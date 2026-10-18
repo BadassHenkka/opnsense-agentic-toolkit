@@ -114,6 +114,30 @@ make build    # binaries in ./bin
 
 The tests run against an in-memory fake of the OPNsense API, so they need no firewall.
 
+### Acceptance tests (real firewall)
+
+The fake follows the specs, so it cannot tell whether OPNsense really behaves that way.
+`internal/acceptance` runs the client against a real firewall with the usual `OPNSENSE_*`
+variables:
+
+```sh
+make acc                          # read-only: safe on any firewall
+OPNSENSE_ACC_WRITE=1 make acc     # also create/update/delete test objects (use a test VM)
+```
+
+- **Read-only (default):** lists every item collection and reads every settings section the
+  client knows (found by reflection, so new areas are covered automatically), and compares the
+  firewall's field names with the Go structs. A field the client has but the firewall lacks
+  fails the test (schema drift); fields only the firewall has are logged. Areas of plugins that
+  are not installed are skipped. Also reads gateway status, backups and snapshot support.
+- **Writes:** a firewall alias, a disabled cron job and a disabled Unbound host override named
+  `acc-test-*`, with 192.0.2.0/24 addresses and the `.invalid` domain. Each goes through
+  add → get → set → get → set unchanged → delete and checks that OPNsense stores what was
+  sent and that writing back what was read changes nothing. Unbound is not applied (that
+  would restart the resolver); everything created is deleted, also when a test fails.
+
+Without `OPNSENSE_ACC=1` the same tests run against the fake as part of `make test`.
+
 ## MCP server
 
 ```sh
