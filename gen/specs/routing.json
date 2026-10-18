@@ -1,0 +1,194 @@
+{
+  "area": "routing",
+  "title": "System \u2192 Gateways and System \u2192 Routes",
+  "mcp": false,
+  "items": [
+    {
+      "resource": "gateway",
+      "go_name": "Gateway",
+      "description": "A gateway (System \u2192 Gateways \u2192 Configuration). For WireGuard site-to-site, point it at the remote peer's tunnel address on the assigned WireGuard interface, and use it in opnsense_route.",
+      "model": "core/Routing/Gateways.xml",
+      "node": "gateway_item",
+      "base": "routing/settings",
+      "key": "gateway_item",
+      "suffix": "Gateway",
+      "reconfigure": "routes/routes/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "disabled": {
+          "attr": "enabled",
+          "go_name": "Disabled",
+          "invert": true
+        },
+        "name": {
+          "description": "Gateway name; static routes refer to it."
+        },
+        "interface": {
+          "required": true,
+          "description": "Assigned interface name, e.g. `opt3` (Interfaces \u2192 Assignments), not the device name `wg0`."
+        },
+        "ipprotocol": {
+          "attr": "ip_protocol",
+          "go_name": "IPProtocol"
+        },
+        "gateway": {
+          "attr": "address",
+          "go_name": "Address",
+          "description": "Gateway IP, e.g. the remote peer's tunnel address. Empty means dynamic."
+        },
+        "defaultgw": {
+          "attr": "default_gateway",
+          "go_name": "DefaultGateway",
+          "description": "Use as the default (upstream) gateway. Leave false for a VPN peer."
+        },
+        "fargw": {
+          "attr": "far_gateway",
+          "go_name": "FarGateway",
+          "description": "Allow a gateway outside the interface's subnet. Needed when the WireGuard instance has a /32 tunnel address."
+        },
+        "monitor_disable": {
+          "attr": "monitoring",
+          "go_name": "MonitorDisable",
+          "invert": true,
+          "description": "Monitor the gateway with dpinger (shows loss/latency, enables failover)."
+        },
+        "monitor": {
+          "attr": "monitor_ip",
+          "go_name": "MonitorIP",
+          "description": "Address to ping when monitoring; defaults to the gateway address."
+        },
+        "priority": {
+          "description": "Lower wins when several gateways could be the default."
+        },
+        "weight": {
+          "description": "Weight in gateway groups."
+        },
+        "latencylow": {
+          "attr": "latency_low"
+        },
+        "latencyhigh": {
+          "attr": "latency_high"
+        },
+        "losslow": {
+          "attr": "loss_low"
+        },
+        "losshigh": {
+          "attr": "loss_high"
+        }
+      },
+      "example": {
+        "name": "WG_SITE2",
+        "interface": "opt3",
+        "gateway": "10.20.0.2",
+        "fargw": "1"
+      }
+    },
+    {
+      "resource": "route",
+      "go_name": "Route",
+      "description": "A static route (System \u2192 Routes \u2192 Configuration): send a destination network to a gateway.",
+      "model": "core/Routes/Route.xml",
+      "node": "route",
+      "base": "routes/routes",
+      "key": "route",
+      "suffix": "route",
+      "reconfigure": "routes/routes/reconfigure",
+      "name_field": "network",
+      "zero_field": "network",
+      "fields": {
+        "network": {
+          "description": "Destination network in CIDR notation, e.g. `192.168.50.0/24`.",
+          "validators": [
+            "cidr{}"
+          ]
+        },
+        "gateway": {
+          "description": "Gateway *name*, e.g. `opnsense_gateway.site2.name`. Static routes reference gateways by name, so referencing the resource also orders creation correctly."
+        }
+      },
+      "example": {
+        "network": "192.168.50.0/24",
+        "gateway": "WAN_DHCP",
+        "descr": "site 2 LAN"
+      },
+      "update": {
+        "network": "192.168.51.0/24"
+      }
+    },
+    {
+      "resource": "gateway_group",
+      "go_name": "GatewayGroup",
+      "plural": "GatewayGroups",
+      "description": "A gateway group (System \u2192 Gateways \u2192 Groups): failover and load balancing. Gateways in the same tier share the load; a higher tier is used when everything in the lower tiers is down. Use the group name as the gateway of a firewall rule or route.",
+      "model": "core/Routing/GatewayGroups.xml",
+      "node": "gateway_group",
+      "base": "routing/group_settings",
+      "key": "gateway_group",
+      "suffix": "",
+      "actions": {
+        "add": "add",
+        "get": "get",
+        "set": "set",
+        "del": "del",
+        "search": "search"
+      },
+      "reconfigure": "routing/group_settings/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "item": {
+          "attr": "tier1",
+          "go_name": "Tier1",
+          "type": "refs",
+          "description": "Gateways in tier 1 (preferred; several share the load)."
+        },
+        "item2": {
+          "attr": "tier2",
+          "go_name": "Tier2",
+          "type": "refs",
+          "description": "Gateways in tier 2; used when every tier below it is down."
+        },
+        "item3": {
+          "attr": "tier3",
+          "go_name": "Tier3",
+          "type": "refs",
+          "description": "Gateways in tier 3; used when every tier below it is down."
+        },
+        "item4": {
+          "attr": "tier4",
+          "go_name": "Tier4",
+          "type": "refs",
+          "description": "Gateways in tier 4; used when every tier below it is down."
+        },
+        "item5": {
+          "attr": "tier5",
+          "go_name": "Tier5",
+          "type": "refs",
+          "description": "Gateways in tier 5; used when every tier below it is down."
+        },
+        "trigger": {
+          "description": "When a member counts as down: `down`, `downloss` (packet loss), `downlatency` or `downlosslatency`."
+        },
+        "poolopts": {
+          "attr": "pool_options",
+          "go_name": "PoolOptions",
+          "description": "Load-balancing mode within a tier; empty for the default."
+        },
+        "descr": {
+          "attr": "description",
+          "go_name": "Description"
+        }
+      },
+      "example": {
+        "name": "WAN_FAILOVER",
+        "item": "lan",
+        "item2": "lan",
+        "descr": "failover"
+      },
+      "update": {
+        "descr": "WAN failover group"
+      }
+    }
+  ]
+}

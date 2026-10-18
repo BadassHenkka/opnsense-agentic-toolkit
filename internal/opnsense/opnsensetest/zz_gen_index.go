@@ -5,6 +5,7 @@ package opnsensetest
 func registerGenerated(s *Server) {
 	registerGenAcme(s)
 	registerGenFirewall(s)
+	registerGenRouting(s)
 	registerGenUnbound(s)
 	registerGenWireguard(s)
 }

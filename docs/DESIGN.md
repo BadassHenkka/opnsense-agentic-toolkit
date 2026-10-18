@@ -216,3 +216,29 @@ CIDR notation and key format without echoing secrets.
 MCP choices: `wireguard_peer_create` without a public key generates the device keys and returns
 a wg-quick config once (the UI's "peer generator", minus storing the device private key on the
 firewall). Secrets are never returned by `get` tools.
+
+## Fifth area: gateways and static routes
+
+Driven by WireGuard site-to-site: a peer whose allowed IPs include a remote network.
+
+Source: opnsense/core `models/OPNsense/Routing/Gateways.xml`, `models/OPNsense/Routes/Route.xml`,
+`Routing/Api/SettingsController.php`, `Routes/Api/{Routes,Gateway}Controller.php`.
+
+- Gateways: `routing/settings/{add,get,set,del,search}Gateway`, key `gateway_item`. Fields are
+  inverted booleans (`disabled`, `monitor_disable`); Terraform and MCP expose them as `enabled` and
+  `monitoring`. `interface` is an *assigned* interface (`opt3`), not a device (`wg0`). Search is a
+  recordset that also lists dynamic gateways (WAN_DHCP), whose `uuid` is their name.
+- Routes: `routes/routes/{add,get,set,del,search}route` (lower-case suffix), key `route`. A route
+  names its gateway by *name* (JsonKeyValueStoreField), so the Terraform `gateway` attribute is a
+  name, and referencing `opnsense_gateway.x.name` also orders creation and destruction.
+- `delGateway` throws a UserException while a route, interface or group uses the gateway. The
+  client now surfaces `errorMessage` from such responses (body or 200-with-error), and the fake
+  answers with HTTP 400 like the real one (`Collection.CanDelete`).
+- Both models apply via `interface routes configure`; `Apply` uses `routes/routes/reconfigure`,
+  which reports errors in `status`.
+- Routes are addressed by their destination network (`RouteRow.RowRef` returns the network as the
+  name), for MCP look-ups and `terraform import`.
+
+Not covered yet: interface assignment. opnsense/core master has `Interfaces/Api/AssignmentController`
+with a brand-new `NetworkInterface` model (0.0.1). It is the next step for a fully codified
+site-to-site, once it ships in a release.

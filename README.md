@@ -27,6 +27,7 @@ Supported so far:
 | Services → Unbound DNS → Overrides | `opnsense_unbound_host_override`, `opnsense_unbound_host_alias` | `unbound` |
 | Services → ACME Client (plugin os-acme-client) | `opnsense_acme_settings`, `opnsense_acme_account`, `opnsense_acme_challenge_type`, `opnsense_acme_automation`, `opnsense_acme_certificate` | `acme` |
 | VPN → WireGuard | `opnsense_wireguard_settings`, `opnsense_wireguard_instance`, `opnsense_wireguard_peer` | `wireguard` |
+| System → Gateways, Groups, System → Routes | `opnsense_gateway`, `opnsense_gateway_group`, `opnsense_route` | `routing` |
 
 ## Quick start
 
@@ -106,6 +107,7 @@ through Terraform. Use `--read-only` when you only want exploration.
 | `firewall_alias` | `firewall_alias_{list,get,create,update,delete}`, `firewall_alias_apply` |
 | `unbound` | `unbound_host_override_{list,get,create,update,delete}`, `unbound_host_alias_{list,get,create,update,delete}`, `unbound_apply` |
 | `wireguard` | `wireguard_settings_{get,update}`; `wireguard_status` (live handshakes/traffic); `wireguard_{instance,peer}_{list,get,create,update,delete}`; `wireguard_apply` |
+| `routing` | `routing_gateway_{list,get,create,update,delete}`, `routing_gateway_status`; `routing_route_{list,get,create,update,delete}`; `routing_apply` |
 | `acme` | `acme_settings_{get,update}`; `acme_{account,challenge_type,automation,certificate}_{list,get,create,update,delete}`; `acme_challenge_type_fields`, `acme_automation_fields` (discover provider fields); `acme_account_register`; `acme_certificate_{issue,revoke,run_automations}`; `acme_apply` |
 
 ACME credentials (DNS API tokens, EAB keys, automation passwords) can be set through MCP but
@@ -163,6 +165,8 @@ terraform import opnsense_unbound_host_alias.truenas truenas.home.lan
 terraform import opnsense_acme_certificate.fw fw.example.com            # ACME objects by name
 terraform import opnsense_acme_settings.this acmeclient
 terraform import opnsense_wireguard_instance.home home                # WireGuard by name
+terraform import opnsense_gateway.site2 WG_SITE2                      # gateway by name
+terraform import opnsense_route.site2 192.168.50.0/24                 # route by network
 ```
 
 WireGuard: `opnsense_wireguard_instance` generates its private key when you omit
@@ -170,6 +174,20 @@ WireGuard: `opnsense_wireguard_instance` generates its private key when you omit
 shows the derived `public_key` in the plan. Peer membership is set only on the peer
 (`instance_ids`). OPNsense stores it on the instance, but the provider never writes it there,
 so two resources never fight over it.
+
+### Routing to networks behind a WireGuard peer (site-to-site)
+
+A peer's `tunnel_addresses` are its WireGuard *allowed IPs*. `/32` is one device. A wider block
+(`192.168.50.0/24`) means a whole network sits behind that peer. By default OPNsense installs
+routes for every allowed IP itself. For explicit control (monitoring, failover, policy routing),
+set `disable_routes = true` on the instance, then add an `opnsense_gateway` that points at the
+peer's tunnel IP and an `opnsense_route` per remote network. See the example in
+[examples/terraform/main.tf](examples/terraform/main.tf).
+
+One manual step remains: assign the `wgN` device as an interface (Interfaces → Assignments, it
+becomes e.g. `opt3`) and enable it. The gateway's `interface` is that assigned name. Recent
+OPNsense development versions add an assignment API, so a resource for this is on the roadmap.
+Then allow the traffic with `opnsense_firewall_rule` on the WireGuard interface.
 
 ## Adding a resource
 

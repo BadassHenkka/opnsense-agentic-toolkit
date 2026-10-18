@@ -8,6 +8,8 @@ type generatedServices struct {
 	Acme *AcmeService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
+	// Routing manages System → Gateways and System → Routes.
+	Routing *RoutingService
 	// Unbound manages Services → Unbound DNS.
 	Unbound *UnboundService
 	// Wireguard manages VPN → WireGuard.
@@ -17,6 +19,7 @@ type generatedServices struct {
 func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
 	c.Firewall = newFirewallService(c)
+	c.Routing = newRoutingService(c)
 	c.Unbound = newUnboundService(c)
 	c.Wireguard = newWireguardService(c)
 }
