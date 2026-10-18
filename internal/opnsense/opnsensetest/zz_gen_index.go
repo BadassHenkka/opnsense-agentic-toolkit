@@ -18,6 +18,7 @@ func registerGenerated(s *Server) {
 	registerGenNodeExporter(s)
 	registerGenPostfix(s)
 	registerGenRouting(s)
+	registerGenRspamd(s)
 	registerGenSystem(s)
 	registerGenTrafficShaper(s)
 	registerGenTrust(s)

@@ -38,6 +38,7 @@ Supported so far:
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
 | Routing → FRR (plugin os-frr) | `opnsense_frr_settings`, `opnsense_frr_bgp_{settings,neighbor,peer_group,aspath,community_list,prefix_list,route_map,redistribution}`, `opnsense_frr_ospf_{settings,area,network,neighbor,interface,prefix_list,route_map,redistribution}`, `opnsense_frr_ospf6_*`, `opnsense_frr_rip_settings`, `opnsense_frr_bfd_{settings,neighbor}`, `opnsense_frr_static_{settings,route}` | `frr` (read-only) |
 | Services → Postfix (plugin os-postfix) | `opnsense_postfix_settings`, `_antispam_settings`, `_domain`, `_recipient`, `_sender`, `_header_check`, `_recipient_bcc`, `_sender_bcc`, `_address` | `postfix` (read-only) |
+| Services → Rspamd (plugin os-rspamd) | `opnsense_rspamd_settings` | `rspamd` (read-only) |
 | Services → Monit | `opnsense_monit_settings`, `_alert`, `_test`, `_service` | `monit` (read-only) |
 | Services → Kea DHCP | `opnsense_kea_dhcp4_{settings,subnet,reservation,option,peer}`, `opnsense_kea_dhcp6_{settings,subnet,reservation,pd_pool,option,peer}`, `opnsense_kea_ctrl_agent_settings` | `kea` (read-only, plus `kea_lease4_list`, `kea_lease6_list`) |
 | Services → Dnsmasq DNS & DHCP | `opnsense_dnsmasq_settings`, `opnsense_dnsmasq_host`, `_domain`, `_tag`, `_range`, `_option`, `_boot` | `dnsmasq` (read-only, plus `dnsmasq_lease_list`) |

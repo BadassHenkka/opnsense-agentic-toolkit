@@ -1,0 +1,228 @@
+{
+  "area": "rspamd",
+  "title": "Services \u2192 Rspamd (plugin os-rspamd)",
+  "settings": [
+    {
+      "resource": "rspamd_settings",
+      "go_name": "RspamdSettings",
+      "plural": "Settings",
+      "description": "Rspamd settings (Services \u2192 Rspamd): scoring, greylisting, DKIM, SPF, phishing, antivirus and the other modules. Per-sender/IP rate limit tables are not modelled.",
+      "model": "plugins/mail/rspamd/Rspamd/RSpamd.xml",
+      "node": "",
+      "get": "rspamd/settings/get",
+      "set": "rspamd/settings/set",
+      "path": [
+        "rspamd"
+      ],
+      "reconfigure": "rspamd/service/reconfigure",
+      "fields": {
+        "general.enabled": {
+          "attr": "enabled"
+        },
+        "general.enable_redis_plugin": {
+          "attr": "enable_redis_plugin"
+        },
+        "general.enable_bayes_autolearn": {
+          "attr": "enable_bayes_autolearn"
+        },
+        "general.rejectscore": {
+          "attr": "rejectscore"
+        },
+        "general.headerscore": {
+          "attr": "headerscore"
+        },
+        "general.greylistscore": {
+          "attr": "greylistscore"
+        },
+        "general.subjectscore": {
+          "attr": "subjectscore"
+        },
+        "general.rewritesubject": {
+          "attr": "rewritesubject"
+        },
+        "general.historyrows": {
+          "attr": "historyrows"
+        },
+        "general.nameserver": {
+          "attr": "nameserver"
+        },
+        "milter_headers.enabled": {
+          "attr": "milter_headers_enabled"
+        },
+        "milter_headers.enable_extended_spam_headers": {
+          "attr": "milter_headers_enable_extended_spam_headers"
+        },
+        "milter_headers.enable_authentication_results": {
+          "attr": "milter_headers_enable_authentication_results"
+        },
+        "milter_headers.enable_spamd_bar": {
+          "attr": "milter_headers_enable_spamd_bar"
+        },
+        "milter_headers.skip_local": {
+          "attr": "milter_headers_skip_local"
+        },
+        "milter_headers.skip_authenticated": {
+          "attr": "milter_headers_skip_authenticated"
+        },
+        "milter_headers.extended_headers_rcpt": {
+          "attr": "milter_headers_extended_headers_rcpt",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "graylist.expire": {
+          "attr": "graylist_expire"
+        },
+        "graylist.timeout": {
+          "attr": "graylist_timeout"
+        },
+        "graylist.max_data_len": {
+          "attr": "graylist_max_data_len"
+        },
+        "graylist.ipv4mask": {
+          "attr": "graylist_ipv4mask"
+        },
+        "graylist.ipv6mask": {
+          "attr": "graylist_ipv6mask"
+        },
+        "graylist.whitelist_ip": {
+          "attr": "graylist_whitelist_ip",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "dkim.cache_size": {
+          "attr": "dkim_cache_size"
+        },
+        "dkim.cache_expire": {
+          "attr": "dkim_cache_expire"
+        },
+        "dkim.time_jitter": {
+          "attr": "dkim_time_jitter"
+        },
+        "dkim.trusted_only": {
+          "attr": "dkim_trusted_only"
+        },
+        "dkim.skip_multi": {
+          "attr": "dkim_skip_multi"
+        },
+        "dkim.allow_envfrom_empty": {
+          "attr": "dkim_allow_envfrom_empty"
+        },
+        "dkim.allow_hdrfrom_mismatch": {
+          "attr": "dkim_allow_hdrfrom_mismatch"
+        },
+        "dkim.allow_hdrfrom_multiple": {
+          "attr": "dkim_allow_hdrfrom_multiple"
+        },
+        "dkim.allow_username_mismatch": {
+          "attr": "dkim_allow_username_mismatch"
+        },
+        "dkim.auth_only": {
+          "attr": "dkim_auth_only"
+        },
+        "dkim.sign_local": {
+          "attr": "dkim_sign_local"
+        },
+        "dkim.try_fallback": {
+          "attr": "dkim_try_fallback"
+        },
+        "dkim.use_domain": {
+          "attr": "dkim_use_domain"
+        },
+        "dkim.use_esld": {
+          "attr": "dkim_use_esld"
+        },
+        "mx-check.enabled": {
+          "attr": "mx_check_enabled"
+        },
+        "mx-check.expire": {
+          "attr": "mx_check_expire"
+        },
+        "phishing.openphish_enabled": {
+          "attr": "phishing_openphish_enabled"
+        },
+        "phishing.openphish_map": {
+          "attr": "phishing_openphish_map"
+        },
+        "phishing.openphish_premium_enabled": {
+          "attr": "phishing_openphish_premium_enabled"
+        },
+        "phishing.phishtank_enabled": {
+          "attr": "phishing_phishtank_enabled"
+        },
+        "phishing.phishtank_map": {
+          "attr": "phishing_phishtank_map"
+        },
+        "phishing.exclusion": {
+          "attr": "phishing_exclusion",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "rate_limit.max_rcpt": {
+          "attr": "rate_limit_max_rcpt"
+        },
+        "rate_limit.whitelisted_rcpts": {
+          "attr": "rate_limit_whitelisted_rcpts",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "spamtrap.enabled": {
+          "attr": "spamtrap_enabled"
+        },
+        "spamtrap.fuzzy_learning": {
+          "attr": "spamtrap_fuzzy_learning"
+        },
+        "spamtrap.spam_learning": {
+          "attr": "spamtrap_spam_learning"
+        },
+        "spamtrap.spam_recipients": {
+          "attr": "spamtrap_spam_recipients",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "spf.spf_cache_size": {
+          "attr": "spf_spf_cache_size"
+        },
+        "spf.spf_cache_expire": {
+          "attr": "spf_spf_cache_expire"
+        },
+        "av.force-reject": {
+          "attr": "av_force_reject"
+        },
+        "av.attachments-only": {
+          "attr": "av_attachments_only"
+        },
+        "av.max-size": {
+          "attr": "av_max_size"
+        },
+        "av.whitelist": {
+          "attr": "av_whitelist",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "surbl.whitelist": {
+          "attr": "surbl_whitelist",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "surbl.exceptions": {
+          "attr": "surbl_exceptions",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "multimap.badfileextension": {
+          "attr": "multimap_badfileextension",
+          "type": "list",
+          "description": "File extensions to flag. The default list repeats `bat`, so this is an ordered list rather than a set."
+        },
+        "multimap.whitelistsender": {
+          "attr": "multimap_whitelistsender",
+          "type": "list",
+          "tf_type": "set"
+        }
+      },
+      "example": {
+        "general.enabled": "1"
+      }
+    }
+  ]
+}

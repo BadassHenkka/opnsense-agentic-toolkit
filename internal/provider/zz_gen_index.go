@@ -110,6 +110,7 @@ func generatedResources() []func() resource.Resource {
 		NewGatewayResource,
 		NewRouteResource,
 		NewGatewayGroupResource,
+		NewRspamdSettingsResource,
 		NewCronJobResource,
 		NewSyslogDestinationResource,
 		NewTunableResource,

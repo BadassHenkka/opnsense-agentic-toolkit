@@ -34,6 +34,8 @@ type generatedServices struct {
 	Postfix *PostfixService
 	// Routing manages System → Gateways and System → Routes.
 	Routing *RoutingService
+	// Rspamd manages Services → Rspamd (plugin os-rspamd).
+	Rspamd *RspamdService
 	// System manages System → Settings: cron, logging and tunables.
 	System *SystemService
 	// TrafficShaper manages Firewall → Shaper.
@@ -64,6 +66,7 @@ func (c *Client) initGenerated() {
 	c.NodeExporter = newNodeExporterService(c)
 	c.Postfix = newPostfixService(c)
 	c.Routing = newRoutingService(c)
+	c.Rspamd = newRspamdService(c)
 	c.System = newSystemService(c)
 	c.TrafficShaper = newTrafficShaperService(c)
 	c.Trust = newTrustService(c)
