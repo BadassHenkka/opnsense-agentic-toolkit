@@ -28,6 +28,186 @@ func genFirewallCategoryViewOf(id string, v *opnsense.FirewallCategory) genFirew
 	}
 }
 
+type genNATPortForwardView struct {
+	UUID               string   `json:"uuid"`
+	Sequence           *int64   `json:"sequence,omitempty"`
+	Enabled            bool     `json:"enabled"`
+	NoRdr              bool     `json:"no_rdr"`
+	Interfaces         []string `json:"interfaces,omitempty"`
+	IPProtocol         string   `json:"ip_protocol,omitempty"`
+	Protocol           string   `json:"protocol,omitempty"`
+	SourceNetwork      string   `json:"source_network,omitempty"`
+	SourcePort         string   `json:"source_port,omitempty"`
+	SourceNot          bool     `json:"source_not"`
+	DestinationNetwork string   `json:"destination_network,omitempty"`
+	DestinationPort    string   `json:"destination_port,omitempty"`
+	DestinationNot     bool     `json:"destination_not"`
+	Target             string   `json:"target,omitempty"`
+	LocalPort          string   `json:"local_port,omitempty"`
+	PoolOptions        string   `json:"pool_options,omitempty"`
+	Log                bool     `json:"log"`
+	CategoryIDs        []string `json:"category_ids,omitempty"`
+	Description        string   `json:"description,omitempty"`
+	Tag                string   `json:"tag,omitempty"`
+	Tagged             string   `json:"tagged,omitempty"`
+	Nosync             bool     `json:"nosync"`
+	NATReflection      string   `json:"nat_reflection,omitempty"`
+	FilterRule         string   `json:"filter_rule,omitempty"`
+	AssociatedRuleID   string   `json:"associated_rule_id,omitempty"`
+}
+
+func genNATPortForwardViewOf(id string, v *opnsense.NATPortForward) genNATPortForwardView {
+	return genNATPortForwardView{
+		UUID:               id,
+		Sequence:           intPtr(v.Sequence),
+		Enabled:            !bool(v.Disabled),
+		NoRdr:              bool(v.NoRDR),
+		Interfaces:         nonNil([]string(v.Interfaces)),
+		IPProtocol:         string(v.IPProtocol),
+		Protocol:           string(v.Protocol),
+		SourceNetwork:      v.Source.Network,
+		SourcePort:         v.Source.Port,
+		SourceNot:          bool(v.Source.Not),
+		DestinationNetwork: v.Destination.Network,
+		DestinationPort:    v.Destination.Port,
+		DestinationNot:     bool(v.Destination.Not),
+		Target:             string(v.Target),
+		LocalPort:          v.LocalPort,
+		PoolOptions:        string(v.PoolOptions),
+		Log:                bool(v.Log),
+		CategoryIDs:        nonNil([]string(v.Categories)),
+		Description:        v.Description,
+		Tag:                v.Tag,
+		Tagged:             v.Tagged,
+		Nosync:             bool(v.Nosync),
+		NATReflection:      string(v.NATReflection),
+		FilterRule:         string(v.Pass),
+		AssociatedRuleID:   string(v.AssociatedRuleID),
+	}
+}
+
+type genNATOutboundView struct {
+	UUID                string   `json:"uuid"`
+	Enabled             bool     `json:"enabled"`
+	NoNAT               bool     `json:"no_nat"`
+	NoSync              bool     `json:"no_sync"`
+	Sequence            *int64   `json:"sequence,omitempty"`
+	Interface           string   `json:"interface,omitempty"`
+	IPProtocol          string   `json:"ip_protocol,omitempty"`
+	Protocol            string   `json:"protocol,omitempty"`
+	SourceNet           string   `json:"source_net,omitempty"`
+	SourceNot           bool     `json:"source_not"`
+	SourcePort          string   `json:"source_port,omitempty"`
+	DestinationNet      string   `json:"destination_net,omitempty"`
+	DestinationNot      bool     `json:"destination_not"`
+	DestinationPort     string   `json:"destination_port,omitempty"`
+	Target              string   `json:"target,omitempty"`
+	TargetPort          string   `json:"target_port,omitempty"`
+	PoolOptions         string   `json:"pool_options,omitempty"`
+	PoolSourceHashKey   string   `json:"pool_source_hash_key,omitempty"`
+	StaticNATPort       bool     `json:"static_nat_port"`
+	Log                 bool     `json:"log"`
+	CategoryIDs         []string `json:"category_ids,omitempty"`
+	Tag                 string   `json:"tag,omitempty"`
+	Tagged              string   `json:"tagged,omitempty"`
+	EndpointIndependent bool     `json:"endpoint_independent"`
+	Description         string   `json:"description,omitempty"`
+}
+
+func genNATOutboundViewOf(id string, v *opnsense.NATOutbound) genNATOutboundView {
+	return genNATOutboundView{
+		UUID:                id,
+		Enabled:             bool(v.Enabled),
+		NoNAT:               bool(v.NoNAT),
+		NoSync:              bool(v.NoSync),
+		Sequence:            intPtr(v.Sequence),
+		Interface:           string(v.Interface),
+		IPProtocol:          string(v.IPProtocol),
+		Protocol:            string(v.Protocol),
+		SourceNet:           v.SourceNet,
+		SourceNot:           bool(v.SourceNot),
+		SourcePort:          v.SourcePort,
+		DestinationNet:      v.DestinationNet,
+		DestinationNot:      bool(v.DestinationNot),
+		DestinationPort:     v.DestinationPort,
+		Target:              v.Target,
+		TargetPort:          v.TargetPort,
+		PoolOptions:         string(v.PoolOptions),
+		PoolSourceHashKey:   v.PoolSourceHashKey,
+		StaticNATPort:       bool(v.StaticNATPort),
+		Log:                 bool(v.Log),
+		CategoryIDs:         nonNil([]string(v.Categories)),
+		Tag:                 v.Tag,
+		Tagged:              v.Tagged,
+		EndpointIndependent: bool(v.EndpointIndependent),
+		Description:         v.Description,
+	}
+}
+
+type genNATOneToOneView struct {
+	UUID           string   `json:"uuid"`
+	Enabled        bool     `json:"enabled"`
+	Log            bool     `json:"log"`
+	Sequence       *int64   `json:"sequence,omitempty"`
+	Interface      string   `json:"interface,omitempty"`
+	NATType        string   `json:"nat_type,omitempty"`
+	SourceNet      string   `json:"source_net,omitempty"`
+	SourceNot      bool     `json:"source_not"`
+	DestinationNet string   `json:"destination_net,omitempty"`
+	DestinationNot bool     `json:"destination_not"`
+	External       string   `json:"external,omitempty"`
+	NATReflection  string   `json:"nat_reflection,omitempty"`
+	CategoryIDs    []string `json:"category_ids,omitempty"`
+	Description    string   `json:"description,omitempty"`
+}
+
+func genNATOneToOneViewOf(id string, v *opnsense.NATOneToOne) genNATOneToOneView {
+	return genNATOneToOneView{
+		UUID:           id,
+		Enabled:        bool(v.Enabled),
+		Log:            bool(v.Log),
+		Sequence:       intPtr(v.Sequence),
+		Interface:      string(v.Interface),
+		NATType:        string(v.Type),
+		SourceNet:      v.SourceNet,
+		SourceNot:      bool(v.SourceNot),
+		DestinationNet: v.DestinationNet,
+		DestinationNot: bool(v.DestinationNot),
+		External:       v.External,
+		NATReflection:  string(v.NATReflection),
+		CategoryIDs:    nonNil([]string(v.Categories)),
+		Description:    v.Description,
+	}
+}
+
+type genNATNPTView struct {
+	UUID           string   `json:"uuid"`
+	Enabled        bool     `json:"enabled"`
+	Log            bool     `json:"log"`
+	Sequence       *int64   `json:"sequence,omitempty"`
+	Interface      string   `json:"interface,omitempty"`
+	SourceNet      string   `json:"source_net,omitempty"`
+	DestinationNet string   `json:"destination_net,omitempty"`
+	Trackif        string   `json:"trackif,omitempty"`
+	CategoryIDs    []string `json:"category_ids,omitempty"`
+	Description    string   `json:"description,omitempty"`
+}
+
+func genNATNPTViewOf(id string, v *opnsense.NATNPT) genNATNPTView {
+	return genNATNPTView{
+		UUID:           id,
+		Enabled:        bool(v.Enabled),
+		Log:            bool(v.Log),
+		Sequence:       intPtr(v.Sequence),
+		Interface:      string(v.Interface),
+		SourceNet:      v.SourceNet,
+		DestinationNet: v.DestinationNet,
+		Trackif:        string(v.Trackif),
+		CategoryIDs:    nonNil([]string(v.Categories)),
+		Description:    v.Description,
+	}
+}
+
 type genInterfaceGroupView struct {
 	UUID        string   `json:"uuid"`
 	Name        string   `json:"name,omitempty"`
@@ -45,6 +225,16 @@ func genInterfaceGroupViewOf(id string, v *opnsense.InterfaceGroup) genInterface
 		NoGroup:     bool(v.NoGroup),
 		Sequence:    intPtr(v.Sequence),
 		Description: v.Description,
+	}
+}
+
+type genNATOutboundModeView struct {
+	Mode string `json:"mode,omitempty"`
+}
+
+func genNATOutboundModeViewOf(v *opnsense.NATOutboundMode) genNATOutboundModeView {
+	return genNATOutboundModeView{
+		Mode: string(v.Mode),
 	}
 }
 
@@ -68,6 +258,74 @@ func genFirewallTools(c *opnsense.Client) []tool {
 				return nil, genFirewallCategoryViewOf(id, v), nil
 			})
 		}},
+		listTool(genFirewallToolset, "firewall_nat_port_forward_list", "List firewall nat port forwards", "List firewall nat port forwards. A port forward (Firewall → NAT → Destination NAT): redirect traffic arriving on an interface to an internal host. With pass = `rule` OPNsense also creates the matching filter rule. Read-only: change them with Terraform (opnsense_firewall_nat_port_forward).", svc.PortForwards),
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_nat_port_forward_get",
+				Description: "Get a firewall nat port forward by UUID or description.",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall nat port forward", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, genNATPortForwardView, error) {
+				id, err := resolveNamed(ctx, svc.PortForwards, in, "firewall nat port forward")
+				if err != nil {
+					return nil, genNATPortForwardView{}, err
+				}
+				v, err := svc.PortForwards.Get(ctx, id)
+				if err != nil {
+					return nil, genNATPortForwardView{}, notFoundAs(err, "firewall nat port forward", id)
+				}
+				return nil, genNATPortForwardViewOf(id, v), nil
+			})
+		}},
+		listTool(genFirewallToolset, "firewall_nat_outbound_list", "List firewall nat outbounds", "List firewall nat outbounds. An outbound NAT rule (Firewall → NAT → Outbound). Takes effect when the outbound mode is `hybrid` or `advanced` (`opnsense_firewall_nat_outbound_mode`). Read-only: change them with Terraform (opnsense_firewall_nat_outbound).", svc.Outbound),
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_nat_outbound_get",
+				Description: "Get a firewall nat outbound by UUID or description.",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall nat outbound", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, genNATOutboundView, error) {
+				id, err := resolveNamed(ctx, svc.Outbound, in, "firewall nat outbound")
+				if err != nil {
+					return nil, genNATOutboundView{}, err
+				}
+				v, err := svc.Outbound.Get(ctx, id)
+				if err != nil {
+					return nil, genNATOutboundView{}, notFoundAs(err, "firewall nat outbound", id)
+				}
+				return nil, genNATOutboundViewOf(id, v), nil
+			})
+		}},
+		listTool(genFirewallToolset, "firewall_nat_one_to_one_list", "List firewall nat one to ones", "List firewall nat one to ones. A 1:1 NAT rule (Firewall → NAT → One-to-One): map an external network onto an internal one. Read-only: change them with Terraform (opnsense_firewall_nat_one_to_one).", svc.OneToOne),
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_nat_one_to_one_get",
+				Description: "Get a firewall nat one to one by UUID or description.",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall nat one to one", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, genNATOneToOneView, error) {
+				id, err := resolveNamed(ctx, svc.OneToOne, in, "firewall nat one to one")
+				if err != nil {
+					return nil, genNATOneToOneView{}, err
+				}
+				v, err := svc.OneToOne.Get(ctx, id)
+				if err != nil {
+					return nil, genNATOneToOneView{}, notFoundAs(err, "firewall nat one to one", id)
+				}
+				return nil, genNATOneToOneViewOf(id, v), nil
+			})
+		}},
+		listTool(genFirewallToolset, "firewall_nat_npt_list", "List firewall nat npts", "List firewall nat npts. An IPv6 network prefix translation rule (Firewall → NAT → NPTv6). Read-only: change them with Terraform (opnsense_firewall_nat_npt).", svc.NPT),
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_nat_npt_get",
+				Description: "Get a firewall nat npt by UUID or description.",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall nat npt", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, genNATNPTView, error) {
+				id, err := resolveNamed(ctx, svc.NPT, in, "firewall nat npt")
+				if err != nil {
+					return nil, genNATNPTView{}, err
+				}
+				v, err := svc.NPT.Get(ctx, id)
+				if err != nil {
+					return nil, genNATNPTView{}, notFoundAs(err, "firewall nat npt", id)
+				}
+				return nil, genNATNPTViewOf(id, v), nil
+			})
+		}},
 		listTool(genFirewallToolset, "firewall_interface_group_list", "List firewall interface groups", "List firewall interface groups. An interface group (Firewall → Groups): a named set of interfaces that rules can use like one interface. Read-only: change them with Terraform (opnsense_firewall_interface_group).", svc.InterfaceGroups),
 		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
 			mcp.AddTool(s, &mcp.Tool{Name: "firewall_interface_group_get",
@@ -83,6 +341,18 @@ func genFirewallTools(c *opnsense.Client) []tool {
 					return nil, genInterfaceGroupView{}, notFoundAs(err, "firewall interface group", id)
 				}
 				return nil, genInterfaceGroupViewOf(id, v), nil
+			})
+		}},
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_nat_outbound_mode_get",
+				Description: "Get the firewall nat outbound mode. The outbound NAT mode (Firewall → NAT → Outbound). `automatic` and `hybrid` generate rules for your networks; `advanced` uses only opnsense_firewall_nat_outbound; `disabled` turns source NAT off. Destroying the resource leaves the mode as it is. Read-only: change them with Terraform (opnsense_firewall_nat_outbound_mode).",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall nat outbound mode", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, genNATOutboundModeView, error) {
+				v, err := svc.OutboundMode.Get(ctx)
+				if err != nil {
+					return nil, genNATOutboundModeView{}, err
+				}
+				return nil, genNATOutboundModeViewOf(v), nil
 			})
 		}},
 	}

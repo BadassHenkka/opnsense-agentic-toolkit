@@ -92,6 +92,405 @@
       }
     },
     {
+      "resource": "firewall_nat_port_forward",
+      "go_name": "NATPortForward",
+      "plural": "PortForwards",
+      "description": "A port forward (Firewall → NAT → Destination NAT): redirect traffic arriving on an interface to an internal host. With pass = `rule` OPNsense also creates the matching filter rule.",
+      "model": "core/Firewall/DNat.xml",
+      "node": "rule",
+      "base": "firewall/d_nat",
+      "key": "rule",
+      "suffix": "Rule",
+      "reconfigure": "firewall/d_nat/apply",
+      "name_field": "descr",
+      "zero_field": "-",
+      "fields": {
+        "sequence": {
+          "type": "int",
+          "no_default": true,
+          "plan_modifiers": [
+            "int64planmodifier.UseStateForUnknown()"
+          ],
+          "description": "Order; lower runs first. Unset picks the next free number."
+        },
+        "disabled": {
+          "attr": "enabled",
+          "go_name": "Disabled",
+          "invert": true
+        },
+        "nordr": {
+          "attr": "no_rdr",
+          "go_name": "NoRDR",
+          "description": "Exclude the matched traffic from redirection (a \"no rdr\" rule)."
+        },
+        "interface": {
+          "attr": "interfaces",
+          "go_name": "Interfaces",
+          "description": "Interfaces the traffic arrives on, e.g. `[\"wan\"]`."
+        },
+        "ipprotocol": {
+          "attr": "ip_protocol",
+          "go_name": "IPProtocol"
+        },
+        "protocol": {
+          "description": "Protocol, e.g. `TCP`, `UDP`, `TCP/UDP`."
+        },
+        "source.network": {
+          "description": "Source network, alias or `any`.",
+          "type": "string"
+        },
+        "source.port": {
+          "description": "Source port, range or alias; usually empty.",
+          "type": "string"
+        },
+        "source.not": {
+          "description": "Invert the source match."
+        },
+        "destination.network": {
+          "description": "Destination, e.g. `wanip` or an alias.",
+          "type": "string"
+        },
+        "destination.port": {
+          "description": "Destination port, range or alias, e.g. `443`.",
+          "type": "string"
+        },
+        "destination.not": {
+          "description": "Invert the destination match."
+        },
+        "target": {
+          "description": "Internal host (IP or alias) to send the traffic to."
+        },
+        "local-port": {
+          "attr": "local_port",
+          "go_name": "LocalPort",
+          "description": "Port on the target; empty keeps the destination port."
+        },
+        "poolopts": {
+          "attr": "pool_options",
+          "go_name": "PoolOptions"
+        },
+        "category": {
+          "attr": "category_ids",
+          "go_name": "Categories",
+          "type": "refs",
+          "description": "opnsense_firewall_category ids."
+        },
+        "descr": {
+          "description": "Also used as the import name."
+        },
+        "natreflection": {
+          "attr": "nat_reflection",
+          "go_name": "NATReflection",
+          "description": "Empty uses the system default."
+        },
+        "pass": {
+          "attr": "filter_rule",
+          "go_name": "Pass",
+          "description": "`rule` adds an associated filter rule, `pass` passes the traffic without one; empty adds none."
+        },
+        "audit": {
+          "skip": true
+        },
+        "associated-rule-id": {
+          "attr": "associated_rule_id",
+          "go_name": "AssociatedRuleID",
+          "type": "string",
+          "computed": true,
+          "tf_unstable": true,
+          "description": "The filter rule OPNsense created for filter_rule = `rule`."
+        }
+      },
+      "example": {
+        "interface": "wan",
+        "protocol": "TCP",
+        "destination.network": "wanip",
+        "destination.port": "443",
+        "target": "192.168.1.20",
+        "descr": "https to caddy"
+      },
+      "update": {
+        "local-port": "8443"
+      }
+    },
+    {
+      "resource": "firewall_nat_outbound",
+      "go_name": "NATOutbound",
+      "plural": "Outbound",
+      "description": "An outbound NAT rule (Firewall → NAT → Outbound). Takes effect when the outbound mode is `hybrid` or `advanced` (`opnsense_firewall_nat_outbound_mode`).",
+      "model": "core/Firewall/Filter.xml",
+      "node": "snatrules.rule",
+      "base": "firewall/source_nat",
+      "key": "rule",
+      "suffix": "Rule",
+      "reconfigure": "firewall/source_nat/apply",
+      "name_field": "description",
+      "zero_field": "-",
+      "fields": {
+        "sequence": {
+          "type": "int",
+          "no_default": true,
+          "plan_modifiers": [
+            "int64planmodifier.UseStateForUnknown()"
+          ],
+          "description": "Order; lower runs first. Unset picks the next free number."
+        },
+        "categories": {
+          "attr": "category_ids",
+          "go_name": "Categories",
+          "type": "refs",
+          "description": "opnsense_firewall_category ids."
+        },
+        "audit": {
+          "skip": true
+        },
+        "sort_order": {
+          "skip": true
+        },
+        "prio_group": {
+          "skip": true
+        },
+        "interface": {
+          "type": "ref",
+          "description": "Interface the rule applies to, e.g. `wan`."
+        },
+        "log": {
+          "description": "Log matching packets."
+        },
+        "nonat": {
+          "attr": "no_nat",
+          "go_name": "NoNAT",
+          "description": "Do not translate the matched traffic."
+        },
+        "nosync": {
+          "attr": "no_sync",
+          "go_name": "NoSync",
+          "description": "Exclude from CARP/XMLRPC sync."
+        },
+        "ipprotocol": {
+          "attr": "ip_protocol",
+          "go_name": "IPProtocol"
+        },
+        "protocol": {
+          "description": "Protocol, e.g. `any`, `TCP`, `UDP`."
+        },
+        "source_net": {
+          "type": "string",
+          "description": "Source network, alias or `any`."
+        },
+        "source_port": {
+          "type": "string",
+          "description": "Source port or alias; usually empty."
+        },
+        "source_not": {
+          "description": "Invert the source match."
+        },
+        "destination_net": {
+          "type": "string",
+          "description": "Destination network, alias or `any`."
+        },
+        "destination_port": {
+          "type": "string",
+          "description": "Destination port or alias."
+        },
+        "destination_not": {
+          "description": "Invert the destination match."
+        },
+        "target": {
+          "type": "string",
+          "description": "Translate to this address or alias; empty uses the interface address."
+        },
+        "target_port": {
+          "type": "string",
+          "description": "Translate to this port."
+        },
+        "poolopts": {
+          "attr": "pool_options",
+          "go_name": "PoolOptions"
+        },
+        "poolopts_sourcehashkey": {
+          "attr": "pool_source_hash_key",
+          "go_name": "PoolSourceHashKey"
+        },
+        "staticnatport": {
+          "attr": "static_nat_port",
+          "go_name": "StaticNATPort",
+          "description": "Keep the source port."
+        },
+        "tag": {
+          "description": "Tag matching packets."
+        },
+        "tagged": {
+          "description": "Match packets with this tag."
+        },
+        "endpoint-independent": {
+          "attr": "endpoint_independent",
+          "go_name": "EndpointIndependent"
+        },
+        "description": {}
+      },
+      "example": {
+        "interface": "wan",
+        "source_net": "10.0.0.0/24",
+        "target": "wanip",
+        "description": "lan to wan"
+      },
+      "update": {
+        "description": "lan to wan (updated)"
+      }
+    },
+    {
+      "resource": "firewall_nat_one_to_one",
+      "go_name": "NATOneToOne",
+      "plural": "OneToOne",
+      "description": "A 1:1 NAT rule (Firewall → NAT → One-to-One): map an external network onto an internal one.",
+      "model": "core/Firewall/Filter.xml",
+      "node": "onetoone.rule",
+      "base": "firewall/one_to_one",
+      "key": "rule",
+      "suffix": "Rule",
+      "reconfigure": "firewall/one_to_one/apply",
+      "name_field": "description",
+      "zero_field": "-",
+      "fields": {
+        "sequence": {
+          "type": "int",
+          "no_default": true,
+          "plan_modifiers": [
+            "int64planmodifier.UseStateForUnknown()"
+          ],
+          "description": "Order; lower runs first. Unset picks the next free number."
+        },
+        "categories": {
+          "attr": "category_ids",
+          "go_name": "Categories",
+          "type": "refs",
+          "description": "opnsense_firewall_category ids."
+        },
+        "audit": {
+          "skip": true
+        },
+        "sort_order": {
+          "skip": true
+        },
+        "prio_group": {
+          "skip": true
+        },
+        "interface": {
+          "type": "ref",
+          "description": "Interface the rule applies to, e.g. `wan`."
+        },
+        "log": {
+          "description": "Log matching packets."
+        },
+        "type": {
+          "attr": "nat_type",
+          "go_name": "Type",
+          "description": "`binat` (bidirectional) or `nat`."
+        },
+        "source_net": {
+          "type": "string",
+          "description": "Internal network or address."
+        },
+        "source_not": {
+          "description": "Invert the source match."
+        },
+        "destination_net": {
+          "type": "string",
+          "description": "Destination network, alias or `any`."
+        },
+        "destination_not": {
+          "description": "Invert the destination match."
+        },
+        "external": {
+          "type": "string",
+          "description": "External network or address."
+        },
+        "natreflection": {
+          "attr": "nat_reflection",
+          "go_name": "NATReflection",
+          "description": "Empty uses the system default."
+        },
+        "description": {}
+      },
+      "example": {
+        "interface": "wan",
+        "source_net": "10.0.0.50",
+        "external": "203.0.113.50",
+        "description": "web server"
+      },
+      "update": {
+        "description": "web server (updated)"
+      }
+    },
+    {
+      "resource": "firewall_nat_npt",
+      "go_name": "NATNPT",
+      "plural": "NPT",
+      "description": "An IPv6 network prefix translation rule (Firewall → NAT → NPTv6).",
+      "model": "core/Firewall/Filter.xml",
+      "node": "npt.rule",
+      "base": "firewall/npt",
+      "key": "rule",
+      "suffix": "Rule",
+      "reconfigure": "firewall/npt/apply",
+      "name_field": "description",
+      "zero_field": "-",
+      "fields": {
+        "sequence": {
+          "type": "int",
+          "no_default": true,
+          "plan_modifiers": [
+            "int64planmodifier.UseStateForUnknown()"
+          ],
+          "description": "Order; lower runs first. Unset picks the next free number."
+        },
+        "categories": {
+          "attr": "category_ids",
+          "go_name": "Categories",
+          "type": "refs",
+          "description": "opnsense_firewall_category ids."
+        },
+        "audit": {
+          "skip": true
+        },
+        "sort_order": {
+          "skip": true
+        },
+        "prio_group": {
+          "skip": true
+        },
+        "interface": {
+          "type": "ref",
+          "description": "Interface the rule applies to, e.g. `wan`."
+        },
+        "log": {
+          "description": "Log matching packets."
+        },
+        "source_net": {
+          "type": "string",
+          "description": "Internal IPv6 prefix."
+        },
+        "destination_net": {
+          "type": "string",
+          "description": "External IPv6 prefix; empty to track an interface."
+        },
+        "trackif": {
+          "type": "ref",
+          "description": "Interface whose prefix is used as the external prefix."
+        },
+        "description": {}
+      },
+      "example": {
+        "interface": "lan",
+        "source_net": "fd00::/64",
+        "destination_net": "2001:db8::/64",
+        "description": "ula to gua"
+      },
+      "update": {
+        "description": "ula to gua (updated)"
+      }
+    },
+    {
       "resource": "firewall_interface_group",
       "go_name": "InterfaceGroup",
       "plural": "InterfaceGroups",
@@ -135,6 +534,35 @@
       },
       "update": {
         "descr": "trusted lans"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "firewall_nat_outbound_mode",
+      "go_name": "NATOutboundMode",
+      "plural": "OutboundMode",
+      "description": "The outbound NAT mode (Firewall → NAT → Outbound). `automatic` and `hybrid` generate rules for your networks; `advanced` uses only opnsense_firewall_nat_outbound; `disabled` turns source NAT off. Destroying the resource leaves the mode as it is.",
+      "model": "core/Firewall/Filter.xml",
+      "node": "general",
+      "path": [
+        "filter",
+        "general"
+      ],
+      "get": "firewall/source_nat/get",
+      "set": "firewall/source_nat/set",
+      "reconfigure": "firewall/source_nat/apply",
+      "fields": {
+        "snat_mode": {
+          "include": true,
+          "attr": "mode",
+          "go_name": "Mode",
+          "description": "`automatic`, `hybrid`, `advanced` or `disabled`.",
+          "type": "option"
+        }
+      },
+      "update": {
+        "snat_mode": "hybrid"
       }
     }
   ]

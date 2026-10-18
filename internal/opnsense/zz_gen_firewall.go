@@ -67,6 +67,202 @@ type FirewallCategoryRow struct {
 
 func (r FirewallCategoryRow) RowRef() (string, string) { return string(r.UUID), string(r.Name) }
 
+// NATPortForward: A port forward (Firewall → NAT → Destination NAT): redirect traffic arriving on an interface to an internal host. With pass = `rule` OPNsense also creates the matching filter rule.
+// (model core/Firewall/DNat.xml, array rule).
+// Not generated: source.address, destination.address, categories, audit, created.
+type NATPortForward struct {
+	Sequence         Int                       `json:"sequence"`
+	Disabled         Bool                      `json:"disabled"`
+	NoRDR            Bool                      `json:"nordr"`
+	Interfaces       CSVList                   `json:"interface"`
+	IPProtocol       Option                    `json:"ipprotocol"`
+	Protocol         Option                    `json:"protocol"`
+	Source           NATPortForwardSource      `json:"source"`
+	Destination      NATPortForwardDestination `json:"destination"`
+	Target           Option                    `json:"target"`
+	LocalPort        string                    `json:"local-port"`
+	PoolOptions      Option                    `json:"poolopts"`
+	Log              Bool                      `json:"log"`
+	Categories       CSVList                   `json:"category"`
+	Description      string                    `json:"descr"`
+	Tag              string                    `json:"tag"`
+	Tagged           string                    `json:"tagged"`
+	Nosync           Bool                      `json:"nosync"`
+	NATReflection    Option                    `json:"natreflection"`
+	Pass             Option                    `json:"pass"`
+	AssociatedRuleID ReadOnly                  `json:"associated-rule-id,omitzero"`
+}
+
+// NATPortForwardSource is the source part of a NATPortForward.
+type NATPortForwardSource struct {
+	Network string `json:"network"`
+	Port    string `json:"port"`
+	Not     Bool   `json:"not"`
+}
+
+// NATPortForwardDestination is the destination part of a NATPortForward.
+type NATPortForwardDestination struct {
+	Network string `json:"network"`
+	Port    string `json:"port"`
+	Not     Bool   `json:"not"`
+}
+
+// NATPortForwardRow is one row of a firewall_nat_port_forward search; values are display text.
+type NATPortForwardRow struct {
+	UUID             Text `json:"uuid"`
+	Sequence         Text `json:"sequence"`
+	Disabled         Text `json:"disabled"`
+	NoRDR            Text `json:"nordr"`
+	Interfaces       Text `json:"interface"`
+	IPProtocol       Text `json:"ipprotocol"`
+	Protocol         Text `json:"protocol"`
+	Target           Text `json:"target"`
+	LocalPort        Text `json:"local-port"`
+	PoolOptions      Text `json:"poolopts"`
+	Log              Text `json:"log"`
+	Categories       Text `json:"category"`
+	Description      Text `json:"descr"`
+	Tag              Text `json:"tag"`
+	Tagged           Text `json:"tagged"`
+	Nosync           Text `json:"nosync"`
+	NATReflection    Text `json:"natreflection"`
+	Pass             Text `json:"pass"`
+	AssociatedRuleID Text `json:"associated-rule-id"`
+}
+
+func (r NATPortForwardRow) RowRef() (string, string) { return string(r.UUID), string(r.Description) }
+
+// NATOutbound: An outbound NAT rule (Firewall → NAT → Outbound). Takes effect when the outbound mode is `hybrid` or `advanced` (`opnsense_firewall_nat_outbound_mode`).
+// (model core/Firewall/Filter.xml, array snatrules.rule).
+// Not generated: sort_order, prio_group, audit.
+type NATOutbound struct {
+	Enabled             Bool    `json:"enabled"`
+	NoNAT               Bool    `json:"nonat"`
+	NoSync              Bool    `json:"nosync"`
+	Sequence            Int     `json:"sequence"`
+	Interface           Option  `json:"interface"`
+	IPProtocol          Option  `json:"ipprotocol"`
+	Protocol            Option  `json:"protocol"`
+	SourceNet           string  `json:"source_net"`
+	SourceNot           Bool    `json:"source_not"`
+	SourcePort          string  `json:"source_port"`
+	DestinationNet      string  `json:"destination_net"`
+	DestinationNot      Bool    `json:"destination_not"`
+	DestinationPort     string  `json:"destination_port"`
+	Target              string  `json:"target"`
+	TargetPort          string  `json:"target_port"`
+	PoolOptions         Option  `json:"poolopts"`
+	PoolSourceHashKey   string  `json:"poolopts_sourcehashkey"`
+	StaticNATPort       Bool    `json:"staticnatport"`
+	Log                 Bool    `json:"log"`
+	Categories          CSVList `json:"categories"`
+	Tag                 string  `json:"tag"`
+	Tagged              string  `json:"tagged"`
+	EndpointIndependent Bool    `json:"endpoint-independent"`
+	Description         string  `json:"description"`
+}
+
+// NATOutboundRow is one row of a firewall_nat_outbound search; values are display text.
+type NATOutboundRow struct {
+	UUID                Text `json:"uuid"`
+	Enabled             Text `json:"enabled"`
+	NoNAT               Text `json:"nonat"`
+	NoSync              Text `json:"nosync"`
+	Sequence            Text `json:"sequence"`
+	Interface           Text `json:"interface"`
+	IPProtocol          Text `json:"ipprotocol"`
+	Protocol            Text `json:"protocol"`
+	SourceNet           Text `json:"source_net"`
+	SourceNot           Text `json:"source_not"`
+	SourcePort          Text `json:"source_port"`
+	DestinationNet      Text `json:"destination_net"`
+	DestinationNot      Text `json:"destination_not"`
+	DestinationPort     Text `json:"destination_port"`
+	Target              Text `json:"target"`
+	TargetPort          Text `json:"target_port"`
+	PoolOptions         Text `json:"poolopts"`
+	PoolSourceHashKey   Text `json:"poolopts_sourcehashkey"`
+	StaticNATPort       Text `json:"staticnatport"`
+	Log                 Text `json:"log"`
+	Categories          Text `json:"categories"`
+	Tag                 Text `json:"tag"`
+	Tagged              Text `json:"tagged"`
+	EndpointIndependent Text `json:"endpoint-independent"`
+	Description         Text `json:"description"`
+}
+
+func (r NATOutboundRow) RowRef() (string, string) { return string(r.UUID), string(r.Description) }
+
+// NATOneToOne: A 1:1 NAT rule (Firewall → NAT → One-to-One): map an external network onto an internal one.
+// (model core/Firewall/Filter.xml, array onetoone.rule).
+// Not generated: sort_order, prio_group, audit.
+type NATOneToOne struct {
+	Enabled        Bool    `json:"enabled"`
+	Log            Bool    `json:"log"`
+	Sequence       Int     `json:"sequence"`
+	Interface      Option  `json:"interface"`
+	Type           Option  `json:"type"`
+	SourceNet      string  `json:"source_net"`
+	SourceNot      Bool    `json:"source_not"`
+	DestinationNet string  `json:"destination_net"`
+	DestinationNot Bool    `json:"destination_not"`
+	External       string  `json:"external"`
+	NATReflection  Option  `json:"natreflection"`
+	Categories     CSVList `json:"categories"`
+	Description    string  `json:"description"`
+}
+
+// NATOneToOneRow is one row of a firewall_nat_one_to_one search; values are display text.
+type NATOneToOneRow struct {
+	UUID           Text `json:"uuid"`
+	Enabled        Text `json:"enabled"`
+	Log            Text `json:"log"`
+	Sequence       Text `json:"sequence"`
+	Interface      Text `json:"interface"`
+	Type           Text `json:"type"`
+	SourceNet      Text `json:"source_net"`
+	SourceNot      Text `json:"source_not"`
+	DestinationNet Text `json:"destination_net"`
+	DestinationNot Text `json:"destination_not"`
+	External       Text `json:"external"`
+	NATReflection  Text `json:"natreflection"`
+	Categories     Text `json:"categories"`
+	Description    Text `json:"description"`
+}
+
+func (r NATOneToOneRow) RowRef() (string, string) { return string(r.UUID), string(r.Description) }
+
+// NATNPT: An IPv6 network prefix translation rule (Firewall → NAT → NPTv6).
+// (model core/Firewall/Filter.xml, array npt.rule).
+// Not generated: sort_order, prio_group, audit.
+type NATNPT struct {
+	Enabled        Bool    `json:"enabled"`
+	Log            Bool    `json:"log"`
+	Sequence       Int     `json:"sequence"`
+	Interface      Option  `json:"interface"`
+	SourceNet      string  `json:"source_net"`
+	DestinationNet string  `json:"destination_net"`
+	Trackif        Option  `json:"trackif"`
+	Categories     CSVList `json:"categories"`
+	Description    string  `json:"description"`
+}
+
+// NATNPTRow is one row of a firewall_nat_npt search; values are display text.
+type NATNPTRow struct {
+	UUID           Text `json:"uuid"`
+	Enabled        Text `json:"enabled"`
+	Log            Text `json:"log"`
+	Sequence       Text `json:"sequence"`
+	Interface      Text `json:"interface"`
+	SourceNet      Text `json:"source_net"`
+	DestinationNet Text `json:"destination_net"`
+	Trackif        Text `json:"trackif"`
+	Categories     Text `json:"categories"`
+	Description    Text `json:"description"`
+}
+
+func (r NATNPTRow) RowRef() (string, string) { return string(r.UUID), string(r.Description) }
+
 // InterfaceGroup: An interface group (Firewall → Groups): a named set of interfaces that rules can use like one interface.
 // (model core/Firewall/Group.xml, array ifgroupentry).
 type InterfaceGroup struct {
@@ -91,12 +287,23 @@ type InterfaceGroupRow struct {
 
 func (r InterfaceGroupRow) RowRef() (string, string) { return string(r.UUID), string(r.Name) }
 
+// NATOutboundMode: The outbound NAT mode (Firewall → NAT → Outbound). `automatic` and `hybrid` generate rules for your networks; `advanced` uses only opnsense_firewall_nat_outbound; `disabled` turns source NAT off. Destroying the resource leaves the mode as it is.
+// (model core/Firewall/Filter.xml, section general).
+type NATOutboundMode struct {
+	Mode Option `json:"snat_mode"`
+}
+
 // FirewallService manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 type FirewallService struct {
 	c               *Client
 	Aliases         *ItemController[Alias, AliasRow]
 	Categories      *ItemController[FirewallCategory, FirewallCategoryRow]
+	PortForwards    *ItemController[NATPortForward, NATPortForwardRow]
+	Outbound        *ItemController[NATOutbound, NATOutboundRow]
+	OneToOne        *ItemController[NATOneToOne, NATOneToOneRow]
+	NPT             *ItemController[NATNPT, NATNPTRow]
 	InterfaceGroups *ItemController[InterfaceGroup, InterfaceGroupRow]
+	OutboundMode    *SettingsController[NATOutboundMode]
 }
 
 func newFirewallService(c *Client) *FirewallService {
@@ -104,6 +311,11 @@ func newFirewallService(c *Client) *FirewallService {
 		c:               c,
 		Aliases:         NewItemController[Alias, AliasRow](c, "firewall/alias", "alias", "Item", nil, "firewall/alias/reconfigure"),
 		Categories:      NewItemController[FirewallCategory, FirewallCategoryRow](c, "firewall/category", "category", "Item", nil, ""),
+		PortForwards:    NewItemController[NATPortForward, NATPortForwardRow](c, "firewall/d_nat", "rule", "Rule", nil, "firewall/d_nat/apply"),
+		Outbound:        NewItemController[NATOutbound, NATOutboundRow](c, "firewall/source_nat", "rule", "Rule", nil, "firewall/source_nat/apply"),
+		OneToOne:        NewItemController[NATOneToOne, NATOneToOneRow](c, "firewall/one_to_one", "rule", "Rule", nil, "firewall/one_to_one/apply"),
+		NPT:             NewItemController[NATNPT, NATNPTRow](c, "firewall/npt", "rule", "Rule", nil, "firewall/npt/apply"),
 		InterfaceGroups: NewItemController[InterfaceGroup, InterfaceGroupRow](c, "firewall/group", "group", "Item", nil, "firewall/group/reconfigure"),
+		OutboundMode:    NewSettingsController[NATOutboundMode](c, "firewall/source_nat/get", "firewall/source_nat/set", []string{"filter", "general"}, "firewall/source_nat/apply"),
 	}
 }

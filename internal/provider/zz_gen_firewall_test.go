@@ -42,6 +42,104 @@ func genFirewallCategoryPlan() genFirewallCategoryModel {
 	}
 }
 
+// genNATPortForwardPlan returns a create plan with the example values from gen/specs/firewall.json.
+func genNATPortForwardPlan() genNATPortForwardModel {
+	return genNATPortForwardModel{
+		ID:                 types.StringUnknown(),
+		Sequence:           types.Int64Unknown(),
+		Enabled:            types.BoolValue(false),
+		NoRdr:              types.BoolValue(false),
+		Interfaces:         strSet("wan"),
+		IPProtocol:         types.StringValue(""),
+		Protocol:           types.StringValue("TCP"),
+		SourceNetwork:      types.StringValue(""),
+		SourcePort:         types.StringValue(""),
+		SourceNot:          types.BoolValue(false),
+		DestinationNetwork: types.StringValue("wanip"),
+		DestinationPort:    types.StringValue("443"),
+		DestinationNot:     types.BoolValue(false),
+		Target:             types.StringValue("192.168.1.20"),
+		LocalPort:          types.StringValue(""),
+		PoolOptions:        types.StringValue(""),
+		Log:                types.BoolValue(false),
+		CategoryIDs:        strSet(),
+		Description:        types.StringValue("https to caddy"),
+		Tag:                types.StringValue(""),
+		Tagged:             types.StringValue(""),
+		Nosync:             types.BoolValue(false),
+		NATReflection:      types.StringValue(""),
+		FilterRule:         types.StringValue(""),
+		AssociatedRuleID:   types.StringUnknown(),
+	}
+}
+
+// genNATOutboundPlan returns a create plan with the example values from gen/specs/firewall.json.
+func genNATOutboundPlan() genNATOutboundModel {
+	return genNATOutboundModel{
+		ID:                  types.StringUnknown(),
+		Enabled:             types.BoolValue(true),
+		NoNAT:               types.BoolValue(false),
+		NoSync:              types.BoolValue(false),
+		Sequence:            types.Int64Unknown(),
+		Interface:           types.StringValue("wan"),
+		IPProtocol:          types.StringValue("inet"),
+		Protocol:            types.StringValue("any"),
+		SourceNet:           types.StringValue("10.0.0.0/24"),
+		SourceNot:           types.BoolValue(false),
+		SourcePort:          types.StringValue(""),
+		DestinationNet:      types.StringValue("any"),
+		DestinationNot:      types.BoolValue(false),
+		DestinationPort:     types.StringValue(""),
+		Target:              types.StringValue("wanip"),
+		TargetPort:          types.StringValue(""),
+		PoolOptions:         types.StringValue(""),
+		PoolSourceHashKey:   types.StringValue(""),
+		StaticNATPort:       types.BoolValue(false),
+		Log:                 types.BoolValue(false),
+		CategoryIDs:         strSet(),
+		Tag:                 types.StringValue(""),
+		Tagged:              types.StringValue(""),
+		EndpointIndependent: types.BoolValue(false),
+		Description:         types.StringValue("lan to wan"),
+	}
+}
+
+// genNATOneToOnePlan returns a create plan with the example values from gen/specs/firewall.json.
+func genNATOneToOnePlan() genNATOneToOneModel {
+	return genNATOneToOneModel{
+		ID:             types.StringUnknown(),
+		Enabled:        types.BoolValue(true),
+		Log:            types.BoolValue(false),
+		Sequence:       types.Int64Unknown(),
+		Interface:      types.StringValue("wan"),
+		NATType:        types.StringValue("binat"),
+		SourceNet:      types.StringValue("10.0.0.50"),
+		SourceNot:      types.BoolValue(false),
+		DestinationNet: types.StringValue("any"),
+		DestinationNot: types.BoolValue(false),
+		External:       types.StringValue("203.0.113.50"),
+		NATReflection:  types.StringValue(""),
+		CategoryIDs:    strSet(),
+		Description:    types.StringValue("web server"),
+	}
+}
+
+// genNATNPTPlan returns a create plan with the example values from gen/specs/firewall.json.
+func genNATNPTPlan() genNATNPTModel {
+	return genNATNPTModel{
+		ID:             types.StringUnknown(),
+		Enabled:        types.BoolValue(true),
+		Log:            types.BoolValue(false),
+		Sequence:       types.Int64Unknown(),
+		Interface:      types.StringValue("lan"),
+		SourceNet:      types.StringValue("fd00::/64"),
+		DestinationNet: types.StringValue("2001:db8::/64"),
+		Trackif:        types.StringValue(""),
+		CategoryIDs:    strSet(),
+		Description:    types.StringValue("ula to gua"),
+	}
+}
+
 // genInterfaceGroupPlan returns a create plan with the example values from gen/specs/firewall.json.
 func genInterfaceGroupPlan() genInterfaceGroupModel {
 	return genInterfaceGroupModel{
@@ -51,6 +149,14 @@ func genInterfaceGroupPlan() genInterfaceGroupModel {
 		NoGroup:     types.BoolValue(false),
 		Sequence:    types.Int64Value(0),
 		Description: types.StringValue("trusted networks"),
+	}
+}
+
+// genNATOutboundModePlan returns a create plan with the example values from gen/specs/firewall.json.
+func genNATOutboundModePlan() genNATOutboundModeModel {
+	return genNATOutboundModeModel{
+		ID:   types.StringUnknown(),
+		Mode: types.StringValue("hybrid"),
 	}
 }
 
@@ -192,6 +298,388 @@ func TestGenFirewallCategory(t *testing.T) {
 	}
 }
 
+func TestGenNATPortForward(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewNATPortForwardResource())
+	plan := genNATPortForwardPlan()
+	var got genNATPortForwardModel
+	st, ok := h.create(plan, &got)
+	if !ok {
+		t.Fatal("create failed")
+	}
+	id := got.ID.ValueString()
+	rec, ok := fake.Get("rule", id)
+	if !ok {
+		t.Fatal("not stored")
+	}
+	if !sameValues(rec["disabled"], "1") {
+		t.Errorf("disabled: stored %q, want %q", rec["disabled"], "1")
+	}
+	if !sameValues(rec["nordr"], "0") {
+		t.Errorf("nordr: stored %q, want %q", rec["nordr"], "0")
+	}
+	if !sameValues(rec["interface"], "wan") {
+		t.Errorf("interface: stored %q, want %q", rec["interface"], "wan")
+	}
+	if !sameValues(rec["ipprotocol"], "") {
+		t.Errorf("ipprotocol: stored %q, want %q", rec["ipprotocol"], "")
+	}
+	if !sameValues(rec["protocol"], "TCP") {
+		t.Errorf("protocol: stored %q, want %q", rec["protocol"], "TCP")
+	}
+	if !sameValues(rec["source.network"], "") {
+		t.Errorf("source.network: stored %q, want %q", rec["source.network"], "")
+	}
+	if !sameValues(rec["source.port"], "") {
+		t.Errorf("source.port: stored %q, want %q", rec["source.port"], "")
+	}
+	if !sameValues(rec["source.not"], "0") {
+		t.Errorf("source.not: stored %q, want %q", rec["source.not"], "0")
+	}
+	if !sameValues(rec["destination.network"], "wanip") {
+		t.Errorf("destination.network: stored %q, want %q", rec["destination.network"], "wanip")
+	}
+	if !sameValues(rec["destination.port"], "443") {
+		t.Errorf("destination.port: stored %q, want %q", rec["destination.port"], "443")
+	}
+	if !sameValues(rec["destination.not"], "0") {
+		t.Errorf("destination.not: stored %q, want %q", rec["destination.not"], "0")
+	}
+	if !sameValues(rec["target"], "192.168.1.20") {
+		t.Errorf("target: stored %q, want %q", rec["target"], "192.168.1.20")
+	}
+	if !sameValues(rec["local-port"], "") {
+		t.Errorf("local-port: stored %q, want %q", rec["local-port"], "")
+	}
+	if !sameValues(rec["poolopts"], "") {
+		t.Errorf("poolopts: stored %q, want %q", rec["poolopts"], "")
+	}
+	if !sameValues(rec["log"], "0") {
+		t.Errorf("log: stored %q, want %q", rec["log"], "0")
+	}
+	if !sameValues(rec["category"], "") {
+		t.Errorf("category: stored %q, want %q", rec["category"], "")
+	}
+	if !sameValues(rec["descr"], "https to caddy") {
+		t.Errorf("descr: stored %q, want %q", rec["descr"], "https to caddy")
+	}
+	if !sameValues(rec["tag"], "") {
+		t.Errorf("tag: stored %q, want %q", rec["tag"], "")
+	}
+	if !sameValues(rec["tagged"], "") {
+		t.Errorf("tagged: stored %q, want %q", rec["tagged"], "")
+	}
+	if !sameValues(rec["nosync"], "0") {
+		t.Errorf("nosync: stored %q, want %q", rec["nosync"], "0")
+	}
+	if !sameValues(rec["natreflection"], "") {
+		t.Errorf("natreflection: stored %q, want %q", rec["natreflection"], "")
+	}
+	if !sameValues(rec["pass"], "") {
+		t.Errorf("pass: stored %q, want %q", rec["pass"], "")
+	}
+	if got.AssociatedRuleID.ValueString() == "" && rec["associated-rule-id"] != "" {
+		t.Error("computed associated_rule_id not read back")
+	}
+
+	plan.ID = got.ID
+	plan.Sequence = got.Sequence
+	plan.AssociatedRuleID = got.AssociatedRuleID
+	plan.LocalPort = types.StringValue("8443")
+	st = h.update(st, plan, &got)
+	rec, _ = fake.Get("rule", id)
+	if !sameValues(rec["local-port"], "8443") {
+		t.Errorf("local-port: stored %q, want %q", rec["local-port"], "8443")
+	}
+
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	if imp, ok := h.importID(id); !ok || imp != id {
+		t.Fatalf("import by uuid = %q", imp)
+	}
+	if imp, ok := h.importID("https to caddy"); !ok || imp != id {
+		t.Fatalf("import by name = %q", imp)
+	}
+	h.delete(st)
+	if _, ok := fake.Get("rule", id); ok {
+		t.Fatal("still stored after delete")
+	}
+	if fake.Applies["firewall/d_nat/apply"] == 0 {
+		t.Error("never applied")
+	}
+	bad := plan
+	bad.IPProtocol = types.StringValue("not-an-option")
+	if !h.validateStrings(bad).HasError() {
+		t.Error("invalid ip_protocol accepted")
+	}
+}
+
+func TestGenNATOutbound(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewNATOutboundResource())
+	plan := genNATOutboundPlan()
+	var got genNATOutboundModel
+	st, ok := h.create(plan, &got)
+	if !ok {
+		t.Fatal("create failed")
+	}
+	id := got.ID.ValueString()
+	rec, ok := fake.Get("rule", id)
+	if !ok {
+		t.Fatal("not stored")
+	}
+	if !sameValues(rec["enabled"], "1") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "1")
+	}
+	if !sameValues(rec["nonat"], "0") {
+		t.Errorf("nonat: stored %q, want %q", rec["nonat"], "0")
+	}
+	if !sameValues(rec["nosync"], "0") {
+		t.Errorf("nosync: stored %q, want %q", rec["nosync"], "0")
+	}
+	if !sameValues(rec["interface"], "wan") {
+		t.Errorf("interface: stored %q, want %q", rec["interface"], "wan")
+	}
+	if !sameValues(rec["ipprotocol"], "inet") {
+		t.Errorf("ipprotocol: stored %q, want %q", rec["ipprotocol"], "inet")
+	}
+	if !sameValues(rec["protocol"], "any") {
+		t.Errorf("protocol: stored %q, want %q", rec["protocol"], "any")
+	}
+	if !sameValues(rec["source_net"], "10.0.0.0/24") {
+		t.Errorf("source_net: stored %q, want %q", rec["source_net"], "10.0.0.0/24")
+	}
+	if !sameValues(rec["source_not"], "0") {
+		t.Errorf("source_not: stored %q, want %q", rec["source_not"], "0")
+	}
+	if !sameValues(rec["source_port"], "") {
+		t.Errorf("source_port: stored %q, want %q", rec["source_port"], "")
+	}
+	if !sameValues(rec["destination_net"], "any") {
+		t.Errorf("destination_net: stored %q, want %q", rec["destination_net"], "any")
+	}
+	if !sameValues(rec["destination_not"], "0") {
+		t.Errorf("destination_not: stored %q, want %q", rec["destination_not"], "0")
+	}
+	if !sameValues(rec["destination_port"], "") {
+		t.Errorf("destination_port: stored %q, want %q", rec["destination_port"], "")
+	}
+	if !sameValues(rec["target"], "wanip") {
+		t.Errorf("target: stored %q, want %q", rec["target"], "wanip")
+	}
+	if !sameValues(rec["target_port"], "") {
+		t.Errorf("target_port: stored %q, want %q", rec["target_port"], "")
+	}
+	if !sameValues(rec["poolopts"], "") {
+		t.Errorf("poolopts: stored %q, want %q", rec["poolopts"], "")
+	}
+	if !sameValues(rec["poolopts_sourcehashkey"], "") {
+		t.Errorf("poolopts_sourcehashkey: stored %q, want %q", rec["poolopts_sourcehashkey"], "")
+	}
+	if !sameValues(rec["staticnatport"], "0") {
+		t.Errorf("staticnatport: stored %q, want %q", rec["staticnatport"], "0")
+	}
+	if !sameValues(rec["log"], "0") {
+		t.Errorf("log: stored %q, want %q", rec["log"], "0")
+	}
+	if !sameValues(rec["categories"], "") {
+		t.Errorf("categories: stored %q, want %q", rec["categories"], "")
+	}
+	if !sameValues(rec["tag"], "") {
+		t.Errorf("tag: stored %q, want %q", rec["tag"], "")
+	}
+	if !sameValues(rec["tagged"], "") {
+		t.Errorf("tagged: stored %q, want %q", rec["tagged"], "")
+	}
+	if !sameValues(rec["endpoint-independent"], "0") {
+		t.Errorf("endpoint-independent: stored %q, want %q", rec["endpoint-independent"], "0")
+	}
+	if !sameValues(rec["description"], "lan to wan") {
+		t.Errorf("description: stored %q, want %q", rec["description"], "lan to wan")
+	}
+
+	plan.ID = got.ID
+	plan.Sequence = got.Sequence
+	plan.Description = types.StringValue("lan to wan (updated)")
+	st = h.update(st, plan, &got)
+	rec, _ = fake.Get("rule", id)
+	if !sameValues(rec["description"], "lan to wan (updated)") {
+		t.Errorf("description: stored %q, want %q", rec["description"], "lan to wan (updated)")
+	}
+
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	if imp, ok := h.importID(id); !ok || imp != id {
+		t.Fatalf("import by uuid = %q", imp)
+	}
+	if imp, ok := h.importID("lan to wan (updated)"); !ok || imp != id {
+		t.Fatalf("import by name = %q", imp)
+	}
+	h.delete(st)
+	if _, ok := fake.Get("rule", id); ok {
+		t.Fatal("still stored after delete")
+	}
+	if fake.Applies["firewall/source_nat/apply"] == 0 {
+		t.Error("never applied")
+	}
+	bad := plan
+	bad.IPProtocol = types.StringValue("not-an-option")
+	if !h.validateStrings(bad).HasError() {
+		t.Error("invalid ip_protocol accepted")
+	}
+}
+
+func TestGenNATOneToOne(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewNATOneToOneResource())
+	plan := genNATOneToOnePlan()
+	var got genNATOneToOneModel
+	st, ok := h.create(plan, &got)
+	if !ok {
+		t.Fatal("create failed")
+	}
+	id := got.ID.ValueString()
+	rec, ok := fake.Get("rule", id)
+	if !ok {
+		t.Fatal("not stored")
+	}
+	if !sameValues(rec["enabled"], "1") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "1")
+	}
+	if !sameValues(rec["log"], "0") {
+		t.Errorf("log: stored %q, want %q", rec["log"], "0")
+	}
+	if !sameValues(rec["interface"], "wan") {
+		t.Errorf("interface: stored %q, want %q", rec["interface"], "wan")
+	}
+	if !sameValues(rec["type"], "binat") {
+		t.Errorf("type: stored %q, want %q", rec["type"], "binat")
+	}
+	if !sameValues(rec["source_net"], "10.0.0.50") {
+		t.Errorf("source_net: stored %q, want %q", rec["source_net"], "10.0.0.50")
+	}
+	if !sameValues(rec["source_not"], "0") {
+		t.Errorf("source_not: stored %q, want %q", rec["source_not"], "0")
+	}
+	if !sameValues(rec["destination_net"], "any") {
+		t.Errorf("destination_net: stored %q, want %q", rec["destination_net"], "any")
+	}
+	if !sameValues(rec["destination_not"], "0") {
+		t.Errorf("destination_not: stored %q, want %q", rec["destination_not"], "0")
+	}
+	if !sameValues(rec["external"], "203.0.113.50") {
+		t.Errorf("external: stored %q, want %q", rec["external"], "203.0.113.50")
+	}
+	if !sameValues(rec["natreflection"], "") {
+		t.Errorf("natreflection: stored %q, want %q", rec["natreflection"], "")
+	}
+	if !sameValues(rec["categories"], "") {
+		t.Errorf("categories: stored %q, want %q", rec["categories"], "")
+	}
+	if !sameValues(rec["description"], "web server") {
+		t.Errorf("description: stored %q, want %q", rec["description"], "web server")
+	}
+
+	plan.ID = got.ID
+	plan.Sequence = got.Sequence
+	plan.Description = types.StringValue("web server (updated)")
+	st = h.update(st, plan, &got)
+	rec, _ = fake.Get("rule", id)
+	if !sameValues(rec["description"], "web server (updated)") {
+		t.Errorf("description: stored %q, want %q", rec["description"], "web server (updated)")
+	}
+
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	if imp, ok := h.importID(id); !ok || imp != id {
+		t.Fatalf("import by uuid = %q", imp)
+	}
+	if imp, ok := h.importID("web server (updated)"); !ok || imp != id {
+		t.Fatalf("import by name = %q", imp)
+	}
+	h.delete(st)
+	if _, ok := fake.Get("rule", id); ok {
+		t.Fatal("still stored after delete")
+	}
+	if fake.Applies["firewall/one_to_one/apply"] == 0 {
+		t.Error("never applied")
+	}
+	bad := plan
+	bad.NATType = types.StringValue("not-an-option")
+	if !h.validateStrings(bad).HasError() {
+		t.Error("invalid nat_type accepted")
+	}
+}
+
+func TestGenNATNPT(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewNATNPTResource())
+	plan := genNATNPTPlan()
+	var got genNATNPTModel
+	st, ok := h.create(plan, &got)
+	if !ok {
+		t.Fatal("create failed")
+	}
+	id := got.ID.ValueString()
+	rec, ok := fake.Get("rule", id)
+	if !ok {
+		t.Fatal("not stored")
+	}
+	if !sameValues(rec["enabled"], "1") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "1")
+	}
+	if !sameValues(rec["log"], "0") {
+		t.Errorf("log: stored %q, want %q", rec["log"], "0")
+	}
+	if !sameValues(rec["interface"], "lan") {
+		t.Errorf("interface: stored %q, want %q", rec["interface"], "lan")
+	}
+	if !sameValues(rec["source_net"], "fd00::/64") {
+		t.Errorf("source_net: stored %q, want %q", rec["source_net"], "fd00::/64")
+	}
+	if !sameValues(rec["destination_net"], "2001:db8::/64") {
+		t.Errorf("destination_net: stored %q, want %q", rec["destination_net"], "2001:db8::/64")
+	}
+	if !sameValues(rec["trackif"], "") {
+		t.Errorf("trackif: stored %q, want %q", rec["trackif"], "")
+	}
+	if !sameValues(rec["categories"], "") {
+		t.Errorf("categories: stored %q, want %q", rec["categories"], "")
+	}
+	if !sameValues(rec["description"], "ula to gua") {
+		t.Errorf("description: stored %q, want %q", rec["description"], "ula to gua")
+	}
+
+	plan.ID = got.ID
+	plan.Sequence = got.Sequence
+	plan.Description = types.StringValue("ula to gua (updated)")
+	st = h.update(st, plan, &got)
+	rec, _ = fake.Get("rule", id)
+	if !sameValues(rec["description"], "ula to gua (updated)") {
+		t.Errorf("description: stored %q, want %q", rec["description"], "ula to gua (updated)")
+	}
+
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	if imp, ok := h.importID(id); !ok || imp != id {
+		t.Fatalf("import by uuid = %q", imp)
+	}
+	if imp, ok := h.importID("ula to gua (updated)"); !ok || imp != id {
+		t.Fatalf("import by name = %q", imp)
+	}
+	h.delete(st)
+	if _, ok := fake.Get("rule", id); ok {
+		t.Fatal("still stored after delete")
+	}
+	if fake.Applies["firewall/npt/apply"] == 0 {
+		t.Error("never applied")
+	}
+}
+
 func TestGenInterfaceGroup(t *testing.T) {
 	fake := opnsensetest.New(t)
 	h := newHarness(t, fake, NewInterfaceGroupResource())
@@ -246,4 +734,23 @@ func TestGenInterfaceGroup(t *testing.T) {
 	if fake.Applies["firewall/group/reconfigure"] == 0 {
 		t.Error("never applied")
 	}
+}
+
+func TestGenNATOutboundMode(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewNATOutboundModeResource())
+	plan := genNATOutboundModePlan()
+	var got genNATOutboundModeModel
+	st, ok := h.create(plan, &got)
+	if !ok || got.ID.ValueString() != "firewall_nat_outbound_mode" {
+		t.Fatalf("create: %+v", got)
+	}
+	rec := fake.Settings("firewall/source_nat/get", "general")
+	if !sameValues(rec["snat_mode"], "hybrid") {
+		t.Errorf("snat_mode: stored %q, want %q", rec["snat_mode"], "hybrid")
+	}
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	h.delete(st)
 }

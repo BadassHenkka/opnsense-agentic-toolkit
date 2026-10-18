@@ -43,6 +43,116 @@ func registerGenFirewall(s *Server) {
 			return v
 		}
 	}
+	{ // firewall_nat_port_forward
+		c := s.add(&Collection{Base: "firewall/d_nat", Suffix: "Rule", Key: "rule",
+			Fields: map[string]Field{
+				"sequence":            {Required: true, HasRange: true, Min: 1, Max: 999999},
+				"disabled":            {},
+				"nordr":               {},
+				"interface":           {Kind: List, Sep: ","},
+				"ipprotocol":          {Kind: Option, Choices: static("inet", "inet6", "inet46")},
+				"protocol":            {Kind: List, Sep: ","},
+				"source.network":      {},
+				"source.port":         {},
+				"source.not":          {},
+				"destination.network": {},
+				"destination.port":    {},
+				"destination.not":     {},
+				"target":              {Kind: List, Sep: ","},
+				"local-port":          {},
+				"poolopts":            {Kind: Option, Choices: static("round-robin", "round-robin sticky-address", "random", "random sticky-address", "source-hash", "bitmask")},
+				"log":                 {},
+				"category":            {Kind: List, Sep: ","},
+				"descr":               {},
+				"tag":                 {},
+				"tagged":              {},
+				"nosync":              {},
+				"natreflection":       {Kind: Option, Choices: static("purenat", "disable")},
+				"pass":                {Kind: Option, Choices: static("pass", "rule")},
+				"associated-rule-id":  {ReadOnly: true},
+			},
+		})
+		c.Validate = func(s *Server, self string, r Record) map[string]string {
+			v := checkFields(s, "rule", c.Fields, r)
+			return v
+		}
+	}
+	{ // firewall_nat_outbound
+		c := s.add(&Collection{Base: "firewall/source_nat", Suffix: "Rule", Key: "rule",
+			Fields: map[string]Field{
+				"enabled":                {Required: true, Default: "1"},
+				"nonat":                  {Required: true, Default: "0"},
+				"nosync":                 {Required: true, Default: "0"},
+				"sequence":               {Required: true, Default: "1", HasRange: true, Min: 1, Max: 999999},
+				"interface":              {Kind: List, Sep: ",", Required: true},
+				"ipprotocol":             {Kind: Option, Choices: static("inet", "inet6"), Required: true, Default: "inet"},
+				"protocol":               {Kind: List, Sep: ",", Required: true, Default: "any"},
+				"source_net":             {Required: true, Default: "any"},
+				"source_not":             {Required: true, Default: "0"},
+				"source_port":            {},
+				"destination_net":        {Required: true, Default: "any"},
+				"destination_not":        {Required: true, Default: "0"},
+				"destination_port":       {},
+				"target":                 {},
+				"target_port":            {},
+				"poolopts":               {Kind: Option, Choices: static("round-robin", "round-robin sticky-address", "random", "random sticky-address", "source-hash", "bitmask")},
+				"poolopts_sourcehashkey": {Mask: "^0x[0-9a-fA-F]{32}$"},
+				"staticnatport":          {},
+				"log":                    {Required: true, Default: "0"},
+				"categories":             {Kind: List, Sep: ","},
+				"tag":                    {Mask: "^([0-9a-zA-Z.,_\\-]){0,512}$"},
+				"tagged":                 {Mask: "^([0-9a-zA-Z.,_\\-]){0,512}$"},
+				"endpoint-independent":   {},
+				"description":            {},
+			},
+		})
+		c.Validate = func(s *Server, self string, r Record) map[string]string {
+			v := checkFields(s, "rule", c.Fields, r)
+			return v
+		}
+	}
+	{ // firewall_nat_one_to_one
+		c := s.add(&Collection{Base: "firewall/one_to_one", Suffix: "Rule", Key: "rule",
+			Fields: map[string]Field{
+				"enabled":         {Required: true, Default: "1"},
+				"log":             {Required: true, Default: "0"},
+				"sequence":        {Required: true, Default: "1", HasRange: true, Min: 1, Max: 999999},
+				"interface":       {Kind: List, Sep: ",", Required: true, Default: "wan"},
+				"type":            {Kind: Option, Choices: static("binat", "nat"), Required: true, Default: "binat"},
+				"source_net":      {Required: true},
+				"source_not":      {Required: true, Default: "0"},
+				"destination_net": {Required: true, Default: "any"},
+				"destination_not": {Required: true, Default: "0"},
+				"external":        {Required: true},
+				"natreflection":   {Kind: Option, Choices: static("", "enable", "disable")},
+				"categories":      {Kind: List, Sep: ","},
+				"description":     {},
+			},
+		})
+		c.Validate = func(s *Server, self string, r Record) map[string]string {
+			v := checkFields(s, "rule", c.Fields, r)
+			return v
+		}
+	}
+	{ // firewall_nat_npt
+		c := s.add(&Collection{Base: "firewall/npt", Suffix: "Rule", Key: "rule",
+			Fields: map[string]Field{
+				"enabled":         {Required: true, Default: "1"},
+				"log":             {Required: true, Default: "0"},
+				"sequence":        {Required: true, Default: "1", HasRange: true, Min: 1, Max: 999999},
+				"interface":       {Kind: List, Sep: ",", Required: true, Default: "lan"},
+				"source_net":      {Required: true},
+				"destination_net": {},
+				"trackif":         {Kind: List, Sep: ","},
+				"categories":      {Kind: List, Sep: ","},
+				"description":     {},
+			},
+		})
+		c.Validate = func(s *Server, self string, r Record) map[string]string {
+			v := checkFields(s, "rule", c.Fields, r)
+			return v
+		}
+	}
 	{ // firewall_interface_group
 		c := s.add(&Collection{Base: "firewall/group", Suffix: "Item", Key: "group",
 			Fields: map[string]Field{
@@ -59,6 +169,14 @@ func registerGenFirewall(s *Server) {
 			return v
 		}
 	}
+	// firewall_nat_outbound_mode
+	s.addSettings("firewall/source_nat/get", "firewall/source_nat/set", "filter", "general", map[string]Field{
+		"snat_mode": {Kind: Option, Choices: static("automatic", "hybrid", "advanced", "disabled"), Required: true, Default: "automatic"},
+	}, nil)
 	s.reconfigure["firewall/alias/reconfigure"] = true
+	s.reconfigure["firewall/d_nat/apply"] = true
 	s.reconfigure["firewall/group/reconfigure"] = true
+	s.reconfigure["firewall/npt/apply"] = true
+	s.reconfigure["firewall/one_to_one/apply"] = true
+	s.reconfigure["firewall/source_nat/apply"] = true
 }

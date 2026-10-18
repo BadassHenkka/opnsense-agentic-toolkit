@@ -15,8 +15,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -239,6 +242,572 @@ func (r *genFirewallCategoryResource) ImportState(ctx context.Context, req resou
 	importByName(ctx, req, resp, r.client.Firewall.Categories, "firewall category")
 }
 
+var _ resource.ResourceWithImportState = (*genNATPortForwardResource)(nil)
+
+// NewNATPortForwardResource returns the opnsense_firewall_nat_port_forward resource.
+func NewNATPortForwardResource() resource.Resource { return &genNATPortForwardResource{} }
+
+type genNATPortForwardResource struct{ baseResource }
+
+type genNATPortForwardModel struct {
+	ID                 types.String `tfsdk:"id"`
+	Sequence           types.Int64  `tfsdk:"sequence"`
+	Enabled            types.Bool   `tfsdk:"enabled"`
+	NoRdr              types.Bool   `tfsdk:"no_rdr"`
+	Interfaces         types.Set    `tfsdk:"interfaces"`
+	IPProtocol         types.String `tfsdk:"ip_protocol"`
+	Protocol           types.String `tfsdk:"protocol"`
+	SourceNetwork      types.String `tfsdk:"source_network"`
+	SourcePort         types.String `tfsdk:"source_port"`
+	SourceNot          types.Bool   `tfsdk:"source_not"`
+	DestinationNetwork types.String `tfsdk:"destination_network"`
+	DestinationPort    types.String `tfsdk:"destination_port"`
+	DestinationNot     types.Bool   `tfsdk:"destination_not"`
+	Target             types.String `tfsdk:"target"`
+	LocalPort          types.String `tfsdk:"local_port"`
+	PoolOptions        types.String `tfsdk:"pool_options"`
+	Log                types.Bool   `tfsdk:"log"`
+	CategoryIDs        types.Set    `tfsdk:"category_ids"`
+	Description        types.String `tfsdk:"description"`
+	Tag                types.String `tfsdk:"tag"`
+	Tagged             types.String `tfsdk:"tagged"`
+	Nosync             types.Bool   `tfsdk:"nosync"`
+	NATReflection      types.String `tfsdk:"nat_reflection"`
+	FilterRule         types.String `tfsdk:"filter_rule"`
+	AssociatedRuleID   types.String `tfsdk:"associated_rule_id"`
+}
+
+func (r *genNATPortForwardResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_nat_port_forward"
+}
+
+func (r *genNATPortForwardResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "A port forward (Firewall → NAT → Destination NAT): redirect traffic arriving on an interface to an internal host. With pass = `rule` OPNsense also creates the matching filter rule. Generated from core/Firewall/DNat.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":                  idAttribute("firewall nat port forward"),
+			"sequence":            schema.Int64Attribute{Required: true, Description: "Order; lower runs first. Unset picks the next free number. OPNsense field `sequence`.", Validators: []validator.Int64{int64validator.Between(1, 999999)}, PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}},
+			"enabled":             schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `disabled`, inverted."},
+			"no_rdr":              schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Exclude the matched traffic from redirection (a \"no rdr\" rule). OPNsense field `nordr`."},
+			"interfaces":          schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "Interfaces the traffic arrives on, e.g. `[\"wan\"]`. OPNsense field `interface`."},
+			"ip_protocol":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "One of `inet`, `inet6`, `inet46`. OPNsense field `ipprotocol`.", Validators: []validator.String{stringvalidator.OneOf("", "inet", "inet6", "inet46")}},
+			"protocol":            schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Protocol, e.g. `TCP`, `UDP`, `TCP/UDP`. OPNsense field `protocol`."},
+			"source_network":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Source network, alias or `any`. OPNsense field `source.network`."},
+			"source_port":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Source port, range or alias; usually empty. OPNsense field `source.port`."},
+			"source_not":          schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Invert the source match. OPNsense field `source.not`."},
+			"destination_network": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Destination, e.g. `wanip` or an alias. OPNsense field `destination.network`."},
+			"destination_port":    schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Destination port, range or alias, e.g. `443`. OPNsense field `destination.port`."},
+			"destination_not":     schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Invert the destination match. OPNsense field `destination.not`."},
+			"target":              schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Internal host (IP or alias) to send the traffic to. OPNsense field `target`."},
+			"local_port":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Port on the target; empty keeps the destination port. OPNsense field `local-port`."},
+			"pool_options":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "One of `round-robin`, `round-robin sticky-address`, `random`, `random sticky-address`, `source-hash`, `bitmask`. OPNsense field `poolopts`.", Validators: []validator.String{stringvalidator.OneOf("", "round-robin", "round-robin sticky-address", "random", "random sticky-address", "source-hash", "bitmask")}},
+			"log":                 schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `log`."},
+			"category_ids":        schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "opnsense_firewall_category ids. OPNsense field `category`."},
+			"description":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Also used as the import name. OPNsense field `descr`."},
+			"tag":                 schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `tag`."},
+			"tagged":              schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `tagged`."},
+			"nosync":              schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `nosync`."},
+			"nat_reflection":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Empty uses the system default. One of `purenat`, `disable`. OPNsense field `natreflection`.", Validators: []validator.String{stringvalidator.OneOf("", "purenat", "disable")}},
+			"filter_rule":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "`rule` adds an associated filter rule, `pass` passes the traffic without one; empty adds none. OPNsense field `pass`.", Validators: []validator.String{stringvalidator.OneOf("", "pass", "rule")}},
+			"associated_rule_id":  schema.StringAttribute{Computed: true, Description: "The filter rule OPNsense created for filter_rule = `rule`. OPNsense field `associated-rule-id`."},
+		},
+	}
+}
+
+func (m *genNATPortForwardModel) toAPI(ctx context.Context) (opnsense.NATPortForward, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.NATPortForward
+	v.Sequence = apiInt(m.Sequence)
+	v.Disabled = opnsense.Bool(!m.Enabled.ValueBool())
+	v.NoRDR = opnsense.Bool(m.NoRdr.ValueBool())
+	diags.Append(m.Interfaces.ElementsAs(ctx, (*[]string)(&v.Interfaces), false)...)
+	v.IPProtocol = opnsense.Option(m.IPProtocol.ValueString())
+	v.Protocol = opnsense.Option(m.Protocol.ValueString())
+	v.Source.Network = m.SourceNetwork.ValueString()
+	v.Source.Port = m.SourcePort.ValueString()
+	v.Source.Not = opnsense.Bool(m.SourceNot.ValueBool())
+	v.Destination.Network = m.DestinationNetwork.ValueString()
+	v.Destination.Port = m.DestinationPort.ValueString()
+	v.Destination.Not = opnsense.Bool(m.DestinationNot.ValueBool())
+	v.Target = opnsense.Option(m.Target.ValueString())
+	v.LocalPort = m.LocalPort.ValueString()
+	v.PoolOptions = opnsense.Option(m.PoolOptions.ValueString())
+	v.Log = opnsense.Bool(m.Log.ValueBool())
+	diags.Append(m.CategoryIDs.ElementsAs(ctx, (*[]string)(&v.Categories), false)...)
+	v.Description = m.Description.ValueString()
+	v.Tag = m.Tag.ValueString()
+	v.Tagged = m.Tagged.ValueString()
+	v.Nosync = opnsense.Bool(m.Nosync.ValueBool())
+	v.NATReflection = opnsense.Option(m.NATReflection.ValueString())
+	v.Pass = opnsense.Option(m.FilterRule.ValueString())
+	_ = ctx
+	return v, diags
+}
+
+func (m *genNATPortForwardModel) fromAPI(ctx context.Context, id string, v *opnsense.NATPortForward) diag.Diagnostics {
+	m.ID = types.StringValue(id)
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Sequence = int64Value(v.Sequence)
+	m.Enabled = types.BoolValue(!bool(v.Disabled))
+	m.NoRdr = types.BoolValue(bool(v.NoRDR))
+	m.Interfaces, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Interfaces)))
+	diags.Append(d...)
+	m.IPProtocol = types.StringValue(string(v.IPProtocol))
+	m.Protocol = types.StringValue(string(v.Protocol))
+	m.SourceNetwork = types.StringValue(v.Source.Network)
+	m.SourcePort = types.StringValue(v.Source.Port)
+	m.SourceNot = types.BoolValue(bool(v.Source.Not))
+	m.DestinationNetwork = types.StringValue(v.Destination.Network)
+	m.DestinationPort = types.StringValue(v.Destination.Port)
+	m.DestinationNot = types.BoolValue(bool(v.Destination.Not))
+	m.Target = types.StringValue(string(v.Target))
+	m.LocalPort = types.StringValue(v.LocalPort)
+	m.PoolOptions = types.StringValue(string(v.PoolOptions))
+	m.Log = types.BoolValue(bool(v.Log))
+	m.CategoryIDs, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Categories)))
+	diags.Append(d...)
+	m.Description = types.StringValue(v.Description)
+	m.Tag = types.StringValue(v.Tag)
+	m.Tagged = types.StringValue(v.Tagged)
+	m.Nosync = types.BoolValue(bool(v.Nosync))
+	m.NATReflection = types.StringValue(string(v.NATReflection))
+	m.FilterRule = types.StringValue(string(v.Pass))
+	if v.AssociatedRuleID != "" || m.AssociatedRuleID.IsUnknown() || m.AssociatedRuleID.IsNull() {
+		m.AssociatedRuleID = types.StringValue(string(v.AssociatedRuleID))
+	}
+	_ = ctx
+	return diags
+}
+
+func (m *genNATPortForwardModel) itemID() string { return m.ID.ValueString() }
+
+var genNATPortForwardCRUD = itemCRUD[opnsense.NATPortForward, opnsense.NATPortForwardRow, genNATPortForwardModel, *genNATPortForwardModel]{
+	what: "firewall nat port forward",
+	items: func(c *opnsense.Client) *opnsense.ItemController[opnsense.NATPortForward, opnsense.NATPortForwardRow] {
+		return c.Firewall.PortForwards
+	},
+	apply: func(c *opnsense.Client) func(context.Context) error { return c.Firewall.PortForwards.Apply },
+}
+
+func (r *genNATPortForwardResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genNATPortForwardCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genNATPortForwardResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genNATPortForwardCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genNATPortForwardResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genNATPortForwardCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genNATPortForwardResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genNATPortForwardCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts a UUID or the description.
+func (r *genNATPortForwardResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	importByName(ctx, req, resp, r.client.Firewall.PortForwards, "firewall nat port forward")
+}
+
+var _ resource.ResourceWithImportState = (*genNATOutboundResource)(nil)
+
+// NewNATOutboundResource returns the opnsense_firewall_nat_outbound resource.
+func NewNATOutboundResource() resource.Resource { return &genNATOutboundResource{} }
+
+type genNATOutboundResource struct{ baseResource }
+
+type genNATOutboundModel struct {
+	ID                  types.String `tfsdk:"id"`
+	Enabled             types.Bool   `tfsdk:"enabled"`
+	NoNAT               types.Bool   `tfsdk:"no_nat"`
+	NoSync              types.Bool   `tfsdk:"no_sync"`
+	Sequence            types.Int64  `tfsdk:"sequence"`
+	Interface           types.String `tfsdk:"interface"`
+	IPProtocol          types.String `tfsdk:"ip_protocol"`
+	Protocol            types.String `tfsdk:"protocol"`
+	SourceNet           types.String `tfsdk:"source_net"`
+	SourceNot           types.Bool   `tfsdk:"source_not"`
+	SourcePort          types.String `tfsdk:"source_port"`
+	DestinationNet      types.String `tfsdk:"destination_net"`
+	DestinationNot      types.Bool   `tfsdk:"destination_not"`
+	DestinationPort     types.String `tfsdk:"destination_port"`
+	Target              types.String `tfsdk:"target"`
+	TargetPort          types.String `tfsdk:"target_port"`
+	PoolOptions         types.String `tfsdk:"pool_options"`
+	PoolSourceHashKey   types.String `tfsdk:"pool_source_hash_key"`
+	StaticNATPort       types.Bool   `tfsdk:"static_nat_port"`
+	Log                 types.Bool   `tfsdk:"log"`
+	CategoryIDs         types.Set    `tfsdk:"category_ids"`
+	Tag                 types.String `tfsdk:"tag"`
+	Tagged              types.String `tfsdk:"tagged"`
+	EndpointIndependent types.Bool   `tfsdk:"endpoint_independent"`
+	Description         types.String `tfsdk:"description"`
+}
+
+func (r *genNATOutboundResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_nat_outbound"
+}
+
+func (r *genNATOutboundResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "An outbound NAT rule (Firewall → NAT → Outbound). Takes effect when the outbound mode is `hybrid` or `advanced` (`opnsense_firewall_nat_outbound_mode`). Generated from core/Firewall/Filter.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":                   idAttribute("firewall nat outbound"),
+			"enabled":              schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `enabled`."},
+			"no_nat":               schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Do not translate the matched traffic. OPNsense field `nonat`."},
+			"no_sync":              schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Exclude from CARP/XMLRPC sync. OPNsense field `nosync`."},
+			"sequence":             schema.Int64Attribute{Optional: true, Computed: true, Description: "Order; lower runs first. Unset picks the next free number. OPNsense field `sequence`.", Validators: []validator.Int64{int64validator.Between(1, 999999)}, PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}},
+			"interface":            schema.StringAttribute{Required: true, Description: "Interface the rule applies to, e.g. `wan`. OPNsense field `interface`."},
+			"ip_protocol":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("inet"), Description: "One of `inet`, `inet6`. OPNsense field `ipprotocol`.", Validators: []validator.String{stringvalidator.OneOf("inet", "inet6")}},
+			"protocol":             schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("any"), Description: "Protocol, e.g. `any`, `TCP`, `UDP`. OPNsense field `protocol`."},
+			"source_net":           schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("any"), Description: "Source network, alias or `any`. OPNsense field `source_net`."},
+			"source_not":           schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Invert the source match. OPNsense field `source_not`."},
+			"source_port":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Source port or alias; usually empty. OPNsense field `source_port`."},
+			"destination_net":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("any"), Description: "Destination network, alias or `any`. OPNsense field `destination_net`."},
+			"destination_not":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Invert the destination match. OPNsense field `destination_not`."},
+			"destination_port":     schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Destination port or alias. OPNsense field `destination_port`."},
+			"target":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Translate to this address or alias; empty uses the interface address. OPNsense field `target`."},
+			"target_port":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Translate to this port. OPNsense field `target_port`."},
+			"pool_options":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "One of `round-robin`, `round-robin sticky-address`, `random`, `random sticky-address`, `source-hash`, `bitmask`. OPNsense field `poolopts`.", Validators: []validator.String{stringvalidator.OneOf("", "round-robin", "round-robin sticky-address", "random", "random sticky-address", "source-hash", "bitmask")}},
+			"pool_source_hash_key": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `poolopts_sourcehashkey`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^0x[0-9a-fA-F]{32}$"), "must match the OPNsense model mask")}},
+			"static_nat_port":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Keep the source port. OPNsense field `staticnatport`."},
+			"log":                  schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Log matching packets. OPNsense field `log`."},
+			"category_ids":         schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "opnsense_firewall_category ids. OPNsense field `categories`."},
+			"tag":                  schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Tag matching packets. OPNsense field `tag`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-zA-Z.,_\\-]){0,512}$"), "must match the OPNsense model mask")}},
+			"tagged":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Match packets with this tag. OPNsense field `tagged`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-zA-Z.,_\\-]){0,512}$"), "must match the OPNsense model mask")}},
+			"endpoint_independent": schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `endpoint-independent`."},
+			"description":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `description`."},
+		},
+	}
+}
+
+func (m *genNATOutboundModel) toAPI(ctx context.Context) (opnsense.NATOutbound, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.NATOutbound
+	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
+	v.NoNAT = opnsense.Bool(m.NoNAT.ValueBool())
+	v.NoSync = opnsense.Bool(m.NoSync.ValueBool())
+	v.Sequence = apiInt(m.Sequence)
+	v.Interface = opnsense.Option(m.Interface.ValueString())
+	v.IPProtocol = opnsense.Option(m.IPProtocol.ValueString())
+	v.Protocol = opnsense.Option(m.Protocol.ValueString())
+	v.SourceNet = m.SourceNet.ValueString()
+	v.SourceNot = opnsense.Bool(m.SourceNot.ValueBool())
+	v.SourcePort = m.SourcePort.ValueString()
+	v.DestinationNet = m.DestinationNet.ValueString()
+	v.DestinationNot = opnsense.Bool(m.DestinationNot.ValueBool())
+	v.DestinationPort = m.DestinationPort.ValueString()
+	v.Target = m.Target.ValueString()
+	v.TargetPort = m.TargetPort.ValueString()
+	v.PoolOptions = opnsense.Option(m.PoolOptions.ValueString())
+	v.PoolSourceHashKey = m.PoolSourceHashKey.ValueString()
+	v.StaticNATPort = opnsense.Bool(m.StaticNATPort.ValueBool())
+	v.Log = opnsense.Bool(m.Log.ValueBool())
+	diags.Append(m.CategoryIDs.ElementsAs(ctx, (*[]string)(&v.Categories), false)...)
+	v.Tag = m.Tag.ValueString()
+	v.Tagged = m.Tagged.ValueString()
+	v.EndpointIndependent = opnsense.Bool(m.EndpointIndependent.ValueBool())
+	v.Description = m.Description.ValueString()
+	_ = ctx
+	return v, diags
+}
+
+func (m *genNATOutboundModel) fromAPI(ctx context.Context, id string, v *opnsense.NATOutbound) diag.Diagnostics {
+	m.ID = types.StringValue(id)
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Enabled = types.BoolValue(bool(v.Enabled))
+	m.NoNAT = types.BoolValue(bool(v.NoNAT))
+	m.NoSync = types.BoolValue(bool(v.NoSync))
+	m.Sequence = int64Value(v.Sequence)
+	m.Interface = types.StringValue(string(v.Interface))
+	m.IPProtocol = types.StringValue(string(v.IPProtocol))
+	m.Protocol = types.StringValue(string(v.Protocol))
+	m.SourceNet = types.StringValue(v.SourceNet)
+	m.SourceNot = types.BoolValue(bool(v.SourceNot))
+	m.SourcePort = types.StringValue(v.SourcePort)
+	m.DestinationNet = types.StringValue(v.DestinationNet)
+	m.DestinationNot = types.BoolValue(bool(v.DestinationNot))
+	m.DestinationPort = types.StringValue(v.DestinationPort)
+	m.Target = types.StringValue(v.Target)
+	m.TargetPort = types.StringValue(v.TargetPort)
+	m.PoolOptions = types.StringValue(string(v.PoolOptions))
+	m.PoolSourceHashKey = types.StringValue(v.PoolSourceHashKey)
+	m.StaticNATPort = types.BoolValue(bool(v.StaticNATPort))
+	m.Log = types.BoolValue(bool(v.Log))
+	m.CategoryIDs, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Categories)))
+	diags.Append(d...)
+	m.Tag = types.StringValue(v.Tag)
+	m.Tagged = types.StringValue(v.Tagged)
+	m.EndpointIndependent = types.BoolValue(bool(v.EndpointIndependent))
+	m.Description = types.StringValue(v.Description)
+	_ = ctx
+	return diags
+}
+
+func (m *genNATOutboundModel) itemID() string { return m.ID.ValueString() }
+
+var genNATOutboundCRUD = itemCRUD[opnsense.NATOutbound, opnsense.NATOutboundRow, genNATOutboundModel, *genNATOutboundModel]{
+	what: "firewall nat outbound",
+	items: func(c *opnsense.Client) *opnsense.ItemController[opnsense.NATOutbound, opnsense.NATOutboundRow] {
+		return c.Firewall.Outbound
+	},
+	apply: func(c *opnsense.Client) func(context.Context) error { return c.Firewall.Outbound.Apply },
+}
+
+func (r *genNATOutboundResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genNATOutboundCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genNATOutboundResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genNATOutboundCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genNATOutboundResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genNATOutboundCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genNATOutboundResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genNATOutboundCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts a UUID or the description.
+func (r *genNATOutboundResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	importByName(ctx, req, resp, r.client.Firewall.Outbound, "firewall nat outbound")
+}
+
+var _ resource.ResourceWithImportState = (*genNATOneToOneResource)(nil)
+
+// NewNATOneToOneResource returns the opnsense_firewall_nat_one_to_one resource.
+func NewNATOneToOneResource() resource.Resource { return &genNATOneToOneResource{} }
+
+type genNATOneToOneResource struct{ baseResource }
+
+type genNATOneToOneModel struct {
+	ID             types.String `tfsdk:"id"`
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	Log            types.Bool   `tfsdk:"log"`
+	Sequence       types.Int64  `tfsdk:"sequence"`
+	Interface      types.String `tfsdk:"interface"`
+	NATType        types.String `tfsdk:"nat_type"`
+	SourceNet      types.String `tfsdk:"source_net"`
+	SourceNot      types.Bool   `tfsdk:"source_not"`
+	DestinationNet types.String `tfsdk:"destination_net"`
+	DestinationNot types.Bool   `tfsdk:"destination_not"`
+	External       types.String `tfsdk:"external"`
+	NATReflection  types.String `tfsdk:"nat_reflection"`
+	CategoryIDs    types.Set    `tfsdk:"category_ids"`
+	Description    types.String `tfsdk:"description"`
+}
+
+func (r *genNATOneToOneResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_nat_one_to_one"
+}
+
+func (r *genNATOneToOneResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "A 1:1 NAT rule (Firewall → NAT → One-to-One): map an external network onto an internal one. Generated from core/Firewall/Filter.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":              idAttribute("firewall nat one to one"),
+			"enabled":         schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `enabled`."},
+			"log":             schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Log matching packets. OPNsense field `log`."},
+			"sequence":        schema.Int64Attribute{Optional: true, Computed: true, Description: "Order; lower runs first. Unset picks the next free number. OPNsense field `sequence`.", Validators: []validator.Int64{int64validator.Between(1, 999999)}, PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}},
+			"interface":       schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("wan"), Description: "Interface the rule applies to, e.g. `wan`. OPNsense field `interface`."},
+			"nat_type":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("binat"), Description: "`binat` (bidirectional) or `nat`. OPNsense field `type`.", Validators: []validator.String{stringvalidator.OneOf("binat", "nat")}},
+			"source_net":      schema.StringAttribute{Required: true, Description: "Internal network or address. OPNsense field `source_net`."},
+			"source_not":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Invert the source match. OPNsense field `source_not`."},
+			"destination_net": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("any"), Description: "Destination network, alias or `any`. OPNsense field `destination_net`."},
+			"destination_not": schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Invert the destination match. OPNsense field `destination_not`."},
+			"external":        schema.StringAttribute{Required: true, Description: "External network or address. OPNsense field `external`."},
+			"nat_reflection":  schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Empty uses the system default. One of `(empty)`, `enable`, `disable`. OPNsense field `natreflection`.", Validators: []validator.String{stringvalidator.OneOf("", "enable", "disable")}},
+			"category_ids":    schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "opnsense_firewall_category ids. OPNsense field `categories`."},
+			"description":     schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `description`."},
+		},
+	}
+}
+
+func (m *genNATOneToOneModel) toAPI(ctx context.Context) (opnsense.NATOneToOne, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.NATOneToOne
+	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
+	v.Log = opnsense.Bool(m.Log.ValueBool())
+	v.Sequence = apiInt(m.Sequence)
+	v.Interface = opnsense.Option(m.Interface.ValueString())
+	v.Type = opnsense.Option(m.NATType.ValueString())
+	v.SourceNet = m.SourceNet.ValueString()
+	v.SourceNot = opnsense.Bool(m.SourceNot.ValueBool())
+	v.DestinationNet = m.DestinationNet.ValueString()
+	v.DestinationNot = opnsense.Bool(m.DestinationNot.ValueBool())
+	v.External = m.External.ValueString()
+	v.NATReflection = opnsense.Option(m.NATReflection.ValueString())
+	diags.Append(m.CategoryIDs.ElementsAs(ctx, (*[]string)(&v.Categories), false)...)
+	v.Description = m.Description.ValueString()
+	_ = ctx
+	return v, diags
+}
+
+func (m *genNATOneToOneModel) fromAPI(ctx context.Context, id string, v *opnsense.NATOneToOne) diag.Diagnostics {
+	m.ID = types.StringValue(id)
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Enabled = types.BoolValue(bool(v.Enabled))
+	m.Log = types.BoolValue(bool(v.Log))
+	m.Sequence = int64Value(v.Sequence)
+	m.Interface = types.StringValue(string(v.Interface))
+	m.NATType = types.StringValue(string(v.Type))
+	m.SourceNet = types.StringValue(v.SourceNet)
+	m.SourceNot = types.BoolValue(bool(v.SourceNot))
+	m.DestinationNet = types.StringValue(v.DestinationNet)
+	m.DestinationNot = types.BoolValue(bool(v.DestinationNot))
+	m.External = types.StringValue(v.External)
+	m.NATReflection = types.StringValue(string(v.NATReflection))
+	m.CategoryIDs, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Categories)))
+	diags.Append(d...)
+	m.Description = types.StringValue(v.Description)
+	_ = ctx
+	return diags
+}
+
+func (m *genNATOneToOneModel) itemID() string { return m.ID.ValueString() }
+
+var genNATOneToOneCRUD = itemCRUD[opnsense.NATOneToOne, opnsense.NATOneToOneRow, genNATOneToOneModel, *genNATOneToOneModel]{
+	what: "firewall nat one to one",
+	items: func(c *opnsense.Client) *opnsense.ItemController[opnsense.NATOneToOne, opnsense.NATOneToOneRow] {
+		return c.Firewall.OneToOne
+	},
+	apply: func(c *opnsense.Client) func(context.Context) error { return c.Firewall.OneToOne.Apply },
+}
+
+func (r *genNATOneToOneResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genNATOneToOneCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genNATOneToOneResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genNATOneToOneCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genNATOneToOneResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genNATOneToOneCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genNATOneToOneResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genNATOneToOneCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts a UUID or the description.
+func (r *genNATOneToOneResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	importByName(ctx, req, resp, r.client.Firewall.OneToOne, "firewall nat one to one")
+}
+
+var _ resource.ResourceWithImportState = (*genNATNPTResource)(nil)
+
+// NewNATNPTResource returns the opnsense_firewall_nat_npt resource.
+func NewNATNPTResource() resource.Resource { return &genNATNPTResource{} }
+
+type genNATNPTResource struct{ baseResource }
+
+type genNATNPTModel struct {
+	ID             types.String `tfsdk:"id"`
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	Log            types.Bool   `tfsdk:"log"`
+	Sequence       types.Int64  `tfsdk:"sequence"`
+	Interface      types.String `tfsdk:"interface"`
+	SourceNet      types.String `tfsdk:"source_net"`
+	DestinationNet types.String `tfsdk:"destination_net"`
+	Trackif        types.String `tfsdk:"trackif"`
+	CategoryIDs    types.Set    `tfsdk:"category_ids"`
+	Description    types.String `tfsdk:"description"`
+}
+
+func (r *genNATNPTResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_nat_npt"
+}
+
+func (r *genNATNPTResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "An IPv6 network prefix translation rule (Firewall → NAT → NPTv6). Generated from core/Firewall/Filter.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":              idAttribute("firewall nat npt"),
+			"enabled":         schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `enabled`."},
+			"log":             schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Log matching packets. OPNsense field `log`."},
+			"sequence":        schema.Int64Attribute{Optional: true, Computed: true, Description: "Order; lower runs first. Unset picks the next free number. OPNsense field `sequence`.", Validators: []validator.Int64{int64validator.Between(1, 999999)}, PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}},
+			"interface":       schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("lan"), Description: "Interface the rule applies to, e.g. `wan`. OPNsense field `interface`."},
+			"source_net":      schema.StringAttribute{Required: true, Description: "Internal IPv6 prefix. OPNsense field `source_net`."},
+			"destination_net": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "External IPv6 prefix; empty to track an interface. OPNsense field `destination_net`."},
+			"trackif":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Interface whose prefix is used as the external prefix. OPNsense field `trackif`."},
+			"category_ids":    schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "opnsense_firewall_category ids. OPNsense field `categories`."},
+			"description":     schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `description`."},
+		},
+	}
+}
+
+func (m *genNATNPTModel) toAPI(ctx context.Context) (opnsense.NATNPT, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.NATNPT
+	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
+	v.Log = opnsense.Bool(m.Log.ValueBool())
+	v.Sequence = apiInt(m.Sequence)
+	v.Interface = opnsense.Option(m.Interface.ValueString())
+	v.SourceNet = m.SourceNet.ValueString()
+	v.DestinationNet = m.DestinationNet.ValueString()
+	v.Trackif = opnsense.Option(m.Trackif.ValueString())
+	diags.Append(m.CategoryIDs.ElementsAs(ctx, (*[]string)(&v.Categories), false)...)
+	v.Description = m.Description.ValueString()
+	_ = ctx
+	return v, diags
+}
+
+func (m *genNATNPTModel) fromAPI(ctx context.Context, id string, v *opnsense.NATNPT) diag.Diagnostics {
+	m.ID = types.StringValue(id)
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Enabled = types.BoolValue(bool(v.Enabled))
+	m.Log = types.BoolValue(bool(v.Log))
+	m.Sequence = int64Value(v.Sequence)
+	m.Interface = types.StringValue(string(v.Interface))
+	m.SourceNet = types.StringValue(v.SourceNet)
+	m.DestinationNet = types.StringValue(v.DestinationNet)
+	m.Trackif = types.StringValue(string(v.Trackif))
+	m.CategoryIDs, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Categories)))
+	diags.Append(d...)
+	m.Description = types.StringValue(v.Description)
+	_ = ctx
+	return diags
+}
+
+func (m *genNATNPTModel) itemID() string { return m.ID.ValueString() }
+
+var genNATNPTCRUD = itemCRUD[opnsense.NATNPT, opnsense.NATNPTRow, genNATNPTModel, *genNATNPTModel]{
+	what: "firewall nat npt",
+	items: func(c *opnsense.Client) *opnsense.ItemController[opnsense.NATNPT, opnsense.NATNPTRow] {
+		return c.Firewall.NPT
+	},
+	apply: func(c *opnsense.Client) func(context.Context) error { return c.Firewall.NPT.Apply },
+}
+
+func (r *genNATNPTResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genNATNPTCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genNATNPTResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genNATNPTCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genNATNPTResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genNATNPTCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genNATNPTResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genNATNPTCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts a UUID or the description.
+func (r *genNATNPTResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	importByName(ctx, req, resp, r.client.Firewall.NPT, "firewall nat npt")
+}
+
 var _ resource.ResourceWithImportState = (*genInterfaceGroupResource)(nil)
 
 // NewInterfaceGroupResource returns the opnsense_firewall_interface_group resource.
@@ -328,4 +897,75 @@ func (r *genInterfaceGroupResource) Delete(ctx context.Context, req resource.Del
 // ImportState accepts a UUID or the name.
 func (r *genInterfaceGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	importByName(ctx, req, resp, r.client.Firewall.InterfaceGroups, "firewall interface group")
+}
+
+var _ resource.ResourceWithImportState = (*genNATOutboundModeResource)(nil)
+
+// NewNATOutboundModeResource returns the opnsense_firewall_nat_outbound_mode resource.
+func NewNATOutboundModeResource() resource.Resource { return &genNATOutboundModeResource{} }
+
+type genNATOutboundModeResource struct{ baseResource }
+
+type genNATOutboundModeModel struct {
+	ID   types.String `tfsdk:"id"`
+	Mode types.String `tfsdk:"mode"`
+}
+
+func (r *genNATOutboundModeResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_nat_outbound_mode"
+}
+
+func (r *genNATOutboundModeResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "The outbound NAT mode (Firewall → NAT → Outbound). `automatic` and `hybrid` generate rules for your networks; `advanced` uses only opnsense_firewall_nat_outbound; `disabled` turns source NAT off. Destroying the resource leaves the mode as it is. Only one per firewall. Destroying it only removes it from Terraform state. Generated from core/Firewall/Filter.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":   schema.StringAttribute{Computed: true, Description: "Always `firewall_nat_outbound_mode`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+			"mode": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("automatic"), Description: "`automatic`, `hybrid`, `advanced` or `disabled`. OPNsense field `snat_mode`.", Validators: []validator.String{stringvalidator.OneOf("automatic", "hybrid", "advanced", "disabled")}},
+		},
+	}
+}
+
+func (m *genNATOutboundModeModel) toAPI(ctx context.Context) (opnsense.NATOutboundMode, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.NATOutboundMode
+	v.Mode = opnsense.Option(m.Mode.ValueString())
+	_ = ctx
+	return v, diags
+}
+
+func (m *genNATOutboundModeModel) fromAPI(ctx context.Context, v *opnsense.NATOutboundMode) diag.Diagnostics {
+	m.ID = types.StringValue("firewall_nat_outbound_mode")
+	var diags diag.Diagnostics
+	m.Mode = types.StringValue(string(v.Mode))
+	_ = ctx
+	return diags
+}
+
+var genNATOutboundModeCRUD = settingsCRUD[opnsense.NATOutboundMode, genNATOutboundModeModel, *genNATOutboundModeModel]{
+	what: "firewall nat outbound mode",
+	id:   "firewall_nat_outbound_mode",
+	ctl: func(c *opnsense.Client) *opnsense.SettingsController[opnsense.NATOutboundMode] {
+		return c.Firewall.OutboundMode
+	},
+}
+
+func (r *genNATOutboundModeResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genNATOutboundModeCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genNATOutboundModeResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genNATOutboundModeCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genNATOutboundModeResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genNATOutboundModeCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genNATOutboundModeResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genNATOutboundModeCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts any id; there is only one firewall nat outbound mode.
+func (r *genNATOutboundModeResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	genNATOutboundModeCRUD.importState(ctx, resp)
 }
