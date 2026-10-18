@@ -37,6 +37,7 @@ Supported so far:
 | Services → Captive Portal | `opnsense_captive_portal_zone` | `captiveportal` (read-only) |
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
 | Services → Kea DHCP | `opnsense_kea_dhcp4_{settings,subnet,reservation,option,peer}`, `opnsense_kea_dhcp6_{settings,subnet,reservation,pd_pool,option,peer}`, `opnsense_kea_ctrl_agent_settings` | `kea` (read-only, plus `kea_lease4_list`, `kea_lease6_list`) |
+| Services → Dnsmasq DNS & DHCP | `opnsense_dnsmasq_settings`, `opnsense_dnsmasq_host`, `_domain`, `_tag`, `_range`, `_option`, `_boot` | `dnsmasq` (read-only, plus `dnsmasq_lease_list`) |
 | Interfaces → Assignments, Other Types, Neighbors | `opnsense_interface`, `opnsense_vlan`, `opnsense_virtual_ip`, `opnsense_bridge`, `opnsense_lagg`, `opnsense_gif`, `opnsense_gre`, `opnsense_vxlan`, `opnsense_loopback`, `opnsense_neighbor` | `interfaces` (read-only) |
 | Interfaces → VLAN, Virtual IPs | `opnsense_vlan`, `opnsense_virtual_ip` | `interfaces` (read-only) |
 | Firewall → Categories | `opnsense_firewall_category` | `firewall` (read-only) |

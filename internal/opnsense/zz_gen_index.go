@@ -10,6 +10,8 @@ type generatedServices struct {
 	Caddy *CaddyService
 	// CaptivePortal manages Services → Captive Portal.
 	CaptivePortal *CaptivePortalService
+	// Dnsmasq manages Services → Dnsmasq DNS & DHCP.
+	Dnsmasq *DnsmasqService
 	// DynDNS manages Services → Dynamic DNS (plugin os-ddclient).
 	DynDNS *DynDNSService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
@@ -36,6 +38,7 @@ func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
 	c.Caddy = newCaddyService(c)
 	c.CaptivePortal = newCaptivePortalService(c)
+	c.Dnsmasq = newDnsmasqService(c)
 	c.DynDNS = newDynDNSService(c)
 	c.Firewall = newFirewallService(c)
 	c.Interfaces = newInterfacesService(c)

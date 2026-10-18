@@ -1,0 +1,328 @@
+{
+  "area": "dnsmasq",
+  "title": "Services \u2192 Dnsmasq DNS & DHCP",
+  "items": [
+    {
+      "resource": "dnsmasq_host",
+      "go_name": "DnsmasqHost",
+      "plural": "Hosts",
+      "description": "A Dnsmasq host (Services \u2192 Dnsmasq DNS & DHCP \u2192 Hosts): a DNS record and/or a static DHCP lease.",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "hosts",
+      "base": "dnsmasq/settings",
+      "key": "host",
+      "suffix": "Host",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "name_field": "descr",
+      "zero_field": "descr",
+      "fields": {
+        "host": {
+          "type": "string",
+          "description": "Host name without the domain; empty for a wildcard on `domain`."
+        },
+        "domain": {
+          "type": "string",
+          "description": "Domain, e.g. `home.lan`."
+        },
+        "local": {
+          "description": "Serve the name only locally (never forward)."
+        },
+        "ip": {
+          "tf_type": "set",
+          "type": "list",
+          "description": "IP addresses (A/AAAA records and the DHCP lease address)."
+        },
+        "cnames": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Alias names (CNAME) for this host."
+        },
+        "aliases": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Alias records with their own address (host names)."
+        },
+        "client_id": {
+          "description": "DHCP client id; `*` matches any."
+        },
+        "hwaddr": {
+          "tf_type": "set",
+          "description": "MAC addresses of the DHCP client."
+        },
+        "lease_time": {
+          "description": "Lease time in seconds; empty for the default."
+        },
+        "ignore": {
+          "description": "Ignore DHCP requests from this client."
+        },
+        "set_tag": {
+          "type": "ref",
+          "description": "Tag set for this host (`opnsense_dnsmasq_tag`)."
+        },
+        "descr": {
+          "attr": "description",
+          "go_name": "Description"
+        },
+        "comments": {
+          "description": "Free-form notes."
+        }
+      },
+      "example": {
+        "host": "nas",
+        "domain": "home.lan",
+        "ip": "10.0.0.5",
+        "descr": "NAS"
+      },
+      "update": {
+        "comments": "managed by Terraform"
+      }
+    },
+    {
+      "resource": "dnsmasq_domain",
+      "go_name": "DnsmasqDomain",
+      "plural": "Domains",
+      "description": "A domain override (Services \u2192 Dnsmasq DNS & DHCP \u2192 Domains): forward queries for a domain to another DNS server.",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "domainoverrides",
+      "base": "dnsmasq/settings",
+      "key": "domainoverride",
+      "suffix": "Domain",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "name_field": "descr",
+      "zero_field": "descr",
+      "fields": {
+        "sequence": {
+          "type": "int",
+          "no_default": true,
+          "plan_modifiers": [
+            "int64planmodifier.UseStateForUnknown()"
+          ]
+        },
+        "domain": {
+          "type": "string",
+          "description": "Domain to forward."
+        },
+        "ipset": {
+          "type": "ref"
+        },
+        "srcip": {
+          "description": "Only for queries from this source address."
+        },
+        "port": {
+          "type": "string",
+          "description": "Port of the DNS server."
+        },
+        "ip": {
+          "type": "string",
+          "description": "DNS server address, optionally `/domain/ip`."
+        },
+        "descr": {
+          "attr": "description",
+          "go_name": "Description"
+        }
+      },
+      "example": {
+        "domain": "corp.example.com",
+        "ip": "10.9.0.53",
+        "descr": "corp DNS"
+      },
+      "update": {
+        "descr": "corp DNS server"
+      }
+    },
+    {
+      "resource": "dnsmasq_tag",
+      "go_name": "DnsmasqTag",
+      "plural": "Tags",
+      "description": "A DHCP tag (Services \u2192 Dnsmasq DNS & DHCP \u2192 Tags): a label that hosts, ranges and options use to select each other.",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "dhcp_tags",
+      "base": "dnsmasq/settings",
+      "key": "tag",
+      "suffix": "Tag",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "name_field": "tag",
+      "zero_field": "tag",
+      "fields": {},
+      "example": {
+        "tag": "iot"
+      },
+      "update": {
+        "tag": "iot-devices"
+      }
+    },
+    {
+      "resource": "dnsmasq_range",
+      "go_name": "DnsmasqRange",
+      "plural": "Ranges",
+      "description": "A DHCP range (Services \u2192 Dnsmasq DNS & DHCP \u2192 DHCP ranges), also used for IPv6 router advertisements.",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "dhcp_ranges",
+      "base": "dnsmasq/settings",
+      "key": "range",
+      "suffix": "Range",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "interface": {
+          "type": "ref",
+          "description": "Interface; empty for any."
+        },
+        "set_tag": {
+          "type": "ref",
+          "description": "Tag set for clients in this range."
+        },
+        "constructor": {
+          "type": "ref",
+          "description": "IPv6: interface whose prefix builds the range."
+        },
+        "start_addr": {
+          "type": "string",
+          "description": "First address (IPv4/IPv6)."
+        },
+        "end_addr": {
+          "type": "string",
+          "description": "Last address; empty for a single address or constructor."
+        },
+        "subnet_mask": {
+          "type": "string",
+          "description": "Netmask (IPv4)."
+        },
+        "mode": {
+          "description": "IPv6 modes, e.g. `static`."
+        },
+        "ra_mode": {
+          "description": "Router advertisement modes."
+        },
+        "domain": {
+          "type": "string",
+          "description": "Domain handed to clients."
+        }
+      },
+      "example": {
+        "interface": "lan",
+        "start_addr": "10.0.0.100",
+        "end_addr": "10.0.0.199",
+        "subnet_mask": "255.255.255.0",
+        "description": "LAN pool"
+      },
+      "update": {
+        "lease_time": "3600"
+      }
+    },
+    {
+      "resource": "dnsmasq_option",
+      "go_name": "DnsmasqOption",
+      "plural": "Options",
+      "description": "A DHCP option (Services \u2192 Dnsmasq DNS & DHCP \u2192 DHCP options).",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "dhcp_options",
+      "base": "dnsmasq/settings",
+      "key": "option",
+      "suffix": "Option",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "option": {
+          "type": "string",
+          "description": "DHCPv4 option number, e.g. `6` (DNS servers)."
+        },
+        "option6": {
+          "type": "string",
+          "description": "DHCPv6 option number."
+        },
+        "interface": {
+          "type": "ref"
+        },
+        "tag": {
+          "type": "refs"
+        },
+        "set_tag": {
+          "type": "ref"
+        },
+        "value": {
+          "description": "Option value."
+        },
+        "force": {
+          "description": "Send even if the client did not ask."
+        }
+      },
+      "example": {
+        "type": "set",
+        "option": "6",
+        "value": "10.0.0.2",
+        "description": "DNS server"
+      },
+      "update": {
+        "value": "10.0.0.3"
+      }
+    },
+    {
+      "resource": "dnsmasq_boot",
+      "go_name": "DnsmasqBoot",
+      "plural": "Boots",
+      "description": "A network boot entry (Services \u2192 Dnsmasq DNS & DHCP \u2192 DHCP boot).",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "dhcp_boot",
+      "base": "dnsmasq/settings",
+      "key": "boot",
+      "suffix": "Boot",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "interface": {
+          "type": "ref"
+        },
+        "tag": {
+          "type": "refs"
+        }
+      },
+      "example": {
+        "filename": "pxelinux.0",
+        "description": "PXE"
+      },
+      "update": {
+        "servername": "tftp.home.lan"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "dnsmasq_settings",
+      "go_name": "DnsmasqSettings",
+      "plural": "General",
+      "description": "Dnsmasq general settings (Services \u2192 Dnsmasq DNS & DHCP \u2192 General). Destroying the resource leaves Dnsmasq as it is.",
+      "model": "core/Dnsmasq/Dnsmasq.xml",
+      "node": "",
+      "path": [
+        "dnsmasq"
+      ],
+      "get": "dnsmasq/settings/get",
+      "set": "dnsmasq/settings/set",
+      "reconfigure": "dnsmasq/service/reconfigure",
+      "fields": {
+        "interface": {
+          "type": "refs",
+          "description": "Interfaces to listen on; empty for all."
+        },
+        "regdhcpdomain": {
+          "type": "string"
+        },
+        "dhcp.no_interface": {
+          "type": "refs",
+          "description": "Interfaces that never get DHCP."
+        },
+        "dhcp.domain": {
+          "type": "string",
+          "description": "Default DHCP domain."
+        }
+      },
+      "update": {
+        "cache_size": "1000"
+      }
+    }
+  ]
+}
