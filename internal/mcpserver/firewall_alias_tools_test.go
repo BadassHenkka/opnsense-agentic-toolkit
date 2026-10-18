@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -19,6 +20,7 @@ func connect(t *testing.T, opts mcpserver.Options) (*mcp.ClientSession, *opnsens
 	ctx := context.Background()
 	fake := opnsensetest.New(t)
 	client := fake.Client(t)
+	client.Firmware.PollInterval = 5 * time.Millisecond
 	srv, err := mcpserver.New(client, opts)
 	if err != nil {
 		t.Fatal(err)

@@ -114,6 +114,7 @@ type Server struct {
 	// called, to simulate firewall rules that cut off the API client.
 	LockOutAfter string
 	lockedOut    bool
+	firmware     *firmwareState
 	settings     map[string]*settingsGroup
 }
 

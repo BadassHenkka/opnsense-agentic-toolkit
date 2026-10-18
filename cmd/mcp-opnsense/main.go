@@ -10,6 +10,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -17,6 +18,7 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -39,11 +41,16 @@ func run() error {
 	toolsets := flag.String("toolsets", envOr("OPNSENSE_MCP_TOOLSETS", "all"),
 		"comma-separated toolsets to enable ("+strings.Join(mcpserver.Toolsets(), ", ")+", all)")
 	showVersion := flag.Bool("version", false, "print version and exit")
+	check := flag.Bool("check", false, "test the configuration and connection, print a report and exit")
 	flag.Parse()
 
 	if *showVersion {
 		fmt.Println(version)
 		return nil
+	}
+
+	if *check {
+		return runCheck()
 	}
 
 	// stdout carries the MCP protocol, so logs must go to stderr.
@@ -80,4 +87,24 @@ func envOr(key, def string) string {
 func envBool(key string) bool {
 	v := strings.ToLower(os.Getenv(key))
 	return v == "1" || v == "true" || v == "yes"
+}
+
+// runCheck prints a setup report. It is the first thing to run after configuring credentials.
+func runCheck() error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	failed := false
+	for _, c := range opnsense.Diagnose(ctx, opnsense.ConfigFromEnv()) {
+		tag := map[opnsense.CheckStatus]string{opnsense.CheckOK: "ok  ", opnsense.CheckWarn: "warn", opnsense.CheckFail: "FAIL"}[c.Status]
+		fmt.Printf("[%s] %-13s %s\n", tag, c.Name, c.Detail)
+		if c.Hint != "" && c.Status != opnsense.CheckOK {
+			fmt.Printf("       -> %s\n", c.Hint)
+		}
+		failed = failed || c.Status == opnsense.CheckFail
+	}
+	if failed {
+		return errors.New("setup check failed")
+	}
+	fmt.Println("\nSetup looks good. Register the server with your MCP client (see README).")
+	return nil
 }

@@ -12,6 +12,7 @@ func registerAll(s *Server) {
 	registerAcme(s)
 	registerWireguard(s)
 	registerRouting(s)
+	registerFirmware(s)
 }
 
 func required(prefix string, r Record, fields ...string) map[string]string {

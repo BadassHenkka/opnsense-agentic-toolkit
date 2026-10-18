@@ -28,6 +28,7 @@ Supported so far:
 | Services → ACME Client (plugin os-acme-client) | `opnsense_acme_settings`, `opnsense_acme_account`, `opnsense_acme_challenge_type`, `opnsense_acme_automation`, `opnsense_acme_certificate` | `acme` |
 | VPN → WireGuard | `opnsense_wireguard_settings`, `opnsense_wireguard_instance`, `opnsense_wireguard_peer` | `wireguard` |
 | System → Gateways, Groups, System → Routes | `opnsense_gateway`, `opnsense_gateway_group`, `opnsense_route` | `routing` |
+| System → Firmware (plugins, updates) | `opnsense_plugin` | `firmware` |
 
 ## Quick start
 
@@ -108,6 +109,7 @@ through Terraform. Use `--read-only` when you only want exploration.
 | `unbound` | `unbound_host_override_{list,get,create,update,delete}`, `unbound_host_alias_{list,get,create,update,delete}`, `unbound_apply` |
 | `wireguard` | `wireguard_settings_{get,update}`; `wireguard_status` (live handshakes/traffic); `wireguard_{instance,peer}_{list,get,create,update,delete}`; `wireguard_apply` |
 | `routing` | `routing_gateway_{list,get,create,update,delete}`, `routing_gateway_status`; `routing_route_{list,get,create,update,delete}`; `routing_apply` |
+| `firmware` | `firmware_status`, `firmware_plugin_list`, `firmware_plugin_{install,remove}`, `firmware_update` (minor updates; never reboots) |
 | `acme` | `acme_settings_{get,update}`; `acme_{account,challenge_type,automation,certificate}_{list,get,create,update,delete}`; `acme_challenge_type_fields`, `acme_automation_fields` (discover provider fields); `acme_account_register`; `acme_certificate_{issue,revoke,run_automations}`; `acme_apply` |
 
 ACME credentials (DNS API tokens, EAB keys, automation passwords) can be set through MCP but
@@ -167,6 +169,21 @@ terraform import opnsense_acme_settings.this acmeclient
 terraform import opnsense_wireguard_instance.home home                # WireGuard by name
 terraform import opnsense_gateway.site2 WG_SITE2                      # gateway by name
 terraform import opnsense_route.site2 192.168.50.0/24                 # route by network
+terraform import opnsense_plugin.ddclient os-ddclient                 # plugin by package name
+```
+
+### Plugins
+
+`opnsense_plugin` installs a plugin on create and removes it on destroy. Both wait for the
+package job, with a 15 minute limit. The provider and MCP refuse third-party packages (tier 4,
+from repositories other than OPNsense/SunnyValley) unless you set `allow_third_party`. The API
+cannot add package repositories: a community repository is a one-time shell step on the
+firewall. Plugin *settings* need their own resources (ACME has them; others don't yet).
+
+```hcl
+resource "opnsense_plugin" "ddclient" {
+  name = "os-ddclient"
+}
 ```
 
 WireGuard: `opnsense_wireguard_instance` generates its private key when you omit

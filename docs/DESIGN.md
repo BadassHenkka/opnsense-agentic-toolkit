@@ -242,3 +242,27 @@ Source: opnsense/core `models/OPNsense/Routing/Gateways.xml`, `models/OPNsense/R
 Not covered yet: interface assignment. opnsense/core master has `Interfaces/Api/AssignmentController`
 with a brand-new `NetworkInterface` model (0.0.1). It is the next step for a fully codified
 site-to-site, once it ships in a release.
+
+## Seventh area: firmware and plugins
+
+Source: opnsense/core `controllers/OPNsense/Core/Api/FirmwareController.php` and
+`service/conf/actions.d/actions_firmware.conf`.
+
+- Package operations are background jobs: `install|remove|reinstall/<pkg>` and `update` start
+  `launcher.sh` through `daemon -f` and answer `{"status":"ok","msg_uuid":...}`.
+  `upgradestatus` returns the job log, with status `done` (log has `***DONE***`), `reboot`
+  (`***REBOOT***`) or `running`. `running` says `busy`/`ready`.
+- **The previous job's log stays until the next job starts**, so polling right after a POST can
+  read the old `***DONE***`. `RunJob` snapshots the log before starting and only accepts `done`
+  once the log changed. If the new log is byte-identical (installing an already-installed
+  package twice), it waits until the firewall reports `ready` for a few polls. A second job
+  while one is running returns `ErrFirmwareBusy`.
+- pkg reports some failures only in the log (an unknown package still ends in `***DONE***`), so
+  `Install`/`Remove` re-read `info` and fail when the package state did not change.
+- `info` marks every plugin's repository and tier. Tier 4 covers every repository except
+  OPNsense and SunnyValley. Terraform (`allow_third_party`) and MCP refuse tier 4 unless the
+  caller opts in.
+- The API cannot add package repositories (`getOptions`/`set` only choose the official mirror,
+  flavour and release type). Community repositories need one shell step on the firewall.
+- `update` installs minor updates only. Nothing in this project reboots; results carry
+  `Reboot`, and the MCP note tells the agent to ask the user.

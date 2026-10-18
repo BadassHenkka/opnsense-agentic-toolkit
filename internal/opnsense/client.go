@@ -69,6 +69,9 @@ type Client struct {
 	// applyMu serialises reconfigure calls; OPNsense handles parallel service reloads poorly
 	// and Terraform runs resources in parallel.
 	applyMu sync.Mutex
+
+	// Firmware manages packages, plugins and firmware updates.
+	Firmware *FirmwareService
 }
 
 // NewClient validates cfg and returns a Client.
@@ -102,6 +105,7 @@ func NewClient(cfg Config) (*Client, error) {
 		http:      hc,
 		userAgent: "opnsense-agentic-toolkit",
 	}
+	c.Firmware = newFirmwareService(c)
 	c.initGenerated()
 	return c, nil
 }
