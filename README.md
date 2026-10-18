@@ -18,3 +18,26 @@ once:
 
 - **`mcp-opnsense`**: local MCP server (stdio) for steps 1 and 2.
 - **`terraform-provider-opnsense`**: Terraform provider (Plugin Framework, protocol 6) for step 3.
+
+## Terraform provider
+
+```sh
+make install-tf   # builds into $(go env GOPATH)/bin
+```
+
+Add a dev override in `~/.terraformrc` (skip `terraform init` for this provider):
+
+```hcl
+provider_installation {
+  dev_overrides {
+    "registry.terraform.io/smulis/opnsense" = "/Users/<you>/go/bin"
+  }
+  direct {}
+}
+```
+
+Then see [examples/terraform/main.tf](examples/terraform/main.tf). Existing objects import by
+name or UUID:
+
+```sh
+```
