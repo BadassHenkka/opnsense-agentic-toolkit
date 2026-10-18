@@ -18,6 +18,8 @@ type generatedServices struct {
 	DynDNS *DynDNSService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
+	// FRR manages Routing → FRR (plugin os-frr).
+	FRR *FRRService
 	// IDS manages Services → Intrusion Detection (Suricata).
 	IDS *IDSService
 	// Interfaces manages Interfaces → Assignments, Other Types (VLAN) and Virtual IPs.
@@ -52,6 +54,7 @@ func (c *Client) initGenerated() {
 	c.Dnsmasq = newDnsmasqService(c)
 	c.DynDNS = newDynDNSService(c)
 	c.Firewall = newFirewallService(c)
+	c.FRR = newFRRService(c)
 	c.IDS = newIDSService(c)
 	c.Interfaces = newInterfacesService(c)
 	c.Kea = newKeaService(c)

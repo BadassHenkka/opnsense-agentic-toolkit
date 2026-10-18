@@ -10,6 +10,7 @@ func registerGenerated(s *Server) {
 	registerGenDnsmasq(s)
 	registerGenDynDNS(s)
 	registerGenFirewall(s)
+	registerGenFRR(s)
 	registerGenIDS(s)
 	registerGenInterfaces(s)
 	registerGenKea(s)

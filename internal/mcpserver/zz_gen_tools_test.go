@@ -9,7 +9,7 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"auth", "captiveportal", "dnsmasq", "dyndns", "firewall", "ids", "interfaces", "kea", "monit", "nodeexporter", "system", "trafficshaper", "trust", "unbound"}})
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"auth", "captiveportal", "dnsmasq", "dyndns", "firewall", "frr", "ids", "interfaces", "kea", "monit", "nodeexporter", "system", "trafficshaper", "trust", "unbound"}})
 	for _, name := range []string{
 		"auth_group_list",
 		"auth_user_list",
@@ -30,6 +30,34 @@ func TestGeneratedTools(t *testing.T) {
 		"firewall_nat_npt_list",
 		"firewall_interface_group_list",
 		"firewall_nat_outbound_mode_get",
+		"frr_bgp_neighbor_list",
+		"frr_bgp_peer_group_list",
+		"frr_bgp_aspath_list",
+		"frr_bgp_community_list_list",
+		"frr_bgp_prefix_list_list",
+		"frr_bgp_route_map_list",
+		"frr_bgp_redistribution_list",
+		"frr_ospf_area_list",
+		"frr_ospf_network_list",
+		"frr_ospf_neighbor_list",
+		"frr_ospf_interface_list",
+		"frr_ospf_prefix_list_list",
+		"frr_ospf_route_map_list",
+		"frr_ospf_redistribution_list",
+		"frr_ospf6_area_list",
+		"frr_ospf6_interface_list",
+		"frr_ospf6_prefix_list_list",
+		"frr_ospf6_route_map_list",
+		"frr_ospf6_redistribution_list",
+		"frr_bfd_neighbor_list",
+		"frr_static_route_list",
+		"frr_settings_get",
+		"frr_bgp_settings_get",
+		"frr_ospf_settings_get",
+		"frr_ospf6_settings_get",
+		"frr_rip_settings_get",
+		"frr_bfd_settings_get",
+		"frr_static_settings_get",
 		"ids_policy_list",
 		"ids_user_rule_list",
 		"ids_settings_get",

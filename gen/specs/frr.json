@@ -1,0 +1,1268 @@
+{
+  "area": "frr",
+  "title": "Routing \u2192 FRR (plugin os-frr)",
+  "service": "FRR",
+  "items": [
+    {
+      "resource": "frr_bgp_neighbor",
+      "go_name": "FrrBgpNeighbor",
+      "plural": "BgpNeighbors",
+      "description": "A BGP neighbor (Routing \u2192 BGP \u2192 Neighbors).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "neighbors.neighbor",
+      "base": "quagga/bgp",
+      "key": "neighbor",
+      "suffix": "Neighbor",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "address",
+      "zero_field": "address",
+      "fields": {
+        "description": {},
+        "address": {
+          "description": "Neighbor IP address."
+        },
+        "family": {
+          "type": "refs",
+          "description": "`ipv4`, `ipv6`."
+        },
+        "remote_as_mode": {
+          "description": "`internal`, `external` or empty to use remote_as."
+        },
+        "remoteas": {
+          "attr": "remote_as",
+          "type": "int"
+        },
+        "localas": {
+          "attr": "local_as",
+          "type": "int"
+        },
+        "password": {
+          "sensitive": true,
+          "description": "MD5 password."
+        },
+        "weight": {
+          "type": "int"
+        },
+        "localip": {
+          "attr": "local_ip",
+          "go_name": "LocalIP"
+        },
+        "updatesource": {
+          "attr": "update_source",
+          "type": "ref"
+        },
+        "linklocalinterface": {
+          "attr": "link_local_interface",
+          "type": "ref"
+        },
+        "nexthopself": {
+          "attr": "next_hop_self"
+        },
+        "nexthopselfall": {
+          "attr": "next_hop_self_all"
+        },
+        "multihop": {},
+        "rrclient": {
+          "attr": "route_reflector_client"
+        },
+        "soft_reconfiguration_inbound": {},
+        "bfd": {},
+        "bfd_strict": {},
+        "keepalive": {
+          "type": "int"
+        },
+        "holddown": {
+          "type": "int"
+        },
+        "connecttimer": {
+          "attr": "connect_timer",
+          "type": "int"
+        },
+        "defaultoriginate": {
+          "attr": "default_originate"
+        },
+        "asoverride": {
+          "attr": "as_override"
+        },
+        "removeprivateas": {
+          "attr": "remove_private_as"
+        },
+        "allowas_in": {},
+        "disable_connected_check": {},
+        "attributeunchanged": {
+          "attr": "attribute_unchanged"
+        },
+        "capabilities": {
+          "type": "refs"
+        },
+        "linkedPrefixlistIn": {
+          "attr": "prefix_list_in",
+          "type": "ref",
+          "description": "Inbound prefix list (`opnsense_frr_*_prefix_list` id)."
+        },
+        "linkedPrefixlistOut": {
+          "attr": "prefix_list_out",
+          "type": "ref",
+          "description": "Outbound prefix list."
+        },
+        "linkedRoutemapIn": {
+          "attr": "route_map_in",
+          "type": "ref",
+          "description": "Inbound route map (`opnsense_frr_*_route_map` id)."
+        },
+        "linkedRoutemapOut": {
+          "attr": "route_map_out",
+          "type": "ref",
+          "description": "Outbound route map."
+        },
+        "peergroup": {
+          "attr": "peer_group",
+          "type": "ref",
+          "description": "`opnsense_frr_bgp_peer_group` id."
+        }
+      },
+      "example": {
+        "address": "192.168.1.2",
+        "remoteas": "65002"
+      }
+    },
+    {
+      "resource": "frr_bgp_peer_group",
+      "go_name": "FrrBgpPeerGroup",
+      "plural": "BgpPeerGroups",
+      "description": "A BGP peer group (Routing \u2192 BGP \u2192 Peer Groups).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "peergroups.peergroup",
+      "base": "quagga/bgp",
+      "key": "peergroup",
+      "suffix": "Peergroup",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {},
+        "remote_as_mode": {},
+        "remoteas": {
+          "attr": "remote_as",
+          "type": "int"
+        },
+        "family": {
+          "type": "refs"
+        },
+        "listenranges": {
+          "attr": "listen_ranges",
+          "type": "list",
+          "tf_type": "set",
+          "description": "Networks for dynamic neighbors."
+        },
+        "updatesource": {
+          "attr": "update_source",
+          "type": "ref"
+        },
+        "nexthopself": {
+          "attr": "next_hop_self"
+        },
+        "defaultoriginate": {
+          "attr": "default_originate"
+        },
+        "linkedPrefixlistIn": {
+          "attr": "prefix_list_in",
+          "type": "ref",
+          "description": "Inbound prefix list (`opnsense_frr_*_prefix_list` id)."
+        },
+        "linkedPrefixlistOut": {
+          "attr": "prefix_list_out",
+          "type": "ref",
+          "description": "Outbound prefix list."
+        },
+        "linkedRoutemapIn": {
+          "attr": "route_map_in",
+          "type": "ref",
+          "description": "Inbound route map (`opnsense_frr_*_route_map` id)."
+        },
+        "linkedRoutemapOut": {
+          "attr": "route_map_out",
+          "type": "ref",
+          "description": "Outbound route map."
+        }
+      },
+      "example": {
+        "name": "peers",
+        "remoteas": "65002"
+      }
+    },
+    {
+      "resource": "frr_bgp_aspath",
+      "go_name": "FrrBgpAspath",
+      "plural": "BgpAspaths",
+      "description": "A BGP AS path access list entry (Routing \u2192 BGP \u2192 AS Path Lists).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "aspaths.aspath",
+      "base": "quagga/bgp",
+      "key": "aspath",
+      "suffix": "Aspath",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "description": {},
+        "number": {
+          "type": "int",
+          "description": "List number."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "as": {
+          "attr": "as_regex",
+          "description": "AS path regular expression, e.g. `_65001$`."
+        }
+      },
+      "example": {
+        "description": "from peer",
+        "number": "10",
+        "action": "permit",
+        "as": "_65001$"
+      }
+    },
+    {
+      "resource": "frr_bgp_community_list",
+      "go_name": "FrrBgpCommunityList",
+      "plural": "BgpCommunityLists",
+      "description": "A BGP community list entry (Routing \u2192 BGP \u2192 Community Lists).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "communitylists.communitylist",
+      "base": "quagga/bgp",
+      "key": "communitylist",
+      "suffix": "Communitylist",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "description": {},
+        "number": {
+          "type": "int",
+          "description": "List number."
+        },
+        "seqnumber": {
+          "attr": "sequence",
+          "type": "int"
+        },
+        "action": {},
+        "community": {
+          "description": "Community, e.g. `65001:100`."
+        }
+      },
+      "example": {
+        "description": "c",
+        "number": "10",
+        "seqnumber": "10",
+        "action": "permit",
+        "community": "65001:100"
+      }
+    },
+    {
+      "resource": "frr_bgp_prefix_list",
+      "go_name": "FrrBgpPrefixList",
+      "plural": "BgpPrefixLists",
+      "description": "An FRR BGP prefix list entry (Routing \u2192 BGP \u2192 Prefix Lists).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "prefixlists.prefixlist",
+      "base": "quagga/bgp",
+      "key": "prefixlist",
+      "suffix": "Prefixlist",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {
+          "description": "Prefix list name; several entries with the same name form one list."
+        },
+        "seqnumber": {
+          "attr": "sequence",
+          "type": "int",
+          "description": "Sequence number within the list."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "network": {
+          "description": "Network, e.g. `10.0.0.0/8`."
+        },
+        "version": {
+          "description": "`IPv4` or `IPv6`.",
+          "attr": "ip_version"
+        }
+      },
+      "example": {
+        "name": "lan",
+        "seqnumber": "10",
+        "action": "permit",
+        "network": "192.168.0.0/16"
+      }
+    },
+    {
+      "resource": "frr_bgp_route_map",
+      "go_name": "FrrBgpRouteMap",
+      "plural": "BgpRouteMaps",
+      "description": "An FRR BGP route map entry (Routing \u2192 BGP \u2192 Route Maps).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "routemaps.routemap",
+      "base": "quagga/bgp",
+      "key": "routemap",
+      "suffix": "Routemap",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {
+          "description": "Route map name; entries with the same name form one map."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "id": {
+          "attr": "sequence",
+          "type": "int",
+          "description": "Sequence number within the map."
+        },
+        "set": {
+          "description": "`set` clause, e.g. `local-preference 200`."
+        },
+        "match": {
+          "attr": "match",
+          "type": "refs",
+          "description": "Ids of the prefix lists, AS paths or community lists to match."
+        },
+        "match2": {
+          "attr": "match2",
+          "type": "refs",
+          "description": "Ids of the prefix lists, AS paths or community lists to match."
+        },
+        "match3": {
+          "attr": "match3",
+          "type": "refs",
+          "description": "Ids of the prefix lists, AS paths or community lists to match."
+        }
+      },
+      "example": {
+        "name": "prefer",
+        "action": "permit",
+        "id": "10"
+      }
+    },
+    {
+      "resource": "frr_bgp_redistribution",
+      "go_name": "FrrBgpRedistribution",
+      "plural": "BgpRedistributions",
+      "description": "Redistribute routes into BGP (Routing \u2192 BGP \u2192 Redistribution).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "redistributions.redistribution",
+      "base": "quagga/bgp",
+      "key": "redistribution",
+      "suffix": "Redistribution",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "redistribute": {
+          "description": "`connected`, `kernel`, `static`, `bgp`, `ospf`, `rip`, ..."
+        },
+        "linkedRoutemap": {
+          "attr": "route_map",
+          "type": "ref",
+          "description": "Route map to filter with."
+        }
+      },
+      "example": {
+        "description": "connected",
+        "redistribute": "connected"
+      }
+    },
+    {
+      "resource": "frr_ospf_area",
+      "go_name": "FrrOspfArea",
+      "plural": "OspfAreas",
+      "description": "An OSPF area (Routing \u2192 OSPF \u2192 Areas).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "areas.area",
+      "base": "quagga/ospfsettings",
+      "key": "area",
+      "suffix": "Area",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "id",
+      "zero_field": "id",
+      "fields": {
+        "id": {
+          "attr": "area_id",
+          "go_name": "AreaID",
+          "description": "Area id, e.g. `0.0.0.0`."
+        },
+        "ranges": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Networks summarised into the area."
+        },
+        "linkedPrefixlistIn": {
+          "attr": "prefix_list_in",
+          "type": "ref",
+          "description": "Inbound prefix list (`opnsense_frr_*_prefix_list` id)."
+        },
+        "linkedPrefixlistOut": {
+          "attr": "prefix_list_out",
+          "type": "ref",
+          "description": "Outbound prefix list."
+        },
+        "type": {
+          "description": "Empty for normal, `stub`, `nssa`, ..."
+        }
+      },
+      "example": {
+        "id": "0.0.0.0"
+      }
+    },
+    {
+      "resource": "frr_ospf_network",
+      "go_name": "FrrOspfNetwork",
+      "plural": "OspfNetworks",
+      "description": "An OSPF network statement (Routing \u2192 OSPF \u2192 Networks).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "networks.network",
+      "base": "quagga/ospfsettings",
+      "key": "network",
+      "suffix": "Network",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "ipaddr",
+      "zero_field": "ipaddr",
+      "fields": {
+        "ipaddr": {
+          "attr": "network",
+          "description": "Network address."
+        },
+        "area": {
+          "type": "ref",
+          "description": "`opnsense_frr_ospf_area` id."
+        },
+        "netmask": {
+          "type": "int",
+          "description": "Prefix length."
+        }
+      },
+      "example": {
+        "ipaddr": "192.168.1.0",
+        "netmask": "24"
+      }
+    },
+    {
+      "resource": "frr_ospf_neighbor",
+      "go_name": "FrrOspfNeighbor",
+      "plural": "OspfNeighbors",
+      "description": "A static OSPF neighbor for non-broadcast networks.",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "neighbors.neighbor",
+      "base": "quagga/ospfsettings",
+      "key": "neighbor",
+      "suffix": "Neighbor",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "address",
+      "zero_field": "address",
+      "fields": {
+        "description": {},
+        "address": {},
+        "pollinterval": {
+          "attr": "poll_interval",
+          "type": "int"
+        },
+        "priority": {
+          "type": "int"
+        }
+      },
+      "example": {
+        "address": "192.168.1.2"
+      }
+    },
+    {
+      "resource": "frr_ospf_interface",
+      "go_name": "FrrOspfInterface",
+      "plural": "OspfInterfaces",
+      "description": "An OSPF interface (Routing \u2192 OSPF \u2192 Interfaces).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "interfaces.interface",
+      "base": "quagga/ospfsettings",
+      "key": "interface",
+      "suffix": "Interface",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "interfacename",
+      "zero_field": "interfacename",
+      "fields": {
+        "interfacename": {
+          "attr": "interface",
+          "type": "ref",
+          "description": "Interface name, e.g. `lan`."
+        },
+        "passive": {},
+        "authtype": {
+          "attr": "auth_type"
+        },
+        "authkey": {
+          "attr": "auth_key",
+          "sensitive": true
+        },
+        "authkey_id": {
+          "attr": "auth_key_id",
+          "type": "int"
+        },
+        "area": {
+          "type": "ref",
+          "description": "`opnsense_frr_*_area` id."
+        },
+        "cost": {
+          "type": "int"
+        },
+        "cost_demoted": {
+          "type": "int"
+        },
+        "carp_depend_on": {
+          "type": "string",
+          "description": "CARP virtual IP the interface follows."
+        },
+        "hellointerval": {
+          "attr": "hello_interval",
+          "type": "int"
+        },
+        "deadinterval": {
+          "attr": "dead_interval",
+          "type": "int"
+        },
+        "retransmitinterval": {
+          "attr": "retransmit_interval",
+          "type": "int"
+        },
+        "transmitdelay": {
+          "attr": "transmit_delay",
+          "type": "int"
+        },
+        "priority": {
+          "type": "int"
+        },
+        "bfd": {},
+        "networktype": {
+          "attr": "network_type"
+        },
+        "p2mpoptions": {
+          "attr": "p2mp_options"
+        }
+      },
+      "example": {
+        "interfacename": "lan"
+      }
+    },
+    {
+      "resource": "frr_ospf_prefix_list",
+      "go_name": "FrrOspfPrefixList",
+      "plural": "OspfPrefixLists",
+      "description": "An FRR OSPF prefix list entry (Routing \u2192 OSPF \u2192 Prefix Lists).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "prefixlists.prefixlist",
+      "base": "quagga/ospfsettings",
+      "key": "prefixlist",
+      "suffix": "Prefixlist",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {
+          "description": "Prefix list name; several entries with the same name form one list."
+        },
+        "seqnumber": {
+          "attr": "sequence",
+          "type": "int",
+          "description": "Sequence number within the list."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "network": {
+          "description": "Network, e.g. `10.0.0.0/8`."
+        }
+      },
+      "example": {
+        "name": "lan",
+        "seqnumber": "10",
+        "action": "permit",
+        "network": "192.168.0.0/16"
+      }
+    },
+    {
+      "resource": "frr_ospf_route_map",
+      "go_name": "FrrOspfRouteMap",
+      "plural": "OspfRouteMaps",
+      "description": "An FRR OSPF route map entry (Routing \u2192 OSPF \u2192 Route Maps).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "routemaps.routemap",
+      "base": "quagga/ospfsettings",
+      "key": "routemap",
+      "suffix": "Routemap",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {
+          "description": "Route map name; entries with the same name form one map."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "id": {
+          "attr": "sequence",
+          "type": "int",
+          "description": "Sequence number within the map."
+        },
+        "set": {
+          "description": "`set` clause, e.g. `local-preference 200`."
+        },
+        "match2": {
+          "attr": "match2",
+          "type": "refs",
+          "description": "Ids of the prefix lists, AS paths or community lists to match."
+        }
+      },
+      "example": {
+        "name": "prefer",
+        "action": "permit",
+        "id": "10"
+      }
+    },
+    {
+      "resource": "frr_ospf_redistribution",
+      "go_name": "FrrOspfRedistribution",
+      "plural": "OspfRedistributions",
+      "description": "Redistribute routes into OSPF (Routing \u2192 OSPF \u2192 Redistribution).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "redistributions.redistribution",
+      "base": "quagga/ospfsettings",
+      "key": "redistribution",
+      "suffix": "Redistribution",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "redistribute": {
+          "description": "`connected`, `kernel`, `static`, `bgp`, `ospf`, `rip`, ..."
+        },
+        "linkedRoutemap": {
+          "attr": "route_map",
+          "type": "ref",
+          "description": "Route map to filter with."
+        }
+      },
+      "example": {
+        "description": "connected",
+        "redistribute": "connected"
+      }
+    },
+    {
+      "resource": "frr_ospf6_area",
+      "go_name": "FrrOspf6Area",
+      "plural": "Ospf6Areas",
+      "description": "An OSPFv3 area (Routing \u2192 OSPFv3 \u2192 Areas).",
+      "model": "plugins/net/frr/Quagga/OSPF6.xml",
+      "node": "areas.area",
+      "base": "quagga/ospf6settings",
+      "key": "area",
+      "suffix": "Area",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "id",
+      "zero_field": "id",
+      "fields": {
+        "id": {
+          "attr": "area_id",
+          "go_name": "AreaID",
+          "description": "Area id, e.g. `0.0.0.0`."
+        },
+        "ranges": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Networks summarised into the area."
+        },
+        "linkedPrefixlistIn": {
+          "attr": "prefix_list_in",
+          "type": "ref",
+          "description": "Inbound prefix list (`opnsense_frr_*_prefix_list` id)."
+        },
+        "linkedPrefixlistOut": {
+          "attr": "prefix_list_out",
+          "type": "ref",
+          "description": "Outbound prefix list."
+        },
+        "type": {
+          "description": "Empty for normal, `stub`, `nssa`, ..."
+        }
+      },
+      "example": {
+        "id": "0.0.0.0"
+      }
+    },
+    {
+      "resource": "frr_ospf6_interface",
+      "go_name": "FrrOspf6Interface",
+      "plural": "Ospf6Interfaces",
+      "description": "An OSPFv3 interface (Routing \u2192 OSPFv3 \u2192 Interfaces).",
+      "model": "plugins/net/frr/Quagga/OSPF6.xml",
+      "node": "interfaces.interface",
+      "base": "quagga/ospf6settings",
+      "key": "interface",
+      "suffix": "Interface",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "interfacename",
+      "zero_field": "interfacename",
+      "fields": {
+        "interfacename": {
+          "attr": "interface",
+          "type": "ref",
+          "description": "Interface name, e.g. `lan`."
+        },
+        "passive": {},
+        "area": {
+          "type": "ref",
+          "description": "`opnsense_frr_*_area` id."
+        },
+        "cost": {
+          "type": "int"
+        },
+        "cost_demoted": {
+          "type": "int"
+        },
+        "carp_depend_on": {
+          "type": "string",
+          "description": "CARP virtual IP the interface follows."
+        },
+        "hellointerval": {
+          "attr": "hello_interval",
+          "type": "int"
+        },
+        "deadinterval": {
+          "attr": "dead_interval",
+          "type": "int"
+        },
+        "retransmitinterval": {
+          "attr": "retransmit_interval",
+          "type": "int"
+        },
+        "transmitdelay": {
+          "attr": "transmit_delay",
+          "type": "int"
+        },
+        "priority": {
+          "type": "int"
+        },
+        "bfd": {},
+        "networktype": {
+          "attr": "network_type"
+        }
+      },
+      "example": {
+        "interfacename": "lan"
+      }
+    },
+    {
+      "resource": "frr_ospf6_prefix_list",
+      "go_name": "FrrOspf6PrefixList",
+      "plural": "Ospf6PrefixLists",
+      "description": "An FRR OSPFv3 prefix list entry (Routing \u2192 OSPFv3 \u2192 Prefix Lists).",
+      "model": "plugins/net/frr/Quagga/OSPF6.xml",
+      "node": "prefixlists.prefixlist",
+      "base": "quagga/ospf6settings",
+      "key": "prefixlist",
+      "suffix": "Prefixlist",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {
+          "description": "Prefix list name; several entries with the same name form one list."
+        },
+        "seqnumber": {
+          "attr": "sequence",
+          "type": "int",
+          "description": "Sequence number within the list."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "network": {
+          "description": "Network, e.g. `10.0.0.0/8`."
+        }
+      },
+      "example": {
+        "name": "lan",
+        "seqnumber": "10",
+        "action": "permit",
+        "network": "192.168.0.0/16"
+      }
+    },
+    {
+      "resource": "frr_ospf6_route_map",
+      "go_name": "FrrOspf6RouteMap",
+      "plural": "Ospf6RouteMaps",
+      "description": "An FRR OSPFv3 route map entry (Routing \u2192 OSPFv3 \u2192 Route Maps).",
+      "model": "plugins/net/frr/Quagga/OSPF6.xml",
+      "node": "routemaps.routemap",
+      "base": "quagga/ospf6settings",
+      "key": "routemap",
+      "suffix": "Routemap",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "name": {
+          "description": "Route map name; entries with the same name form one map."
+        },
+        "action": {
+          "description": "`permit` or `deny`."
+        },
+        "id": {
+          "attr": "sequence",
+          "type": "int",
+          "description": "Sequence number within the map."
+        },
+        "set": {
+          "description": "`set` clause, e.g. `local-preference 200`."
+        },
+        "match2": {
+          "attr": "match2",
+          "type": "refs",
+          "description": "Ids of the prefix lists, AS paths or community lists to match."
+        }
+      },
+      "example": {
+        "name": "prefer",
+        "action": "permit",
+        "id": "10"
+      }
+    },
+    {
+      "resource": "frr_ospf6_redistribution",
+      "go_name": "FrrOspf6Redistribution",
+      "plural": "Ospf6Redistributions",
+      "description": "Redistribute routes into OSPFv3 (Routing \u2192 OSPFv3 \u2192 Redistribution).",
+      "model": "plugins/net/frr/Quagga/OSPF6.xml",
+      "node": "redistributions.redistribution",
+      "base": "quagga/ospf6settings",
+      "key": "redistribution",
+      "suffix": "Redistribution",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "redistribute": {
+          "description": "`connected`, `kernel`, `static`, `bgp`, `ospf`, `rip`, ..."
+        },
+        "linkedRoutemap": {
+          "attr": "route_map",
+          "type": "ref",
+          "description": "Route map to filter with."
+        }
+      },
+      "example": {
+        "description": "connected",
+        "redistribute": "connected"
+      }
+    },
+    {
+      "resource": "frr_bfd_neighbor",
+      "go_name": "FrrBfdNeighbor",
+      "plural": "BfdNeighbors",
+      "description": "A BFD peer (Routing \u2192 BFD \u2192 Neighbors).",
+      "model": "plugins/net/frr/Quagga/BFD.xml",
+      "node": "neighbors.neighbor",
+      "base": "quagga/bfd",
+      "key": "neighbor",
+      "suffix": "Neighbor",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "address",
+      "zero_field": "address",
+      "fields": {
+        "description": {},
+        "address": {},
+        "multihop": {},
+        "localaddress": {
+          "attr": "local_address"
+        },
+        "interfacename": {
+          "attr": "interface",
+          "type": "ref"
+        },
+        "detect_multiplier": {
+          "type": "int"
+        },
+        "receive_interval": {
+          "type": "int"
+        },
+        "transmit_interval": {
+          "type": "int"
+        }
+      },
+      "example": {
+        "address": "192.168.1.2"
+      }
+    },
+    {
+      "resource": "frr_static_route",
+      "go_name": "FrrStaticRoute",
+      "plural": "StaticRoutes",
+      "description": "A static route in FRR's staticd (Routing \u2192 Static).",
+      "model": "plugins/net/frr/Quagga/STATICd.xml",
+      "node": "routes.route",
+      "base": "quagga/static",
+      "key": "route",
+      "suffix": "Route",
+      "reconfigure": "quagga/service/reconfigure",
+      "name_field": "network",
+      "zero_field": "network",
+      "fields": {
+        "network": {
+          "description": "Destination, e.g. `10.9.0.0/24`."
+        },
+        "gateway": {
+          "description": "Next hop address."
+        },
+        "interfacename": {
+          "attr": "interface",
+          "type": "ref"
+        },
+        "bfd": {}
+      },
+      "example": {
+        "network": "10.9.0.0/24",
+        "gateway": "192.168.1.2"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "frr_settings",
+      "go_name": "FrrGeneral",
+      "plural": "General",
+      "description": "FRR general settings (Routing \u2192 General): the master switch, which daemons run and logging. Enable the daemons you configure (`bgpd`, `ospfd`, ...).",
+      "model": "plugins/net/frr/Quagga/General.xml",
+      "node": "",
+      "get": "quagga/general/get",
+      "set": "quagga/general/set",
+      "path": [
+        "general"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "daemons": {
+          "type": "refs",
+          "description": "Extra daemons to run, e.g. `bgpd`, `ospfd`, `ospf6d`, `ripd`, `bfdd`, `staticd`."
+        },
+        "manual_config": {
+          "description": "Use a hand-written frr.conf."
+        },
+        "profile": {
+          "description": "`traditional` or `datacenter`."
+        },
+        "enablecarp": {
+          "attr": "enable_carp",
+          "description": "Only run on the CARP master."
+        },
+        "enablesyslog": {
+          "attr": "enable_syslog"
+        },
+        "enablesnmp": {
+          "attr": "enable_snmp"
+        },
+        "sysloglevel": {
+          "attr": "syslog_level"
+        },
+        "fwrules": {
+          "attr": "firewall_rules",
+          "description": "Create firewall rules for the routing protocols."
+        }
+      },
+      "example": {
+        "enabled": "1"
+      }
+    },
+    {
+      "resource": "frr_bgp_settings",
+      "go_name": "FrrBgp",
+      "plural": "BgpSettings",
+      "description": "FRR BGP global settings (Routing \u2192 BGP).",
+      "model": "plugins/net/frr/Quagga/BGP.xml",
+      "node": "",
+      "get": "quagga/bgp/get",
+      "set": "quagga/bgp/set",
+      "path": [
+        "bgp"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "asnumber": {
+          "attr": "as_number",
+          "type": "int",
+          "description": "Local AS number."
+        },
+        "distance": {
+          "type": "int"
+        },
+        "routerid": {
+          "attr": "router_id",
+          "go_name": "RouterID"
+        },
+        "graceful": {
+          "description": "Graceful restart."
+        },
+        "networkimportcheck": {
+          "attr": "network_import_check"
+        },
+        "enforce_first_as": {},
+        "logneighborchanges": {
+          "attr": "log_neighbor_changes"
+        },
+        "networks": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Networks to advertise."
+        },
+        "bestpath": {
+          "type": "refs",
+          "description": "Best path options."
+        },
+        "maximumpaths": {
+          "attr": "maximum_paths",
+          "type": "int"
+        },
+        "maximumpathsibgp": {
+          "attr": "maximum_paths_ibgp",
+          "go_name": "MaximumPathsIBGP",
+          "type": "int"
+        },
+        "neighbors.neighbor": {
+          "skip": true
+        },
+        "aspaths.aspath": {
+          "skip": true
+        },
+        "prefixlists.prefixlist": {
+          "skip": true
+        },
+        "communitylists.communitylist": {
+          "skip": true
+        },
+        "routemaps.routemap": {
+          "skip": true
+        },
+        "peergroups.peergroup": {
+          "skip": true
+        },
+        "redistributions.redistribution": {
+          "skip": true
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "asnumber": "65001"
+      }
+    },
+    {
+      "resource": "frr_ospf_settings",
+      "go_name": "FrrOspf",
+      "plural": "OspfSettings",
+      "description": "FRR OSPF global settings (Routing \u2192 OSPF).",
+      "model": "plugins/net/frr/Quagga/OSPF.xml",
+      "node": "",
+      "get": "quagga/ospfsettings/get",
+      "set": "quagga/ospfsettings/set",
+      "path": [
+        "ospf"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "carp_demote": {},
+        "routerid": {
+          "attr": "router_id",
+          "go_name": "RouterID"
+        },
+        "costreference": {
+          "attr": "cost_reference",
+          "type": "int"
+        },
+        "logadjacencychanges": {
+          "attr": "log_adjacency_changes"
+        },
+        "originate": {
+          "description": "Advertise a default route."
+        },
+        "originatealways": {
+          "attr": "originate_always"
+        },
+        "originatemetric": {
+          "attr": "originate_metric",
+          "type": "int"
+        },
+        "areas.area": {
+          "skip": true
+        },
+        "networks.network": {
+          "skip": true
+        },
+        "neighbors.neighbor": {
+          "skip": true
+        },
+        "interfaces.interface": {
+          "skip": true
+        },
+        "prefixlists.prefixlist": {
+          "skip": true
+        },
+        "routemaps.routemap": {
+          "skip": true
+        },
+        "redistributions.redistribution": {
+          "skip": true
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "routerid": "10.0.0.1"
+      }
+    },
+    {
+      "resource": "frr_ospf6_settings",
+      "go_name": "FrrOspf6",
+      "plural": "Ospf6Settings",
+      "description": "FRR OSPFv3 global settings (Routing \u2192 OSPFv3).",
+      "model": "plugins/net/frr/Quagga/OSPF6.xml",
+      "node": "",
+      "get": "quagga/ospf6settings/get",
+      "set": "quagga/ospf6settings/set",
+      "path": [
+        "ospf6"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "carp_demote": {},
+        "routerid": {
+          "attr": "router_id",
+          "go_name": "RouterID"
+        },
+        "originate": {},
+        "originatealways": {
+          "attr": "originate_always"
+        },
+        "originatemetric": {
+          "attr": "originate_metric",
+          "type": "int"
+        },
+        "areas.area": {
+          "skip": true
+        },
+        "interfaces.interface": {
+          "skip": true
+        },
+        "prefixlists.prefixlist": {
+          "skip": true
+        },
+        "routemaps.routemap": {
+          "skip": true
+        },
+        "redistributions.redistribution": {
+          "skip": true
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "routerid": "10.0.0.1"
+      }
+    },
+    {
+      "resource": "frr_rip_settings",
+      "go_name": "FrrRip",
+      "plural": "RipSettings",
+      "description": "FRR RIP settings (Routing \u2192 RIP).",
+      "model": "plugins/net/frr/Quagga/RIP.xml",
+      "node": "",
+      "get": "quagga/rip/get",
+      "set": "quagga/rip/set",
+      "path": [
+        "rip"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "version": {
+          "type": "int",
+          "description": "RIP version, 1 or 2.",
+          "attr": "rip_version"
+        },
+        "networks": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Networks to run RIP on."
+        },
+        "passiveinterfaces": {
+          "attr": "passive_interfaces",
+          "type": "refs"
+        },
+        "redistribute": {
+          "type": "refs",
+          "description": "Sources to redistribute, e.g. `connected`, `static`."
+        },
+        "defaultmetric": {
+          "attr": "default_metric",
+          "type": "int"
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "version": "2"
+      }
+    },
+    {
+      "resource": "frr_bfd_settings",
+      "go_name": "FrrBfd",
+      "plural": "BfdSettings",
+      "description": "FRR BFD global switch (Routing \u2192 BFD).",
+      "model": "plugins/net/frr/Quagga/BFD.xml",
+      "node": "",
+      "get": "quagga/bfd/get",
+      "set": "quagga/bfd/set",
+      "path": [
+        "bfd"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "neighbors.neighbor": {
+          "skip": true
+        }
+      },
+      "example": {
+        "enabled": "1"
+      }
+    },
+    {
+      "resource": "frr_static_settings",
+      "go_name": "FrrStatic",
+      "plural": "StaticSettings",
+      "description": "FRR static route daemon switch (Routing \u2192 Static).",
+      "model": "plugins/net/frr/Quagga/STATICd.xml",
+      "node": "",
+      "get": "quagga/static/get",
+      "set": "quagga/static/set",
+      "path": [
+        "staticd"
+      ],
+      "reconfigure": "quagga/service/reconfigure",
+      "fields": {
+        "routes.route": {
+          "skip": true
+        }
+      },
+      "example": {
+        "enabled": "1"
+      }
+    }
+  ]
+}
