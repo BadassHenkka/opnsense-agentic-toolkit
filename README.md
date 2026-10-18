@@ -19,6 +19,97 @@ once:
 - **`mcp-opnsense`**: local MCP server (stdio) for steps 1 and 2.
 - **`terraform-provider-opnsense`**: Terraform provider (Plugin Framework, protocol 6) for step 3.
 
+## Quick start
+
+Four steps, then one command tells you whether it worked.
+
+**1. Create an API user on the firewall.**
+1. System → Access → Users → add a user, e.g. `automation` (a random password you will not use).
+2. Edit it → *Effective Privileges* → add only what the areas you use need. Search the list for
+   the area name: *Firewall: Alias*, *Firewall: Rules*, *Services: Unbound DNS*, *VPN: WireGuard*,
+   *System: Gateways*, *System: Static Routes*, *System: Firmware*, *System: Trust*, *Services:
+   Caddy*, *Services: ACME Client*, *Services: Wake on LAN*. Start small; step 4 tells you what is
+   missing. OPNsense has no read-only privileges for most pages, so "read-only" is enforced by
+   `mcp-opnsense --read-only`, not by the user. Using one user per front end (MCP, Terraform)
+   lets you revoke them separately.
+3. Same user → *API keys* → **+**. The browser downloads a file with `key=` and `secret=`. The
+   secret is shown only once.
+
+**2. Trust the firewall's certificate** (only for a self-signed one): System → Trust →
+Authorities → export the CA certificate as PEM and keep it at, say,
+`~/.config/opnsense/ca.pem`. Do not use `OPNSENSE_INSECURE` except for a throwaway test.
+
+**3. Build and configure.**
+
+```sh
+make build                         # bin/mcp-opnsense and bin/terraform-provider-opnsense
+export OPNSENSE_URL=https://opnsense.lan      # the address you open in the browser
+export OPNSENSE_API_KEY=...
+export OPNSENSE_API_SECRET=...
+export OPNSENSE_CA_FILE=$HOME/.config/opnsense/ca.pem   # only for a self-signed certificate
+```
+
+**4. Check it.**
+
+```sh
+./bin/mcp-opnsense --check
+```
+
+```
+[ok  ] configuration URL, key and secret are set
+[ok  ] connection    authenticated; OPNsense 26.7.3
+[ok  ] version       26.7.3 matches the tested series
+[warn] permissions   no access to: firewall rules (Firewall: Rules)
+       -> System > Access > Users > edit the API user > Effective Privileges; ...
+[ok  ] plugins       installed: os-caddy; not installed: os-frr, ...
+```
+
+Each failure prints the likely fix (wrong secret, untrusted certificate, wrong port, missing
+privilege). Nothing is changed and no secret is printed. When it ends with "Setup looks good",
+register the server with your MCP client ([MCP server](#mcp-server) below) and ask it to run
+`firmware_status`.
+
+## Build and test
+
+```sh
+make tidy     # first run: resolves dependencies and writes go.sum
+make test
+make build    # binaries in ./bin
+```
+
+The tests run against an in-memory fake of the OPNsense API, so they need no firewall.
+
+## MCP server
+
+```sh
+./bin/mcp-opnsense --read-only            # only list/get tools
+./bin/mcp-opnsense --toolsets unbound
+```
+
+Write tools exist for trial changes that verify an idea, not for the final configuration. They
+only **stage** changes: nothing takes effect until the agent calls the toolset's apply tool, and
+the server instructions tell it to confirm with you first and to undo trial changes afterwards
+(`backup_diff_get` shows whether the firewall is back at its baseline). Lasting changes go
+through Terraform. Use `--read-only` when you only want exploration.
+
+| Toolset | Tools |
+|---|---|
+
+Client config examples: [examples/mcp](examples/mcp). Run `./bin/mcp-opnsense --check` first. For Claude Code:
+
+```sh
+claude mcp add opnsense --scope user \
+  -e OPNSENSE_URL=https://opnsense.lan -e OPNSENSE_API_KEY=... -e OPNSENSE_API_SECRET=... \
+  -- $PWD/bin/mcp-opnsense --read-only
+claude mcp list                    # opnsense should show as connected
+```
+
+Start with `--read-only`. Drop it only when you want the agent to be able to run trial changes.
+The MCP client does not inherit your shell's `export`s, so the credentials go in `-e` (or the
+client's `env` block). That stores them in the client's config file in plain text and in your
+shell history; for tighter handling point `command` at a small wrapper script that reads them
+from your password manager and then runs `exec bin/mcp-opnsense --read-only`.
+
 ## Terraform provider
 
 ```sh

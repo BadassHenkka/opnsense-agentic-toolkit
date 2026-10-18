@@ -2,7 +2,11 @@ module github.com/smulis/opnsense-agentic-toolkit
 
 go 1.24.7
 
-require github.com/hashicorp/terraform-plugin-framework v1.18.0
+require (
+	github.com/google/jsonschema-go v0.4.2
+	github.com/hashicorp/terraform-plugin-framework v1.18.0
+	github.com/modelcontextprotocol/go-sdk v1.4.0
+)
 
 require (
 	github.com/fatih/color v1.18.0 // indirect
@@ -19,9 +23,13 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
+	github.com/segmentio/asm v1.1.3 // indirect
+	github.com/segmentio/encoding v0.5.3 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
+	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251202230838-ff82c1b0f217 // indirect

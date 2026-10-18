@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "opnsense": {
+      "command": "/Users/<you>/git/opnsense-agentic-toolkit/bin/mcp-opnsense",
+      "args": ["--read-only"],
+      "env": {
+        "OPNSENSE_URL": "https://opnsense.lan",
+        "OPNSENSE_API_KEY": "<key>",
+        "OPNSENSE_API_SECRET": "<secret>",
+        "OPNSENSE_CA_FILE": "/Users/<you>/.config/opnsense/ca.pem"
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ tidy:
 	go mod tidy
 
 build:
+	go build -ldflags "$(LDFLAGS)" -o bin/mcp-opnsense ./cmd/mcp-opnsense
 	go build -ldflags "$(LDFLAGS)" -o bin/terraform-provider-opnsense ./cmd/terraform-provider-opnsense
 
 test:
