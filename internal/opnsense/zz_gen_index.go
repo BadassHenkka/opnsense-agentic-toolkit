@@ -8,6 +8,8 @@ type generatedServices struct {
 	Acme *AcmeService
 	// Caddy manages Services → Caddy Web Server (plugin os-caddy).
 	Caddy *CaddyService
+	// DynDNS manages Services → Dynamic DNS (plugin os-ddclient).
+	DynDNS *DynDNSService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
 	// NodeExporter manages Services → Prometheus Exporter (plugin os-node_exporter).
@@ -27,6 +29,7 @@ type generatedServices struct {
 func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
 	c.Caddy = newCaddyService(c)
+	c.DynDNS = newDynDNSService(c)
 	c.Firewall = newFirewallService(c)
 	c.NodeExporter = newNodeExporterService(c)
 	c.Routing = newRoutingService(c)

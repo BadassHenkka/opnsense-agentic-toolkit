@@ -33,6 +33,7 @@ Supported so far:
 | System → Firmware (plugins, updates) | `opnsense_plugin` | `firmware` |
 | Services → Prometheus Exporter (plugin os-node_exporter) | `opnsense_node_exporter_settings` | `nodeexporter` (read-only) |
 | Services → Wake on LAN (plugin os-wol) | `opnsense_wol_host`, action `opnsense_wol_wake` | `wol` |
+| Services → Dynamic DNS (plugin os-ddclient) | `opnsense_dyndns_settings`, `opnsense_dyndns_account` | `dyndns` (read-only) |
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
 | System → Cron, Logging, Tunables | `opnsense_cron_job`, `opnsense_syslog_destination`, `opnsense_syslog_settings`, `opnsense_tunable` | `system` (read-only) |
 | Services → Caddy Web Server (plugin os-caddy) | `opnsense_caddy_settings`, `opnsense_caddy_domain`, `opnsense_caddy_subdomain`, `opnsense_caddy_handler`, `opnsense_caddy_access_list`, `opnsense_caddy_basic_auth`, `opnsense_caddy_header`, `opnsense_caddy_layer4_route` | `caddy` |

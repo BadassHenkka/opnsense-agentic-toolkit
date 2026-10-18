@@ -1,0 +1,127 @@
+{
+  "area": "dyndns",
+  "title": "Services \u2192 Dynamic DNS (plugin os-ddclient)",
+  "service": "DynDNS",
+  "items": [
+    {
+      "resource": "dyndns_account",
+      "go_name": "DynDNSAccount",
+      "plural": "Accounts",
+      "description": "A dynamic DNS account: keeps the listed host names pointed at the firewall's current address (Services \u2192 Dynamic DNS \u2192 Accounts).",
+      "model": "plugins/dns/ddclient/DynDNS/DynDNS.xml",
+      "node": "accounts.account",
+      "base": "dyndns/accounts",
+      "key": "account",
+      "suffix": "Item",
+      "actions": {
+        "search": "searchItem"
+      },
+      "reconfigure": "dyndns/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "service": {
+          "type": "string",
+          "description": "Provider, e.g. `cloudflare`, `duckdns`, `namecheap`, `custom` (see the list in the web UI)."
+        },
+        "protocol": {
+          "description": "Only for `custom`: `dyndns2`, `get`, `post` or `put`."
+        },
+        "server": {
+          "description": "Update server for custom providers."
+        },
+        "username": {
+          "description": "Account user name, or the zone/API user for some providers."
+        },
+        "password": {
+          "sensitive": true,
+          "write_only": true,
+          "description": "Password or API token; never returned by OPNsense."
+        },
+        "resourceId": {
+          "attr": "resource_id",
+          "go_name": "ResourceID",
+          "description": "Provider specific resource/zone id."
+        },
+        "hostnames": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Host names to update, e.g. `home.example.com`."
+        },
+        "checkip": {
+          "type": "string",
+          "description": "How the current address is found: `web_dyndns`, `web_cloudflare`, `web_ipify-ipv4`, ..., or `if` to read an interface."
+        },
+        "dynipv6host": {
+          "attr": "dynipv6_host",
+          "go_name": "DynIPv6Host",
+          "description": "IPv6 host part (`::1234`) to combine with the interface prefix."
+        },
+        "checkip_timeout": {
+          "type": "int",
+          "description": "Seconds to wait for the address lookup, 10-60."
+        },
+        "force_ssl": {
+          "description": "Use HTTPS to the update server."
+        },
+        "ttl": {
+          "type": "int",
+          "description": "TTL in seconds, where the provider supports it."
+        },
+        "interface": {
+          "type": "ref",
+          "description": "Interface to read the address from when `checkip` is `if`."
+        }
+      },
+      "example": {
+        "service": "cloudflare",
+        "username": "me@example.com",
+        "password": "token",
+        "hostnames": "home.example.com",
+        "description": "home",
+        "checkip": "web_cloudflare"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "dyndns_settings",
+      "go_name": "DynDNS",
+      "plural": "Settings",
+      "description": "Dynamic DNS general settings (Services \u2192 Dynamic DNS \u2192 Settings).",
+      "model": "plugins/dns/ddclient/DynDNS/DynDNS.xml",
+      "node": "general",
+      "get": "dyndns/settings/get",
+      "set": "dyndns/settings/set",
+      "path": [
+        "ddclient",
+        "general"
+      ],
+      "reconfigure": "dyndns/service/reconfigure",
+      "fields": {
+        "enabled": {
+          "description": "Run the updater."
+        },
+        "verbose": {
+          "description": "Log more detail."
+        },
+        "allowipv6": {
+          "attr": "allow_ipv6",
+          "go_name": "AllowIPv6",
+          "description": "Allow IPv6 updates."
+        },
+        "daemon_delay": {
+          "type": "int",
+          "description": "Seconds between address checks."
+        },
+        "backend": {
+          "description": "`opnsense` (native) or `ddclient`."
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "backend": "opnsense"
+      }
+    }
+  ]
+}
