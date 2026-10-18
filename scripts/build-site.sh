@@ -5,6 +5,7 @@ out=${1:-_site}
 rm -rf "$out"
 mkdir -p "$out"
 cp site/* "$out"/
+go run ./cmd/opnsense-docs -out "$out/docs"
 {
   echo "# opnsense-agentic-toolkit: full documentation"
   echo
@@ -13,4 +14,6 @@ cp site/* "$out"/
     printf '\n\n---\n\n<!-- %s -->\n\n' "$f"
     cat "$f"
   done
+  printf '\n\n---\n\n'
+  cat "$out/docs/reference.md"
 } > "$out/llms-full.txt"

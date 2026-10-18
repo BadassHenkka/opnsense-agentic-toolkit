@@ -23,6 +23,11 @@ Notes for agents using this project:
 - [Terraform example](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/examples/terraform/main.tf): a configuration using the resources
 - [MCP client config example](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/examples/mcp/claude_desktop_config.json)
 
+## Terraform provider reference
+
+- [Resource and action index](https://smulis.github.io/opnsense-agentic-toolkit/docs/llms-index.md): one Markdown page per resource, with example, arguments, constraints and import
+- [Human index](https://smulis.github.io/opnsense-agentic-toolkit/docs/index.html)
+
 ## Install and run
 
 - Build: `task build` produces `bin/mcp-opnsense` and `bin/terraform-provider-opnsense` (Go required).
