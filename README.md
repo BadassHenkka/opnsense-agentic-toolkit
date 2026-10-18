@@ -132,3 +132,24 @@ name or UUID:
 
 ```sh
 ```
+
+## Adding a resource
+
+Most areas are **generated**. `cmd/opnsense-gen` reads a spec in `gen/specs/<area>.json` and
+the pinned OPNsense model XML in `gen/models`, and writes `zz_gen_*.go` files: client types and
+service, fake collections, Terraform resources with tests, and read-only MCP tools. Field types,
+defaults, option lists, ranges, masks and uniqueness come from the XML.
+
+1. Find the model and controller: `src/opnsense/mvc/app/models/OPNsense/<Module>/<File>.xml` and
+   `controllers/OPNsense/<Module>/Api/*Controller.php` in opnsense/core (or the plugin).
+   The controller gives `base`, `key`, `suffix` and any odd action names
+   (`searchJobs` instead of `searchJob`).
+2. Add it to a spec (see [gen/README.md](gen/README.md)), then `make fetch-models gen test`
+   and `make verify-upstream` (checks actions and keys against the upstream controllers).
+3. The generator stops on what it cannot know (custom field types, reserved names) and says
+   which `fields.<name>` override to add.
+
+Hand-write an area only when the API needs behaviour a spec cannot describe (secrets that are
+generated locally, multi-step jobs, safety checks such as the firewall rule reachability test).
+Then follow an existing area: client file, collection in `opnsensetest`, `*_tools.go`, and a
+resource built on `itemCRUD` or `settingsCRUD`.

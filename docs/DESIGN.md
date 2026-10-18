@@ -62,3 +62,31 @@ can use `mcp.NewInMemoryTransports()` and a real `mcp.Client`.
 | MCP surface | Narrow tools per resource; toolsets; `--read-only` | Copied from github-mcp-server |
 | Apply model | TF: apply after every write. MCP: writes are staged, `*_apply` tool activates | TF must converge per resource; an agent should get a review step |
 | Auth | API key/secret via env (`OPNSENSE_URL`, `OPNSENSE_API_KEY`, `OPNSENSE_API_SECRET`), CA file for self-signed certs | No secrets in config files; TLS verification stays on |
+
+## The generator
+
+Every area needs the same four artefacts (client struct, fake
+collection, Terraform resource, MCP tools) and the same mistakes to avoid. OPNsense's model XML
+already holds the facts: field types, defaults, option values, ranges, masks, uniqueness. So
+`cmd/opnsense-gen` generates them from the XML plus a small JSON spec
+([gen/README.md](../gen/README.md)).
+
+- **Pinned input.** `gen/models` holds copies of the XML at the commits in `gen/models/REFS`.
+  Upstream changes arrive as a reviewable diff of generated code, never silently.
+- **No new runtime machinery.** Generated code instantiates the same `ItemController` and
+  `itemCRUD` as hand-written areas, plus their settings counterparts (`SettingsController`,
+  `settingsCRUD`, `Server.addSettings`), which are new and also usable by hand-written code.
+- **Generated tests.** Each resource gets a create/update/read/import/delete test against the
+  fake with example values; the fake enforces the XML's rules (required, options, ranges,
+  masks, uniqueness) through `checkFields` and `checkUnique`, so a wrong default or mapping
+  fails a test instead of a real apply.
+- **Strict by default.** Unknown or custom field types, reserved Terraform names, duplicate
+  attributes and spec typos stop generation with the fix to apply.
+- **Read-only MCP.** Generated areas expose `_list`/`_get` only. Writes go through Terraform,
+  as the `opnsense-iac` skill describes.
+- Surprises the generator surfaced at once: the Syslog transport default (`udp`) is not one of
+  its options; the cron masks exceed RE2's repeat limit (so `parameters` is only checked by
+  OPNsense); VLAN device names are assigned by the server and must never be sent.
+
+Pilot areas: VLANs, virtual IPs, firewall categories, cron jobs, syslog destinations and
+settings, tunables.

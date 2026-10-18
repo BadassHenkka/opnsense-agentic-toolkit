@@ -1,0 +1,4 @@
+# Tags or commits the model XML in this directory was fetched from (go run ./cmd/opnsense-gen -fetch).
+# Pinned to the latest stable release; bump both when upgrading the firewall.
+core 26.7.7
+plugins 26.7.7

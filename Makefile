@@ -1,9 +1,25 @@
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 
-.PHONY: all tidy build test vet lint install-tf clean
+.PHONY: all gen gen-check fetch-models verify-upstream tidy build test vet lint install-tf clean
 
-all: vet test build
+all: gen-check vet test build
+
+# Regenerate zz_gen_*.go from gen/specs and gen/models.
+gen:
+	go run ./cmd/opnsense-gen
+
+# Fail if generated code is out of date.
+gen-check:
+	go run ./cmd/opnsense-gen -check
+
+# Download the model XML the specs use, at the commits in gen/models/REFS.
+fetch-models:
+	go run ./cmd/opnsense-gen -fetch
+
+# Check every spec against the PHP API controllers at the pinned refs (needs network).
+verify-upstream:
+	go run ./cmd/opnsense-gen -verify
 
 tidy:
 	go mod tidy
