@@ -17,6 +17,7 @@ func registerAll(s *Server) {
 	registerAssignments(s)
 	registerAuth(s)
 	registerDnsmasq(s)
+	registerTrust(s)
 	registerBackup(s)
 	registerKea(s)
 	registerFirmware(s)

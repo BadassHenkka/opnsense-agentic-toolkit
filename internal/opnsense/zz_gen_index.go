@@ -28,6 +28,8 @@ type generatedServices struct {
 	Routing *RoutingService
 	// System manages System → Settings: cron, logging and tunables.
 	System *SystemService
+	// Trust manages System → Trust: authorities, certificates and settings.
+	Trust *TrustService
 	// Unbound manages Services → Unbound DNS.
 	Unbound *UnboundService
 	// Wireguard manages VPN → WireGuard.
@@ -49,6 +51,7 @@ func (c *Client) initGenerated() {
 	c.NodeExporter = newNodeExporterService(c)
 	c.Routing = newRoutingService(c)
 	c.System = newSystemService(c)
+	c.Trust = newTrustService(c)
 	c.Unbound = newUnboundService(c)
 	c.Wireguard = newWireguardService(c)
 	c.Wol = newWolService(c)

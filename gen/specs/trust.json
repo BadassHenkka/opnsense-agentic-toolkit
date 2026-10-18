@@ -1,0 +1,538 @@
+{
+  "area": "trust",
+  "title": "System → Trust: authorities, certificates and settings",
+  "items": [
+    {
+      "resource": "trust_ca",
+      "go_name": "TrustCA",
+      "plural": "CAs",
+      "description": "A certificate authority (System → Trust → Authorities). Changing anything but `description` creates a new CA; OPNsense refuses to delete one that is in use.",
+      "model": "core/Trust/Ca.xml",
+      "node": "ca",
+      "base": "trust/ca",
+      "key": "ca",
+      "suffix": "",
+      "actions": {
+        "add": "add",
+        "get": "get",
+        "set": "set",
+        "del": "del",
+        "search": "search"
+      },
+      "name_field": "descr",
+      "zero_field": "refid",
+      "hooks": [
+        "to_api"
+      ],
+      "fields": {
+        "descr": {
+          "attr": "description",
+          "go_name": "Description",
+          "description": "Name shown in OPNsense; the only attribute that can change in place."
+        },
+        "refid": {
+          "computed": true,
+          "fake_value": "%d00000000000a",
+          "description": "Reference id other OPNsense settings use for this item (e.g. `ssl-certref`)."
+        },
+        "crt": {
+          "skip": true
+        },
+        "prv": {
+          "skip": true
+        },
+        "crt_payload": {
+          "attr": "certificate",
+          "go_name": "Certificate",
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "stringplanmodifier.UseStateForUnknown()",
+            "replaceOnChangeString()"
+          ],
+          "description": "Certificate (PEM). Set it when importing; generated otherwise.",
+          "no_default": true
+        },
+        "prv_payload": {
+          "attr": "private_key",
+          "go_name": "PrivateKey",
+          "write_only": true,
+          "include": true,
+          "sensitive": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Private key (PEM) to import. A key OPNsense generates is never stored in Terraform state.",
+          "no_default": true
+        },
+        "valid_from": {
+          "include": true,
+          "computed": true,
+          "description": "Start of validity (unix time)."
+        },
+        "valid_to": {
+          "include": true,
+          "computed": true,
+          "description": "End of validity (unix time)."
+        },
+        "name": {
+          "skip": true
+        },
+        "commonname": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Common name (CN).",
+          "attr": "common_name",
+          "go_name": "CommonName"
+        },
+        "country": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Country code, e.g. `FI`."
+        },
+        "state": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "State or province."
+        },
+        "city": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "City."
+        },
+        "organization": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Organization (O)."
+        },
+        "organizationalunit": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Organizational unit (OU).",
+          "attr": "organizational_unit",
+          "go_name": "OrganizationalUnit"
+        },
+        "email": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "E-mail address in the subject."
+        },
+        "key_type": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Key type: RSA bits (`2048`, `4096`, ...) or an EC curve (`prime256v1`, `secp384r1`, ...)."
+        },
+        "digest": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Digest algorithm."
+        },
+        "lifetime": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeInt64()"
+          ],
+          "description": "Lifetime in days."
+        },
+        "ocsp_uri": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "OCSP URI added to the authorityInfoAccess extension.",
+          "type": "string"
+        },
+        "serial": {
+          "skip": true
+        },
+        "refcount": {
+          "skip": true
+        },
+        "caref": {
+          "write_only": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "refid of the CA that signs this one (an intermediate); empty for a self-signed root.",
+          "attr": "issuer_refid",
+          "go_name": "IssuerRef",
+          "type": "ref"
+        },
+        "action": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "`internal` creates a CA, `existing` imports `certificate` (and `private_key`), `ocsp` creates an OCSP signing certificate.",
+          "attr": "method",
+          "go_name": "Action"
+        }
+      },
+      "example": {
+        "descr": "Home CA",
+        "commonname": "Home CA",
+        "country": "FI"
+      },
+      "update": {
+        "descr": "Home root CA"
+      },
+      "no_test": true
+    },
+    {
+      "resource": "trust_cert",
+      "go_name": "TrustCert",
+      "plural": "Certs",
+      "description": "A certificate (System → Trust → Certificates). Changing anything but `description` creates a new certificate; OPNsense refuses to delete one that is in use.",
+      "model": "core/Trust/Cert.xml",
+      "node": "cert",
+      "base": "trust/cert",
+      "key": "cert",
+      "suffix": "",
+      "actions": {
+        "add": "add",
+        "get": "get",
+        "set": "set",
+        "del": "del",
+        "search": "search"
+      },
+      "name_field": "descr",
+      "zero_field": "refid",
+      "hooks": [
+        "to_api"
+      ],
+      "fields": {
+        "descr": {
+          "attr": "description",
+          "go_name": "Description",
+          "description": "Name shown in OPNsense; the only attribute that can change in place."
+        },
+        "refid": {
+          "computed": true,
+          "fake_value": "%d00000000000a",
+          "description": "Reference id other OPNsense settings use for this item (e.g. `ssl-certref`)."
+        },
+        "crt": {
+          "skip": true
+        },
+        "prv": {
+          "skip": true
+        },
+        "crt_payload": {
+          "attr": "certificate",
+          "go_name": "Certificate",
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "stringplanmodifier.UseStateForUnknown()",
+            "replaceOnChangeString()"
+          ],
+          "description": "Certificate (PEM). Set it when importing; generated otherwise.",
+          "no_default": true
+        },
+        "prv_payload": {
+          "attr": "private_key",
+          "go_name": "PrivateKey",
+          "write_only": true,
+          "include": true,
+          "sensitive": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Private key (PEM) to import. A key OPNsense generates is never stored in Terraform state.",
+          "no_default": true
+        },
+        "valid_from": {
+          "include": true,
+          "computed": true,
+          "description": "Start of validity (unix time)."
+        },
+        "valid_to": {
+          "include": true,
+          "computed": true,
+          "description": "End of validity (unix time)."
+        },
+        "name": {
+          "skip": true
+        },
+        "commonname": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Common name (CN).",
+          "attr": "common_name",
+          "go_name": "CommonName"
+        },
+        "country": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Country code, e.g. `FI`."
+        },
+        "state": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "State or province."
+        },
+        "city": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "City."
+        },
+        "organization": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Organization (O)."
+        },
+        "organizationalunit": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Organizational unit (OU).",
+          "attr": "organizational_unit",
+          "go_name": "OrganizationalUnit"
+        },
+        "email": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "E-mail address in the subject."
+        },
+        "key_type": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Key type: RSA bits (`2048`, `4096`, ...) or an EC curve (`prime256v1`, `secp384r1`, ...)."
+        },
+        "digest": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "Digest algorithm."
+        },
+        "lifetime": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeInt64()"
+          ],
+          "description": "Lifetime in days."
+        },
+        "ocsp_uri": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "OCSP URI added to the authorityInfoAccess extension.",
+          "type": "string"
+        },
+        "caref": {
+          "write_only": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "refid of the signing CA (`opnsense_trust_ca.x.refid`).",
+          "attr": "issuer_refid",
+          "go_name": "IssuerRef",
+          "type": "ref"
+        },
+        "action": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "`internal` creates and signs a certificate, `external` creates a CSR (see `csr`), `import` imports `certificate` (and `private_key`), `sign_csr` signs the CSR in `csr`.",
+          "attr": "method",
+          "go_name": "Action"
+        },
+        "csr": {
+          "skip": true
+        },
+        "csr_payload": {
+          "attr": "csr",
+          "go_name": "CSR",
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "stringplanmodifier.UseStateForUnknown()",
+            "replaceOnChangeString()"
+          ],
+          "description": "Certificate signing request (PEM): input for `sign_csr`, output of `external`.",
+          "no_default": true
+        },
+        "cert_type": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "`usr_cert` (client), `server_cert`, `combined_server_client` or `v3_ca`."
+        },
+        "private_key_location": {
+          "skip": true
+        },
+        "altnames_dns": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "DNS subject alternative names, one per line.",
+          "attr": "alt_names_dns",
+          "go_name": "AltNamesDNS",
+          "type": "string"
+        },
+        "altnames_ip": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "IP subject alternative names, one per line.",
+          "attr": "alt_names_ip",
+          "go_name": "AltNamesIP",
+          "type": "string"
+        },
+        "altnames_uri": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "URI subject alternative names, one per line.",
+          "attr": "alt_names_uri",
+          "go_name": "AltNamesURI",
+          "type": "string"
+        },
+        "altnames_email": {
+          "write_only": true,
+          "include": true,
+          "plan_modifiers": [
+            "replaceOnChangeString()"
+          ],
+          "description": "E-mail subject alternative names, one per line.",
+          "attr": "alt_names_email",
+          "go_name": "AltNamesEmail",
+          "type": "string"
+        },
+        "rfc3280_purpose": {
+          "skip": true
+        },
+        "in_use": {
+          "skip": true
+        },
+        "is_user": {
+          "skip": true
+        }
+      },
+      "example": {
+        "descr": "nas",
+        "commonname": "nas.home.lan",
+        "cert_type": "server_cert",
+        "altnames_dns": "nas.home.lan"
+      },
+      "update": {
+        "descr": "nas.home.lan"
+      },
+      "no_test": true
+    }
+  ],
+  "settings": [
+    {
+      "resource": "trust_settings",
+      "go_name": "TrustSettings",
+      "plural": "Settings",
+      "description": "Trust settings (System → Trust → Settings): CRL handling and the system-wide OpenSSL policy.",
+      "model": "core/Trust/General.xml",
+      "node": "",
+      "path": [
+        "trust"
+      ],
+      "get": "trust/settings/get",
+      "set": "trust/settings/set",
+      "reconfigure": "trust/settings/reconfigure",
+      "fields": {
+        "CipherString": {
+          "attr": "cipher_string",
+          "go_name": "CipherString",
+          "type": "refs"
+        },
+        "Ciphersuites": {
+          "attr": "ciphersuites",
+          "go_name": "Ciphersuites",
+          "type": "refs"
+        },
+        "groups": {
+          "type": "refs"
+        },
+        "SignatureAlgorithms": {
+          "attr": "signature_algorithms",
+          "go_name": "SignatureAlgorithms"
+        },
+        "MinProtocol": {
+          "attr": "min_protocol",
+          "go_name": "MinProtocol"
+        },
+        "MinProtocol_DTLS": {
+          "attr": "min_protocol_dtls",
+          "go_name": "MinProtocolDTLS"
+        }
+      },
+      "update": {
+        "fetch_crls": "1"
+      }
+    }
+  ]
+}
