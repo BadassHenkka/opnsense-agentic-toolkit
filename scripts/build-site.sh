@@ -16,4 +16,6 @@ go run ./cmd/opnsense-docs -out "$out/docs"
   done
   printf '\n\n---\n\n'
   cat "$out/docs/reference.md"
+  printf '\n\n---\n\n'
+  cat "$out/docs/mcp/reference.md"
 } > "$out/llms-full.txt"

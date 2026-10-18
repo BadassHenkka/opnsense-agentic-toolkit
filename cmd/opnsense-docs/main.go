@@ -94,7 +94,11 @@ func main() {
 	if err := write(*out, pages); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("wrote %d pages to %s\n", len(pages), *out)
+	n, err := writeMCP(filepath.Join(*out, "mcp"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("wrote %d Terraform pages and %d MCP tool pages to %s\n", len(pages), n, *out)
 }
 
 func loadAreas(dir string) (map[string]areaInfo, error) {
@@ -448,7 +452,9 @@ func htmlText(s string) string {
 	return inlineCode.ReplaceAllString(html.EscapeString(s), "<code>$1</code>")
 }
 
-func htmlPage(title, body string, depth string) string {
+// htmlPage wraps body in the site chrome. depth is the path back to the site root; section
+// names the reference the page belongs to and sectionHref is its index, relative to the root.
+func htmlPage(title, body, depth, section, sectionHref string) string {
 	return `<!doctype html>
 <html lang="en">
 <head>
@@ -460,7 +466,7 @@ func htmlPage(title, body string, depth string) string {
 </head>
 <body>
 <main>
-<nav class="crumbs"><a href="` + depth + `index.html">OPNsense Agentic Toolkit</a> / <a href="` + depth + `docs/index.html">Terraform provider</a></nav>
+<nav class="crumbs"><a href="` + depth + `index.html">OPNsense Agentic Toolkit</a> / <a href="` + depth + sectionHref + `">` + section + `</a></nav>
 ` + body + `
 <footer><a href="` + repoURL + `">Source on GitHub</a></footer>
 </main>
@@ -527,7 +533,7 @@ func write(out string, pages []page) error {
 			return err
 		}
 		if err := os.WriteFile(filepath.Join(out, dir, p.Short+".html"),
-			[]byte(htmlPage(p.Name, htmlResource(p), "../../")), 0o644); err != nil {
+			[]byte(htmlPage(p.Name, htmlResource(p), "../../", "Terraform provider", "docs/index.html")), 0o644); err != nil {
 			return err
 		}
 		full.WriteString("\n\n---\n\n" + markdown(p))
@@ -548,7 +554,7 @@ func write(out string, pages []page) error {
 	var idx, llms strings.Builder
 	fmt.Fprintf(&idx, "<h1 style=\"font-family:inherit\">Terraform provider reference</h1>\n"+
 		"<p>%d resources and actions. Each page lists an example, every argument with its type and constraints, and how to import.</p>\n", len(pages))
-	idx.WriteString("<h2>Using the provider</h2>\n<pre><code>terraform {\n  required_providers {\n    opnsense = {\n      source = \"smulis/opnsense\"\n    }\n  }\n}\n\nprovider \"opnsense\" {\n  # url, api_key and api_secret can also come from\n  # OPNSENSE_URL, OPNSENSE_API_KEY and OPNSENSE_API_SECRET.\n}</code></pre>\n")
+	idx.WriteString("<p>Looking for the MCP server? See the <a href=\"mcp/index.html\">MCP tool reference</a>.</p>\n<h2>Using the provider</h2>\n<pre><code>terraform {\n  required_providers {\n    opnsense = {\n      source = \"smulis/opnsense\"\n    }\n  }\n}\n\nprovider \"opnsense\" {\n  # url, api_key and api_secret can also come from\n  # OPNSENSE_URL, OPNSENSE_API_KEY and OPNSENSE_API_SECRET.\n}</code></pre>\n")
 	llms.WriteString("# Terraform provider reference\n\n")
 	for _, k := range order {
 		g := groups[k]
@@ -561,7 +567,7 @@ func write(out string, pages []page) error {
 		idx.WriteString("</table></div>\n")
 		llms.WriteString("\n")
 	}
-	if err := os.WriteFile(filepath.Join(out, "index.html"), []byte(htmlPage("Terraform provider reference", idx.String(), "../")), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(out, "index.html"), []byte(htmlPage("Terraform provider reference", idx.String(), "../", "Terraform provider", "docs/index.html")), 0o644); err != nil {
 		return err
 	}
 	if err := os.WriteFile(filepath.Join(out, "llms-index.md"), []byte(llms.String()), 0o644); err != nil {
@@ -571,8 +577,10 @@ func write(out string, pages []page) error {
 }
 
 func firstSentence(s string) string {
-	if i := strings.Index(s, ". "); i >= 0 {
-		return s[:i+1]
+	for i := 0; i+2 < len(s); i++ {
+		if s[i] == '.' && s[i+1] == ' ' && !strings.HasSuffix(s[:i], "e.g") && !strings.HasSuffix(s[:i], "i.e") {
+			return s[:i+1]
+		}
 	}
 	return s
 }

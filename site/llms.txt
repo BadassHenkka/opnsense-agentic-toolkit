@@ -26,6 +26,7 @@ Notes for agents using this project:
 ## Terraform provider reference
 
 - [Resource and action index](https://smulis.github.io/opnsense-agentic-toolkit/docs/llms-index.md): one Markdown page per resource, with example, arguments, constraints and import
+- [MCP tool index](https://smulis.github.io/opnsense-agentic-toolkit/docs/mcp/llms-index.md): one Markdown page per MCP tool, grouped by toolset, with parameters and an example call
 - [Human index](https://smulis.github.io/opnsense-agentic-toolkit/docs/index.html)
 
 ## Install and run
