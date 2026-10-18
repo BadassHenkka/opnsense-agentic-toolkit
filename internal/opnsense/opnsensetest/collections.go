@@ -13,6 +13,7 @@ func registerAll(s *Server) {
 	registerWireguard(s)
 	registerRouting(s)
 	registerFilter(s)
+	registerBackup(s)
 	registerFirmware(s)
 	registerWol(s)
 	registerCaddy(s)

@@ -74,6 +74,8 @@ type Client struct {
 	Filter *FilterService
 	// Firmware manages packages, plugins and firmware updates.
 	Firmware *FirmwareService
+	// Backup reads configuration backups and ZFS snapshots.
+	Backup *BackupService
 }
 
 // NewClient validates cfg and returns a Client.
@@ -109,6 +111,7 @@ func NewClient(cfg Config) (*Client, error) {
 	}
 	c.Filter = newFilterService(c)
 	c.Firmware = newFirmwareService(c)
+	c.Backup = newBackupService(c)
 	c.initGenerated()
 	return c, nil
 }

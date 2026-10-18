@@ -114,6 +114,7 @@ through Terraform. Use `--read-only` when you only want exploration.
 | `routing` | `routing_gateway_{list,get,create,update,delete}`, `routing_gateway_status`; `routing_route_{list,get,create,update,delete}`; `routing_apply` |
 | `firewall_rule` | `firewall_interface_list`; `firewall_rule_{list,get,create,update,delete,move}`; `firewall_rule_apply` (verifies the API is still reachable) |
 | `firmware` | `firmware_status`, `firmware_plugin_list`, `firmware_plugin_{install,remove}`, `firmware_update` (minor updates; never reboots) |
+| `backup` | `backup_list`, `backup_diff_get` (what a change did), `snapshot_list` (ZFS); read-only, no revert/download |
 | `wol` | `wol_host_{list,create,update,delete}`, `wol_wake` (saved host or any MAC), `wol_wake_all` |
 | `caddy` | `caddy_status`, `caddy_settings_update`, `caddy_caddyfile_get`; `caddy_expose` (hostname → LAN service in one call); `caddy_{domain,subdomain,handler,access_list}_{list,delete}`, `caddy_handler_{get,update}`, `caddy_access_list_create`; `caddy_apply` |
 | `acme` | `acme_settings_{get,update}`; `acme_{account,challenge_type,automation,certificate}_{list,get,create,update,delete}`; `acme_challenge_type_fields`, `acme_automation_fields` (discover provider fields); `acme_account_register`; `acme_certificate_{issue,revoke,run_automations}`; `acme_apply` |
