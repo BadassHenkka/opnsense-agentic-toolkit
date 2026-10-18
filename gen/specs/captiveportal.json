@@ -1,0 +1,106 @@
+{
+  "area": "captiveportal",
+  "title": "Services \u2192 Captive Portal",
+  "service": "CaptivePortal",
+  "items": [
+    {
+      "resource": "captive_portal_zone",
+      "go_name": "CaptivePortalZone",
+      "plural": "Zones",
+      "description": "A captive portal zone: the interfaces it guards, how clients authenticate and the session limits (Services \u2192 Captive Portal \u2192 Administration). Templates are uploaded in the web UI; reference one with `template_id`.",
+      "model": "core/CaptivePortal/CaptivePortal.xml",
+      "node": "zones.zone",
+      "base": "captiveportal/settings",
+      "key": "zone",
+      "suffix": "Zone",
+      "actions": {
+        "search": "searchZones"
+      },
+      "reconfigure": "captiveportal/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "zoneid": {
+          "attr": "zone_id",
+          "go_name": "ZoneID",
+          "type": "int",
+          "computed": true,
+          "description": "Zone number chosen by OPNsense."
+        },
+        "interfaces": {
+          "type": "refs",
+          "description": "Interfaces the portal protects, e.g. `lan`."
+        },
+        "disableRules": {
+          "attr": "disable_rules",
+          "description": "Do not create the firewall rules automatically."
+        },
+        "authservers": {
+          "attr": "auth_servers",
+          "type": "refs",
+          "description": "Authentication servers, e.g. `Local Database`."
+        },
+        "roaming": {
+          "description": "Let a client keep its session when its MAC or IP changes."
+        },
+        "alwaysSendAccountingReqs": {
+          "attr": "always_send_accounting",
+          "description": "Send accounting requests even for local authentication."
+        },
+        "authEnforceGroup": {
+          "attr": "enforce_group",
+          "type": "ref",
+          "description": "Only users in this group may log in."
+        },
+        "idletimeout": {
+          "attr": "idle_timeout",
+          "type": "int",
+          "description": "Minutes of inactivity before logout; 0 for never."
+        },
+        "hardtimeout": {
+          "attr": "hard_timeout",
+          "type": "int",
+          "description": "Maximum session minutes; 0 for unlimited."
+        },
+        "concurrentlogins": {
+          "attr": "concurrent_logins",
+          "description": "Allow the same user on several devices."
+        },
+        "certificate": {
+          "type": "ref",
+          "description": "Certificate for HTTPS login (`opnsense_trust_cert` refid)."
+        },
+        "servername": {
+          "description": "Host name the portal answers on."
+        },
+        "allowedAddresses": {
+          "attr": "allowed_addresses",
+          "type": "list",
+          "tf_type": "set",
+          "description": "IPs or networks that bypass the portal."
+        },
+        "allowedMACAddresses": {
+          "attr": "allowed_mac_addresses",
+          "go_name": "AllowedMACAddresses",
+          "type": "list",
+          "tf_type": "set",
+          "description": "MAC addresses that bypass the portal."
+        },
+        "extendedPreAuthData": {
+          "attr": "extended_pre_auth_data",
+          "description": "Pass extra client data to the login page."
+        },
+        "template": {
+          "attr": "template_id",
+          "type": "ref",
+          "description": "Template uuid; empty for the default."
+        }
+      },
+      "example": {
+        "description": "guests",
+        "interfaces": "opt1",
+        "enabled": "1"
+      }
+    }
+  ]
+}

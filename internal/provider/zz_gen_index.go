@@ -20,6 +20,7 @@ func generatedResources() []func() resource.Resource {
 		NewCaddyHeaderResource,
 		NewCaddyLayer4Resource,
 		NewCaddyGeneralResource,
+		NewCaptivePortalZoneResource,
 		NewDynDNSAccountResource,
 		NewDynDNSResource,
 		NewAliasResource,

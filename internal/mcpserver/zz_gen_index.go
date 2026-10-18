@@ -9,6 +9,7 @@ import (
 // generatedTools returns the read-only tools of every generated area.
 func generatedTools(c *opnsense.Client) []tool {
 	var tools []tool
+	tools = append(tools, genCaptivePortalTools(c)...)
 	tools = append(tools, genDynDNSTools(c)...)
 	tools = append(tools, genNodeExporterTools(c)...)
 	tools = append(tools, genSystemTools(c)...)
@@ -32,4 +33,4 @@ func genMapValues(vs []string, m map[string]string) []string {
 }
 
 // generatedToolsets lists the toolsets of generated areas.
-var generatedToolsets = []string{genDynDNSToolset, genNodeExporterToolset, genSystemToolset, genUnboundToolset}
+var generatedToolsets = []string{genCaptivePortalToolset, genDynDNSToolset, genNodeExporterToolset, genSystemToolset, genUnboundToolset}
