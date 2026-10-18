@@ -136,6 +136,8 @@ func TestOptionDecoding(t *testing.T) {
 		Proto   opnsense.CSVList  `json:"proto"`
 		Content opnsense.LineList `json:"content"`
 		Empty   opnsense.CSVList  `json:"empty"`
+		Blank   opnsense.CSVList  `json:"blank"`
+		Indexed opnsense.Option   `json:"indexed"`
 		On      opnsense.Bool     `json:"on"`
 	}
 	data := `{
@@ -143,17 +145,20 @@ func TestOptionDecoding(t *testing.T) {
 		"proto": {"IPv4": {"value": "IPv4", "selected": "1"}, "IPv6": {"value": "IPv6", "selected": 1}},
 		"content": "a\nb\n",
 		"empty": [],
+		"blank": {"": {"value": "", "selected": 1}},
+		"indexed": [{"value": "https://", "selected": 0}, {"value": "http://", "selected": 1}],
 		"on": "1"
 	}`
 	if err := json.Unmarshal([]byte(data), &v); err != nil {
 		t.Fatal(err)
 	}
 	if v.Type != "network" || !slices.Equal(v.Proto, []string{"IPv4", "IPv6"}) ||
-		!slices.Equal(v.Content, []string{"a", "b"}) || v.Empty != nil || !bool(v.On) {
+		!slices.Equal(v.Content, []string{"a", "b"}) || v.Empty != nil || v.Blank != nil ||
+		v.Indexed != "1" || !bool(v.On) {
 		t.Fatalf("decoded %+v", v)
 	}
 	out, _ := json.Marshal(v)
-	want := `{"type":"network","proto":"IPv4,IPv6","content":"a\nb","empty":"","on":"1"}`
+	want := `{"type":"network","proto":"IPv4,IPv6","content":"a\nb","empty":"","blank":"","indexed":"1","on":"1"}`
 	if string(out) != want {
 		t.Fatalf("encoded %s\nwant    %s", out, want)
 	}

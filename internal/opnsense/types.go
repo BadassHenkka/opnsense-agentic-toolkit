@@ -99,15 +99,21 @@ func decodeSelection(data []byte, sep string) ([]string, error) {
 			return nil, err
 		}
 		return splitNonEmpty(s, sep), nil
-	case '[': // OPNsense encodes an empty option map as []
-		var arr []json.RawMessage
+	case '[':
+		// PHP's json_encode turns an array keyed 0..n-1 into a list, so an empty option map
+		// arrives as [] and one keyed "0", "1", … (e.g. Caddy's DisableTls) as a list whose
+		// index is the key.
+		var arr []optionEntry
 		if err := json.Unmarshal(data, &arr); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("opnsense: unexpected list value %s", truncate(string(data), 80))
 		}
-		if len(arr) == 0 {
-			return nil, nil
+		var out []string
+		for i, e := range arr {
+			if e.isSelected() {
+				out = append(out, strconv.Itoa(i))
+			}
 		}
-		return nil, fmt.Errorf("opnsense: unexpected list value %s", truncate(string(data), 80))
+		return out, nil
 	case '{':
 		var m map[string]optionEntry
 		if err := json.Unmarshal(data, &m); err != nil {
@@ -115,7 +121,8 @@ func decodeSelection(data []byte, sep string) ([]string, error) {
 		}
 		var out []string
 		for k, e := range m {
-			if e.isSelected() {
+			// A blank list field comes back as {"": {"selected": 1}}; that is no selection.
+			if e.isSelected() && k != "" {
 				out = append(out, k)
 			}
 		}
