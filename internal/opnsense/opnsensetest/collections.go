@@ -12,6 +12,7 @@ func registerAll(s *Server) {
 	registerAcme(s)
 	registerWireguard(s)
 	registerRouting(s)
+	registerFilter(s)
 	registerFirmware(s)
 }
 

@@ -70,6 +70,8 @@ type Client struct {
 	// and Terraform runs resources in parallel.
 	applyMu sync.Mutex
 
+	// Filter manages firewall filter rules.
+	Filter *FilterService
 	// Firmware manages packages, plugins and firmware updates.
 	Firmware *FirmwareService
 }
@@ -105,6 +107,7 @@ func NewClient(cfg Config) (*Client, error) {
 		http:      hc,
 		userAgent: "opnsense-agentic-toolkit",
 	}
+	c.Filter = newFilterService(c)
 	c.Firmware = newFirmwareService(c)
 	c.initGenerated()
 	return c, nil

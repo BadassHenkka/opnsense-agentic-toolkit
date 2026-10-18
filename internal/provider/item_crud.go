@@ -17,6 +17,7 @@ import (
 var (
 	_ itemModel[opnsense.AcmeAutomation]             = (*acmeAutomationModel)(nil)
 	_ itemModel[opnsense.AcmeChallengeType]          = (*acmeChallengeTypeModel)(nil)
+	_ itemModel[opnsense.FilterRule]                 = (*firewallRuleModel)(nil)
 	_ interface{ setPrior(*acmeAutomationModel) }    = (*acmeAutomationModel)(nil)
 	_ interface{ setPrior(*acmeChallengeTypeModel) } = (*acmeChallengeTypeModel)(nil)
 )

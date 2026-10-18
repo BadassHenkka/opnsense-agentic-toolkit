@@ -38,13 +38,14 @@ func allTools(c *opnsense.Client) []tool {
 	tools = append(tools, acmeTools(c)...)
 	tools = append(tools, wireguardTools(c)...)
 	tools = append(tools, routingTools(c)...)
+	tools = append(tools, firewallRuleTools(c)...)
 	tools = append(tools, firmwareTools(c)...)
 	tools = append(tools, generatedTools(c)...) // zz_gen_*.go, read-only
 	return tools
 }
 
 // toolsetNames lists every toolset. TestToolsetNames checks it matches the tools.
-var toolsetNames = append([]string{aliasToolset, unboundToolset, acmeToolset, wireguardToolset, routingToolset, firmwareToolset}, generatedToolsets...)
+var toolsetNames = append([]string{aliasToolset, unboundToolset, acmeToolset, wireguardToolset, routingToolset, firewallRuleToolset, firmwareToolset}, generatedToolsets...)
 
 // Toolsets lists the toolset names, for --help output.
 func Toolsets() []string {

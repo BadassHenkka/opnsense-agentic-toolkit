@@ -243,6 +243,31 @@ Not covered yet: interface assignment. opnsense/core master has `Interfaces/Api/
 with a brand-new `NetworkInterface` model (0.0.1). It is the next step for a fully codified
 site-to-site, once it ships in a release.
 
+## Sixth area: firewall filter rules
+
+Source: opnsense/core `models/OPNsense/Firewall/Filter.xml` (1.0.9), `Filter.php` (validation),
+`FieldTypes/FilterSequenceField.php`, `Api/FilterController.php`, `Api/FilterBaseController.php`.
+
+- `firewall/filter/{add,get,set,del,search}Rule`, key `rule`; `apply` answers
+  `{"status":"OK\n"}` (configd output, trimmed by `Client.Reconfigure`).
+- **No savepoint/rollback any more.** The plan at the start of the project was to use
+  `savepoint`/`revert`/`cancelRollback`, but they are gone from the filter controller and from
+  the API docs. Replacement safety: `FilterService.ApplyAndVerify` reloads, then calls
+  `http.Client.CloseIdleConnections` and probes the API until it answers or a deadline passes.
+  The fresh connection is the point: established connections stay in pf's state table after a
+  reload and would still work even when new ones are blocked. MCP-created rules default to
+  disabled. The anti-lockout rule remains the real protection.
+- `sequence` is an AutoNumber that appends at max+100. `Int` with `omitzero` leaves it out of
+  an add when unset; Terraform has it Optional+Computed with `UseStateForUnknown`.
+- `searchRule` merges MVC rules with automatic and legacy rules (`legacy` set, no usable
+  uuid). `FilterRuleRow.RowRef` returns no uuid for those, so name look-ups and imports only
+  ever hit API-managed rules. Search accepts an `interface` filter that also expands groups.
+- `getInterfaceList` maps interface keys (`opt3`) to UI descriptions (`WG_SITE2`). MCP accepts
+  either; Terraform takes keys, so state matches what the API returns.
+- Plan-time checks mirror `Filter.php`: ports only with TCP/UDP, `any` not combined with other
+  entries, inversion only for a single entry.
+- `gateway` on a rule is policy routing, by gateway name, which links to `opnsense_gateway`.
+
 ## Seventh area: firmware and plugins
 
 Source: opnsense/core `controllers/OPNsense/Core/Api/FirmwareController.php` and

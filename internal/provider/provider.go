@@ -131,6 +131,7 @@ func (p *opnsenseProvider) Resources(context.Context) []func() resource.Resource
 	return append([]func() resource.Resource{
 		NewAcmeChallengeTypeResource,
 		NewAcmeAutomationResource,
+		NewFirewallRuleResource,
 		NewPluginResource,
 	}, generatedResources()...) // zz_gen_*.go
 }
