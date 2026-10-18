@@ -6,8 +6,11 @@ package opnsense
 type generatedServices struct {
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
+	// Unbound manages Services → Unbound DNS.
+	Unbound *UnboundService
 }
 
 func (c *Client) initGenerated() {
 	c.Firewall = newFirewallService(c)
+	c.Unbound = newUnboundService(c)
 }

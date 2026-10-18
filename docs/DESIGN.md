@@ -107,3 +107,33 @@ OPNsense quirks the client absorbs:
 - Validation failures come back as HTTP 200 with `{"result":"failed","validations":{...}}`;
   the client turns that into a `*ValidationError`.
 - `delItem` fails while the alias is referenced by a rule.
+
+## Second area: Unbound DNS overrides
+
+The Overrides page is two models in `/api/unbound/settings`, both applied with
+`/api/unbound/service/reconfigure` (source: `Unbound.xml` and `Api/SettingsController.php`):
+
+- `hosts.host` via `{add,get,set,del,search}HostOverride`, key `host`. `rr` is A/AAAA/MX/TXT and
+  each needs different fields (`server`; `mx`+`mxprio`; `txtdata`). `hostname` may be empty
+  or `*`; `domain` is required. `ttl` and `mxprio` are optional integers sent as strings.
+- `aliases.alias` via `…HostAlias`, key `alias`. `host` is a ModelRelationField (the host
+  override UUID, read back as an option map). `delHostOverride` also deletes the aliases.
+  `searchHostAlias` accepts a `host` filter.
+
+What this changed in the shared code:
+
+- `ItemController.Suffix` handles the non-`Item` action names; `SearchWith` passes filters.
+- Reconfigure moved to `Client.Reconfigure`, with one lock per client, because two
+  controllers now share one apply endpoint and Terraform runs resources in parallel.
+- New field types: `Int` (optional integer, `""` when unset) and `Text` (lenient search rows).
+- The fake became data-driven (`opnsensetest/collections.go`): each area is a declaration of
+  fields, validation and hooks such as the delete cascade.
+- The provider got `itemCRUD`, a generic Create/Read/Update/Delete, so a resource is now its
+  schema plus `toAPI`/`fromAPI`. The alias resource was moved onto it.
+
+Terraform choices: `host_override_id` on the alias `RequiresReplace`, because replacing the host
+override has already deleted the alias server-side. Delete treats "not found" as success
+for the same reason. `ValidateConfig` checks the per-type fields at plan time.
+
+Version note: `ttl`, `txtdata` and `addptr` exist only in recent OPNsense releases. On older
+ones OPNsense ignores them, and `add_ptr` will show a permanent diff.

@@ -9,8 +9,13 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{}})
-	for _, name := range []string{} {
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"unbound"}})
+	for _, name := range []string{
+		"unbound_acl_list",
+		"unbound_forward_list",
+		"unbound_dot_list",
+		"unbound_blocklist_list",
+	} {
 		if out, ok := call(t, cs, name, map[string]any{}); !ok {
 			t.Errorf("%s: %v", name, out)
 		}

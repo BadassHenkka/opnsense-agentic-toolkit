@@ -24,6 +24,7 @@ Supported so far:
 | OPNsense page | Terraform resources | MCP toolset |
 |---|---|---|
 | Firewall → Aliases | `opnsense_firewall_alias` | `firewall_alias` |
+| Services → Unbound DNS → Overrides | `opnsense_unbound_host_override`, `opnsense_unbound_host_alias` | `unbound` |
 
 ## Quick start
 
@@ -101,6 +102,10 @@ through Terraform. Use `--read-only` when you only want exploration.
 | Toolset | Tools |
 |---|---|
 | `firewall_alias` | `firewall_alias_{list,get,create,update,delete}`, `firewall_alias_apply` |
+| `unbound` | `unbound_host_override_{list,get,create,update,delete}`, `unbound_host_alias_{list,get,create,update,delete}`, `unbound_apply` |
+
+Updates are patches: only the fields given change. Host overrides can be addressed by name
+(`nas.home.lan`), plus `type` when a name has several records (e.g. A and AAAA).
 
 Client config examples: [examples/mcp](examples/mcp). Run `./bin/mcp-opnsense --check` first. For Claude Code:
 
@@ -139,6 +144,8 @@ name or UUID:
 
 ```sh
 terraform import opnsense_firewall_alias.servers homelab_servers
+terraform import opnsense_unbound_host_override.nas nas.home.lan/A   # name/TYPE if ambiguous
+terraform import opnsense_unbound_host_alias.truenas truenas.home.lan
 ```
 
 ## Adding a resource

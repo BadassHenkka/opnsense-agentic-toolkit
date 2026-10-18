@@ -1,0 +1,266 @@
+{
+  "area": "unbound",
+  "title": "Services → Unbound DNS",
+  "items": [
+    {
+      "resource": "unbound_host_override",
+      "go_name": "HostOverride",
+      "description": "A host override (Services → Unbound DNS → Overrides): an A, AAAA, MX or TXT record served by Unbound.",
+      "model": "core/Unbound/Unbound.xml",
+      "node": "hosts.host",
+      "base": "unbound/settings",
+      "key": "host",
+      "suffix": "HostOverride",
+      "reconfigure": "unbound/service/reconfigure",
+      "zero_field": "domain",
+      "custom_import": true,
+      "fields": {
+        "hostname": {
+          "description": "Host part, e.g. `nas`. Empty for the domain itself, `*` for a wildcard."
+        },
+        "domain": {
+          "description": "Domain, e.g. `home.lan`."
+        },
+        "rr": {
+          "attr": "type",
+          "go_name": "RR",
+          "description": "Record type."
+        },
+        "server": {
+          "description": "IP address. Required for A and AAAA."
+        },
+        "mx": {
+          "go_name": "MX",
+          "description": "Mail server host name. Required for MX."
+        },
+        "mxprio": {
+          "attr": "mx_priority",
+          "go_name": "MXPrio",
+          "description": "MX priority. Required for MX."
+        },
+        "txtdata": {
+          "attr": "txt_data",
+          "go_name": "TXTData",
+          "description": "Text. Required for TXT."
+        },
+        "ttl": {
+          "go_name": "TTL",
+          "description": "TTL in seconds. Unset uses the Unbound default."
+        },
+        "addptr": {
+          "attr": "add_ptr",
+          "go_name": "AddPTR",
+          "description": "Also create the reverse (PTR) record for A and AAAA."
+        }
+      },
+      "example": {
+        "hostname": "nas",
+        "domain": "home.lan",
+        "server": "192.168.1.10"
+      },
+      "update": {
+        "server": "192.168.1.11"
+      },
+      "mcp": false
+    },
+    {
+      "resource": "unbound_host_alias",
+      "go_name": "HostAlias",
+      "plural": "HostAliases",
+      "description": "An alias of a host override (Services → Unbound DNS → Overrides → Aliases): another name for the same record.",
+      "model": "core/Unbound/Unbound.xml",
+      "node": "aliases.alias",
+      "base": "unbound/settings",
+      "key": "alias",
+      "suffix": "HostAlias",
+      "reconfigure": "unbound/service/reconfigure",
+      "zero_field": "host",
+      "custom_import": true,
+      "no_test": true,
+      "fields": {
+        "host": {
+          "attr": "host_override_id",
+          "go_name": "Host",
+          "description": "ID of the opnsense_unbound_host_override this alias points at. Replacing the override deletes its aliases in OPNsense, so a change recreates the alias.",
+          "validators": [
+            "stringvalidator.RegexMatches(uuidRe, \"must be a host override UUID\")"
+          ],
+          "plan_modifiers": [
+            "stringplanmodifier.RequiresReplace()"
+          ]
+        },
+        "hostname": {
+          "description": "Alias host part. Set hostname, domain or both."
+        },
+        "domain": {
+          "description": "Alias domain. Set hostname, domain or both."
+        }
+      },
+      "example": {
+        "hostname": "files",
+        "domain": "home.lan"
+      },
+      "mcp": false
+    },
+    {
+      "resource": "unbound_acl",
+      "go_name": "UnboundACL",
+      "plural": "ACLs",
+      "description": "An Unbound access list entry (Services → Unbound DNS → Access Lists): which client networks may query.",
+      "node": "acls.acl",
+      "key": "acl",
+      "suffix": "Acl",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "networks": {
+          "tf_type": "set",
+          "description": "Client networks, e.g. `192.168.1.0/24`.",
+          "validators": [
+            "setvalidator.ValueStringsAre(cidr{})"
+          ]
+        }
+      },
+      "example": {
+        "name": "lan",
+        "networks": "192.168.1.0/24"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "base": "unbound/settings",
+      "reconfigure": "unbound/service/reconfigure"
+    },
+    {
+      "resource": "unbound_forward",
+      "go_name": "UnboundForward",
+      "plural": "Forwards",
+      "description": "A query forwarding server (Services → Unbound DNS → Query Forwarding): send queries for a domain (or all, with no domain) to an upstream resolver over plain DNS.",
+      "node": "dots.dot",
+      "key": "dot",
+      "suffix": "Forward",
+      "zero_field": "server",
+      "fields": {
+        "type": {
+          "computed": true,
+          "tf": false,
+          "fake_value": "forward"
+        },
+        "port": {
+          "type": "int",
+          "description": "Upstream port; unset uses 53."
+        },
+        "domain": {
+          "description": "Domain to forward; empty forwards everything."
+        },
+        "verify": {
+          "description": "Not used for plain forwarding."
+        },
+        "forward_tcp_upstream": {
+          "description": "Use TCP towards the upstream."
+        },
+        "forward_first": {
+          "description": "Fall back to recursion if the upstream fails."
+        }
+      },
+      "example": {
+        "server": "192.168.1.53",
+        "domain": "corp.example.com"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "base": "unbound/settings",
+      "reconfigure": "unbound/service/reconfigure"
+    },
+    {
+      "resource": "unbound_dot",
+      "go_name": "UnboundDoT",
+      "plural": "DoTs",
+      "description": "A DNS-over-TLS upstream (Services → Unbound DNS → DNS over TLS).",
+      "node": "dots.dot",
+      "key": "dot",
+      "suffix": "Dot",
+      "zero_field": "server",
+      "fields": {
+        "type": {
+          "computed": true,
+          "tf": false,
+          "fake_value": "dot"
+        },
+        "port": {
+          "type": "int",
+          "description": "Upstream port; unset uses 853."
+        },
+        "domain": {
+          "description": "Domain to forward; empty sends everything over TLS."
+        },
+        "verify": {
+          "description": "Certificate name to verify, e.g. `cloudflare-dns.com`."
+        }
+      },
+      "example": {
+        "server": "1.1.1.1",
+        "verify": "cloudflare-dns.com",
+        "port": "853"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "base": "unbound/settings",
+      "reconfigure": "unbound/service/reconfigure"
+    },
+    {
+      "resource": "unbound_blocklist",
+      "go_name": "UnboundBlocklist",
+      "plural": "Blocklists",
+      "description": "A DNS blocklist policy (Services → Unbound DNS → Blocklist): block domains from predefined or custom lists, optionally only for some client networks. Applying it downloads the lists.",
+      "node": "dnsbl.blocklist",
+      "key": "blocklist",
+      "suffix": "Dnsbl",
+      "name_field": "description",
+      "zero_field": "description",
+      "apply": "ApplyBlocklists",
+      "fields": {
+        "type": {
+          "attr": "providers",
+          "go_name": "Types",
+          "description": "Predefined lists."
+        },
+        "lists": {
+          "tf_type": "set",
+          "description": "URLs of custom blocklists."
+        },
+        "allowlists": {
+          "tf_type": "set",
+          "description": "Domains (or regular expressions) never blocked."
+        },
+        "blocklists": {
+          "tf_type": "set",
+          "description": "Extra domains to block."
+        },
+        "wildcards": {
+          "tf_type": "set",
+          "description": "Domains blocked including all subdomains."
+        },
+        "source_nets": {
+          "tf_type": "set",
+          "description": "Apply only to these client networks; empty for everyone.",
+          "validators": [
+            "setvalidator.ValueStringsAre(cidr{})"
+          ]
+        },
+        "address": {
+          "description": "Answer blocked queries with this address instead of 0.0.0.0."
+        },
+        "nxdomain": {
+          "description": "Answer blocked queries with NXDOMAIN."
+        },
+        "cache_ttl": {
+          "description": "How long downloaded lists are cached, in seconds."
+        }
+      },
+      "example": {
+        "description": "ads",
+        "type": "hgz001"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "base": "unbound/settings",
+      "reconfigure": "unbound/service/reconfigure"
+    }
+  ]
+}

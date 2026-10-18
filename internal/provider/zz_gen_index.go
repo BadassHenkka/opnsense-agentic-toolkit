@@ -10,6 +10,12 @@ import (
 func generatedResources() []func() resource.Resource {
 	return []func() resource.Resource{
 		NewAliasResource,
+		NewHostOverrideResource,
+		NewHostAliasResource,
+		NewUnboundACLResource,
+		NewUnboundForwardResource,
+		NewUnboundDoTResource,
+		NewUnboundBlocklistResource,
 	}
 }
 
