@@ -19,7 +19,7 @@ once:
 - **`mcp-opnsense`**: local MCP server (stdio) for steps 1 and 2.
 - **`terraform-provider-opnsense`**: Terraform provider (Plugin Framework, protocol 6) for step 3.
 
-The [`opnsense-iac` skill](.claude/skills/opnsense-iac/SKILL.md) teaches Claude Code this workflow.
+The [`opnsense-agentic-toolkit` skill](.claude/skills/opnsense-agentic-toolkit/SKILL.md) teaches Claude Code this workflow.
 
 Supported so far:
 
@@ -398,7 +398,7 @@ next `terraform plan`. A simple rule is MCP read-only for anything Terraform man
 
 ## Claude Code skill
 
-`.claude/skills/opnsense-iac/SKILL.md` teaches Claude Code the workflow this project is built for: explore with MCP, try ideas as short-lived MCP changes that are undone again, implement only through Terraform (plan, summary, your yes, apply), then check the result with MCP.
+`.claude/skills/opnsense-agentic-toolkit/SKILL.md` teaches Claude Code the workflow this project is built for: explore with MCP, try ideas as short-lived MCP changes that are undone again, implement only through Terraform (plan, summary, your yes, apply), then check the result with MCP.
 
 ## Adding a resource
 

@@ -1,5 +1,5 @@
 ---
-name: opnsense-iac
+name: opnsense-agentic-toolkit
 description: Change an OPNsense firewall the reviewable way. Explore live state with the MCP server, verify ideas with short-lived trial changes if needed, and implement every lasting change through Terraform (plan, review, apply). Use for any request to add, change or remove OPNsense config (aliases, DNS, WireGuard, routes, firewall rules, ACME, Caddy, plugins, WoL).
 ---
 

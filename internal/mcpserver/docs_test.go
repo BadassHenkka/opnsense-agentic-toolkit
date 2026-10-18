@@ -15,7 +15,7 @@ func TestDocsToolNames(t *testing.T) {
 	cs, _ := connect(t, mcpserver.Options{})
 	tools := toolNames(t, cs)
 	tok := regexp.MustCompile("`([a-z0-9_{},*]+_(?:list|get|status|wake|\\{[a-z,]+\\}|\\*))`")
-	for _, doc := range []string{"../../README.md", "../../.claude/skills/opnsense-iac/SKILL.md"} {
+	for _, doc := range []string{"../../README.md", "../../.claude/skills/opnsense-agentic-toolkit/SKILL.md"} {
 		src, err := os.ReadFile(doc)
 		if err != nil {
 			t.Fatal(err)

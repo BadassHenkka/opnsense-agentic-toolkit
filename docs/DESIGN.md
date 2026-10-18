@@ -83,7 +83,7 @@ already holds the facts: field types, defaults, option values, ranges, masks, un
 - **Strict by default.** Unknown or custom field types, reserved Terraform names, duplicate
   attributes and spec typos stop generation with the fix to apply.
 - **Read-only MCP.** Generated areas expose `_list`/`_get` only. Writes go through Terraform,
-  as the `opnsense-iac` skill describes.
+  as the `opnsense-agentic-toolkit` skill describes.
 - Surprises the generator surfaced at once: the Syslog transport default (`udp`) is not one of
   its options; the cron masks exceed RE2's repeat limit (so `parameters` is only checked by
   OPNsense); VLAN device names are assigned by the server and must never be sent.

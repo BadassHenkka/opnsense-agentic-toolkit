@@ -125,4 +125,4 @@ fake), whole areas a spec cannot describe — firewall rules (ordering, lockout 
 `params`) — and the extensions above. MCP tools of areas that had them before the generator
 (alias, Unbound, ACME, WireGuard, routing, WoL, Caddy) stay hand-written, including their write
 tools; generated areas get read-only tools, and changes go through Terraform (see
-`.claude/skills/opnsense-iac`).
+`.claude/skills/opnsense-agentic-toolkit`).

@@ -76,7 +76,7 @@ func TestDocsResourceNames(t *testing.T) {
 		known[md.TypeName] = true
 	}
 	tok := regexp.MustCompile("`(opnsense_[a-z0-9_{},*]+)`")
-	for _, doc := range []string{"../../README.md", "../../.claude/skills/opnsense-iac/SKILL.md"} {
+	for _, doc := range []string{"../../README.md", "../../.claude/skills/opnsense-agentic-toolkit/SKILL.md"} {
 		src, err := os.ReadFile(doc)
 		if err != nil {
 			t.Fatal(err)

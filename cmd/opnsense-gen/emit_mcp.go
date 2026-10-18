@@ -6,7 +6,7 @@ import (
 )
 
 // MCP: generated areas get read-only tools only. Changes go through Terraform (see the
-// opnsense-iac skill); hand-written areas keep their write tools.
+// opnsense-agentic-toolkit skill); hand-written areas keep their write tools.
 
 func viewType(f *Field) string {
 	switch {
