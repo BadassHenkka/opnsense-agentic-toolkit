@@ -14,7 +14,7 @@
       "suffix": "Host",
       "reconfigure": "dnsmasq/service/reconfigure",
       "name_field": "descr",
-      "zero_field": "descr",
+      "zero_field": "-",
       "fields": {
         "host": {
           "type": "string",
@@ -89,7 +89,7 @@
       "suffix": "Domain",
       "reconfigure": "dnsmasq/service/reconfigure",
       "name_field": "descr",
-      "zero_field": "descr",
+      "zero_field": "domain",
       "fields": {
         "sequence": {
           "type": "int",
@@ -163,7 +163,7 @@
       "suffix": "Range",
       "reconfigure": "dnsmasq/service/reconfigure",
       "name_field": "description",
-      "zero_field": "description",
+      "zero_field": "-",
       "fields": {
         "interface": {
           "type": "ref",
@@ -223,7 +223,7 @@
       "suffix": "Option",
       "reconfigure": "dnsmasq/service/reconfigure",
       "name_field": "description",
-      "zero_field": "description",
+      "zero_field": "-",
       "fields": {
         "option": {
           "type": "string",
@@ -271,7 +271,7 @@
       "suffix": "Boot",
       "reconfigure": "dnsmasq/service/reconfigure",
       "name_field": "description",
-      "zero_field": "description",
+      "zero_field": "-",
       "fields": {
         "interface": {
           "type": "ref"

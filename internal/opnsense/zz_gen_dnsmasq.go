@@ -20,8 +20,6 @@ type DnsmasqHost struct {
 	Aliases     CSVList `json:"aliases"`
 }
 
-func (v *DnsmasqHost) IsZero() bool { return v.Description == "" }
-
 // DnsmasqHostRow is one row of a dnsmasq_host search; values are display text.
 type DnsmasqHostRow struct {
 	UUID        Text `json:"uuid"`
@@ -54,7 +52,7 @@ type DnsmasqDomain struct {
 	Description string `json:"descr"`
 }
 
-func (v *DnsmasqDomain) IsZero() bool { return v.Description == "" }
+func (v *DnsmasqDomain) IsZero() bool { return v.Domain == "" }
 
 // DnsmasqDomainRow is one row of a dnsmasq_domain search; values are display text.
 type DnsmasqDomainRow struct {
@@ -109,8 +107,6 @@ type DnsmasqRange struct {
 	Description      string  `json:"description"`
 }
 
-func (v *DnsmasqRange) IsZero() bool { return v.Description == "" }
-
 // DnsmasqRangeRow is one row of a dnsmasq_range search; values are display text.
 type DnsmasqRangeRow struct {
 	UUID             Text `json:"uuid"`
@@ -150,8 +146,6 @@ type DnsmasqOption struct {
 	Description string  `json:"description"`
 }
 
-func (v *DnsmasqOption) IsZero() bool { return v.Description == "" }
-
 // DnsmasqOptionRow is one row of a dnsmasq_option search; values are display text.
 type DnsmasqOptionRow struct {
 	UUID        Text `json:"uuid"`
@@ -178,8 +172,6 @@ type DnsmasqBoot struct {
 	Address     string  `json:"address"`
 	Description string  `json:"description"`
 }
-
-func (v *DnsmasqBoot) IsZero() bool { return v.Description == "" }
 
 // DnsmasqBootRow is one row of a dnsmasq_boot search; values are display text.
 type DnsmasqBootRow struct {
