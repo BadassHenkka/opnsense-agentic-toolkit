@@ -63,6 +63,79 @@
       "update": {
         "content": "192.168.1.10\n192.168.1.12"
       }
+    },
+    {
+      "resource": "firewall_category",
+      "go_name": "FirewallCategory",
+      "plural": "Categories",
+      "description": "A category that groups firewall rules, NAT rules and aliases. Categories cannot be deleted while in use.",
+      "model": "core/Firewall/Category.xml",
+      "node": "categories.category",
+      "base": "firewall/category",
+      "key": "category",
+      "suffix": "Item",
+      "name_field": "name",
+      "fields": {
+        "auto": {
+          "description": "Created automatically (e.g. by a plugin); removed when unused."
+        },
+        "color": {
+          "description": "Hex colour without #, e.g. `ff8800`."
+        }
+      },
+      "example": {
+        "name": "homelab",
+        "color": "ff8800"
+      },
+      "update": {
+        "color": "0088ff"
+      }
+    },
+    {
+      "resource": "firewall_interface_group",
+      "go_name": "InterfaceGroup",
+      "plural": "InterfaceGroups",
+      "description": "An interface group (Firewall → Groups): a named set of interfaces that rules can use like one interface.",
+      "model": "core/Firewall/Group.xml",
+      "node": "ifgroupentry",
+      "base": "firewall/group",
+      "key": "group",
+      "suffix": "Item",
+      "reconfigure": "firewall/group/reconfigure",
+      "name_field": "ifname",
+      "zero_field": "ifname",
+      "fields": {
+        "ifname": {
+          "attr": "name",
+          "go_name": "Name",
+          "type": "string",
+          "description": "Group name (letters, digits; shown as the interface name in rules)."
+        },
+        "members": {
+          "type": "refs",
+          "description": "Member interfaces, e.g. `[\"lan\", \"opt1\"]`."
+        },
+        "nogroup": {
+          "attr": "no_group",
+          "go_name": "NoGroup",
+          "description": "Do not use the group as a pf interface group (only for the UI)."
+        },
+        "sequence": {
+          "description": "Sort position in the interface lists."
+        },
+        "descr": {
+          "attr": "description",
+          "go_name": "Description"
+        }
+      },
+      "example": {
+        "ifname": "TRUSTED",
+        "members": "lan",
+        "descr": "trusted networks"
+      },
+      "update": {
+        "descr": "trusted lans"
+      }
     }
   ]
 }

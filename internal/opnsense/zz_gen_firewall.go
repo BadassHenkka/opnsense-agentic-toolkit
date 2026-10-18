@@ -47,15 +47,63 @@ type AliasRow struct {
 
 func (r AliasRow) RowRef() (string, string) { return string(r.UUID), string(r.Name) }
 
+// FirewallCategory: A category that groups firewall rules, NAT rules and aliases. Categories cannot be deleted while in use.
+// (model core/Firewall/Category.xml, array categories.category).
+type FirewallCategory struct {
+	Name  string `json:"name"`
+	Auto  Bool   `json:"auto"`
+	Color string `json:"color"`
+}
+
+func (v *FirewallCategory) IsZero() bool { return v.Name == "" }
+
+// FirewallCategoryRow is one row of a firewall_category search; values are display text.
+type FirewallCategoryRow struct {
+	UUID  Text `json:"uuid"`
+	Name  Text `json:"name"`
+	Auto  Text `json:"auto"`
+	Color Text `json:"color"`
+}
+
+func (r FirewallCategoryRow) RowRef() (string, string) { return string(r.UUID), string(r.Name) }
+
+// InterfaceGroup: An interface group (Firewall → Groups): a named set of interfaces that rules can use like one interface.
+// (model core/Firewall/Group.xml, array ifgroupentry).
+type InterfaceGroup struct {
+	Name        string  `json:"ifname"`
+	Members     CSVList `json:"members"`
+	NoGroup     Bool    `json:"nogroup"`
+	Sequence    Int     `json:"sequence"`
+	Description string  `json:"descr"`
+}
+
+func (v *InterfaceGroup) IsZero() bool { return v.Name == "" }
+
+// InterfaceGroupRow is one row of a firewall_interface_group search; values are display text.
+type InterfaceGroupRow struct {
+	UUID        Text `json:"uuid"`
+	Name        Text `json:"ifname"`
+	Members     Text `json:"members"`
+	NoGroup     Text `json:"nogroup"`
+	Sequence    Text `json:"sequence"`
+	Description Text `json:"descr"`
+}
+
+func (r InterfaceGroupRow) RowRef() (string, string) { return string(r.UUID), string(r.Name) }
+
 // FirewallService manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 type FirewallService struct {
-	c       *Client
-	Aliases *ItemController[Alias, AliasRow]
+	c               *Client
+	Aliases         *ItemController[Alias, AliasRow]
+	Categories      *ItemController[FirewallCategory, FirewallCategoryRow]
+	InterfaceGroups *ItemController[InterfaceGroup, InterfaceGroupRow]
 }
 
 func newFirewallService(c *Client) *FirewallService {
 	return &FirewallService{
-		c:       c,
-		Aliases: NewItemController[Alias, AliasRow](c, "firewall/alias", "alias", "Item", nil, "firewall/alias/reconfigure"),
+		c:               c,
+		Aliases:         NewItemController[Alias, AliasRow](c, "firewall/alias", "alias", "Item", nil, "firewall/alias/reconfigure"),
+		Categories:      NewItemController[FirewallCategory, FirewallCategoryRow](c, "firewall/category", "category", "Item", nil, ""),
+		InterfaceGroups: NewItemController[InterfaceGroup, InterfaceGroupRow](c, "firewall/group", "group", "Item", nil, "firewall/group/reconfigure"),
 	}
 }

@@ -32,6 +32,28 @@ func genAliasPlan() genAliasModel {
 	}
 }
 
+// genFirewallCategoryPlan returns a create plan with the example values from gen/specs/firewall.json.
+func genFirewallCategoryPlan() genFirewallCategoryModel {
+	return genFirewallCategoryModel{
+		ID:    types.StringUnknown(),
+		Name:  types.StringValue("homelab"),
+		Auto:  types.BoolValue(false),
+		Color: types.StringValue("ff8800"),
+	}
+}
+
+// genInterfaceGroupPlan returns a create plan with the example values from gen/specs/firewall.json.
+func genInterfaceGroupPlan() genInterfaceGroupModel {
+	return genInterfaceGroupModel{
+		ID:          types.StringUnknown(),
+		Name:        types.StringValue("TRUSTED"),
+		Members:     strSet("lan"),
+		NoGroup:     types.BoolValue(false),
+		Sequence:    types.Int64Value(0),
+		Description: types.StringValue("trusted networks"),
+	}
+}
+
 func TestGenAlias(t *testing.T) {
 	fake := opnsensetest.New(t)
 	h := newHarness(t, fake, NewAliasResource())
@@ -120,5 +142,108 @@ func TestGenAlias(t *testing.T) {
 	bad.Type = types.StringValue("not-an-option")
 	if !h.validateStrings(bad).HasError() {
 		t.Error("invalid type accepted")
+	}
+}
+
+func TestGenFirewallCategory(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewFirewallCategoryResource())
+	plan := genFirewallCategoryPlan()
+	var got genFirewallCategoryModel
+	st, ok := h.create(plan, &got)
+	if !ok {
+		t.Fatal("create failed")
+	}
+	id := got.ID.ValueString()
+	rec, ok := fake.Get("category", id)
+	if !ok {
+		t.Fatal("not stored")
+	}
+	if !sameValues(rec["name"], "homelab") {
+		t.Errorf("name: stored %q, want %q", rec["name"], "homelab")
+	}
+	if !sameValues(rec["auto"], "0") {
+		t.Errorf("auto: stored %q, want %q", rec["auto"], "0")
+	}
+	if !sameValues(rec["color"], "ff8800") {
+		t.Errorf("color: stored %q, want %q", rec["color"], "ff8800")
+	}
+
+	plan.ID = got.ID
+	plan.Color = types.StringValue("0088ff")
+	st = h.update(st, plan, &got)
+	rec, _ = fake.Get("category", id)
+	if !sameValues(rec["color"], "0088ff") {
+		t.Errorf("color: stored %q, want %q", rec["color"], "0088ff")
+	}
+
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	if imp, ok := h.importID(id); !ok || imp != id {
+		t.Fatalf("import by uuid = %q", imp)
+	}
+	if imp, ok := h.importID("homelab"); !ok || imp != id {
+		t.Fatalf("import by name = %q", imp)
+	}
+	h.delete(st)
+	if _, ok := fake.Get("category", id); ok {
+		t.Fatal("still stored after delete")
+	}
+}
+
+func TestGenInterfaceGroup(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewInterfaceGroupResource())
+	plan := genInterfaceGroupPlan()
+	var got genInterfaceGroupModel
+	st, ok := h.create(plan, &got)
+	if !ok {
+		t.Fatal("create failed")
+	}
+	id := got.ID.ValueString()
+	rec, ok := fake.Get("group", id)
+	if !ok {
+		t.Fatal("not stored")
+	}
+	if !sameValues(rec["ifname"], "TRUSTED") {
+		t.Errorf("ifname: stored %q, want %q", rec["ifname"], "TRUSTED")
+	}
+	if !sameValues(rec["members"], "lan") {
+		t.Errorf("members: stored %q, want %q", rec["members"], "lan")
+	}
+	if !sameValues(rec["nogroup"], "0") {
+		t.Errorf("nogroup: stored %q, want %q", rec["nogroup"], "0")
+	}
+	if !sameValues(rec["sequence"], "0") {
+		t.Errorf("sequence: stored %q, want %q", rec["sequence"], "0")
+	}
+	if !sameValues(rec["descr"], "trusted networks") {
+		t.Errorf("descr: stored %q, want %q", rec["descr"], "trusted networks")
+	}
+
+	plan.ID = got.ID
+	plan.Description = types.StringValue("trusted lans")
+	st = h.update(st, plan, &got)
+	rec, _ = fake.Get("group", id)
+	if !sameValues(rec["descr"], "trusted lans") {
+		t.Errorf("descr: stored %q, want %q", rec["descr"], "trusted lans")
+	}
+
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	if imp, ok := h.importID(id); !ok || imp != id {
+		t.Fatalf("import by uuid = %q", imp)
+	}
+	if imp, ok := h.importID("TRUSTED"); !ok || imp != id {
+		t.Fatalf("import by name = %q", imp)
+	}
+	h.delete(st)
+	if _, ok := fake.Get("group", id); ok {
+		t.Fatal("still stored after delete")
+	}
+	if fake.Applies["firewall/group/reconfigure"] == 0 {
+		t.Error("never applied")
 	}
 }

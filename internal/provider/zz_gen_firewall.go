@@ -4,6 +4,7 @@ package provider
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -13,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -154,4 +156,176 @@ func (r *genAliasResource) Delete(ctx context.Context, req resource.DeleteReques
 // ImportState accepts a UUID or the name.
 func (r *genAliasResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	importByName(ctx, req, resp, r.client.Firewall.Aliases, "firewall alias")
+}
+
+var _ resource.ResourceWithImportState = (*genFirewallCategoryResource)(nil)
+
+// NewFirewallCategoryResource returns the opnsense_firewall_category resource.
+func NewFirewallCategoryResource() resource.Resource { return &genFirewallCategoryResource{} }
+
+type genFirewallCategoryResource struct{ baseResource }
+
+type genFirewallCategoryModel struct {
+	ID    types.String `tfsdk:"id"`
+	Name  types.String `tfsdk:"name"`
+	Auto  types.Bool   `tfsdk:"auto"`
+	Color types.String `tfsdk:"color"`
+}
+
+func (r *genFirewallCategoryResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_category"
+}
+
+func (r *genFirewallCategoryResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "A category that groups firewall rules, NAT rules and aliases. Categories cannot be deleted while in use. Generated from core/Firewall/Category.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":    idAttribute("firewall category"),
+			"name":  schema.StringAttribute{Required: true, Description: "OPNsense field `name`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("[^,]+"), "must match the OPNsense model mask")}},
+			"auto":  schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Created automatically (e.g. by a plugin); removed when unused. OPNsense field `auto`."},
+			"color": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Hex colour without #, e.g. `ff8800`. OPNsense field `color`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-fA-F]){6,6}$"), "must match the OPNsense model mask")}},
+		},
+	}
+}
+
+func (m *genFirewallCategoryModel) toAPI(ctx context.Context) (opnsense.FirewallCategory, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.FirewallCategory
+	v.Name = m.Name.ValueString()
+	v.Auto = opnsense.Bool(m.Auto.ValueBool())
+	v.Color = m.Color.ValueString()
+	_ = ctx
+	return v, diags
+}
+
+func (m *genFirewallCategoryModel) fromAPI(ctx context.Context, id string, v *opnsense.FirewallCategory) diag.Diagnostics {
+	m.ID = types.StringValue(id)
+	var diags diag.Diagnostics
+	m.Name = types.StringValue(v.Name)
+	m.Auto = types.BoolValue(bool(v.Auto))
+	m.Color = types.StringValue(v.Color)
+	_ = ctx
+	return diags
+}
+
+func (m *genFirewallCategoryModel) itemID() string { return m.ID.ValueString() }
+
+var genFirewallCategoryCRUD = itemCRUD[opnsense.FirewallCategory, opnsense.FirewallCategoryRow, genFirewallCategoryModel, *genFirewallCategoryModel]{
+	what: "firewall category",
+	items: func(c *opnsense.Client) *opnsense.ItemController[opnsense.FirewallCategory, opnsense.FirewallCategoryRow] {
+		return c.Firewall.Categories
+	},
+	apply: func(c *opnsense.Client) func(context.Context) error { return c.Firewall.Categories.Apply },
+}
+
+func (r *genFirewallCategoryResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genFirewallCategoryCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genFirewallCategoryResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genFirewallCategoryCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genFirewallCategoryResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genFirewallCategoryCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genFirewallCategoryResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genFirewallCategoryCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts a UUID or the name.
+func (r *genFirewallCategoryResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	importByName(ctx, req, resp, r.client.Firewall.Categories, "firewall category")
+}
+
+var _ resource.ResourceWithImportState = (*genInterfaceGroupResource)(nil)
+
+// NewInterfaceGroupResource returns the opnsense_firewall_interface_group resource.
+func NewInterfaceGroupResource() resource.Resource { return &genInterfaceGroupResource{} }
+
+type genInterfaceGroupResource struct{ baseResource }
+
+type genInterfaceGroupModel struct {
+	ID          types.String `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Members     types.Set    `tfsdk:"members"`
+	NoGroup     types.Bool   `tfsdk:"no_group"`
+	Sequence    types.Int64  `tfsdk:"sequence"`
+	Description types.String `tfsdk:"description"`
+}
+
+func (r *genInterfaceGroupResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_firewall_interface_group"
+}
+
+func (r *genInterfaceGroupResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "An interface group (Firewall → Groups): a named set of interfaces that rules can use like one interface. Generated from core/Firewall/Group.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":          idAttribute("firewall interface group"),
+			"name":        schema.StringAttribute{Required: true, Description: "Group name (letters, digits; shown as the interface name in rules). OPNsense field `ifname`."},
+			"members":     schema.SetAttribute{ElementType: types.StringType, Required: true, Description: "Member interfaces, e.g. `[\"lan\", \"opt1\"]`. OPNsense field `members`."},
+			"no_group":    schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Do not use the group as a pf interface group (only for the UI). OPNsense field `nogroup`."},
+			"sequence":    schema.Int64Attribute{Optional: true, Computed: true, Default: int64default.StaticInt64(0), Description: "Sort position in the interface lists. OPNsense field `sequence`.", Validators: []validator.Int64{int64validator.Between(0, 9999)}},
+			"description": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `descr`."},
+		},
+	}
+}
+
+func (m *genInterfaceGroupModel) toAPI(ctx context.Context) (opnsense.InterfaceGroup, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.InterfaceGroup
+	v.Name = m.Name.ValueString()
+	diags.Append(m.Members.ElementsAs(ctx, (*[]string)(&v.Members), false)...)
+	v.NoGroup = opnsense.Bool(m.NoGroup.ValueBool())
+	v.Sequence = apiInt(m.Sequence)
+	v.Description = m.Description.ValueString()
+	_ = ctx
+	return v, diags
+}
+
+func (m *genInterfaceGroupModel) fromAPI(ctx context.Context, id string, v *opnsense.InterfaceGroup) diag.Diagnostics {
+	m.ID = types.StringValue(id)
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Name = types.StringValue(v.Name)
+	m.Members, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Members)))
+	diags.Append(d...)
+	m.NoGroup = types.BoolValue(bool(v.NoGroup))
+	m.Sequence = int64Value(v.Sequence)
+	m.Description = types.StringValue(v.Description)
+	_ = ctx
+	return diags
+}
+
+func (m *genInterfaceGroupModel) itemID() string { return m.ID.ValueString() }
+
+var genInterfaceGroupCRUD = itemCRUD[opnsense.InterfaceGroup, opnsense.InterfaceGroupRow, genInterfaceGroupModel, *genInterfaceGroupModel]{
+	what: "firewall interface group",
+	items: func(c *opnsense.Client) *opnsense.ItemController[opnsense.InterfaceGroup, opnsense.InterfaceGroupRow] {
+		return c.Firewall.InterfaceGroups
+	},
+	apply: func(c *opnsense.Client) func(context.Context) error { return c.Firewall.InterfaceGroups.Apply },
+}
+
+func (r *genInterfaceGroupResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genInterfaceGroupCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genInterfaceGroupResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genInterfaceGroupCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genInterfaceGroupResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genInterfaceGroupCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genInterfaceGroupResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genInterfaceGroupCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts a UUID or the name.
+func (r *genInterfaceGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	importByName(ctx, req, resp, r.client.Firewall.InterfaceGroups, "firewall interface group")
 }

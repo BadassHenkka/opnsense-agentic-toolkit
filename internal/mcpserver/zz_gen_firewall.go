@@ -2,4 +2,88 @@
 
 package mcpserver
 
-// No generated MCP tools: hand-written tools cover this area.
+import (
+	"context"
+
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+
+	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
+)
+
+const genFirewallToolset = "firewall"
+
+type genFirewallCategoryView struct {
+	UUID  string `json:"uuid"`
+	Name  string `json:"name,omitempty"`
+	Auto  bool   `json:"auto"`
+	Color string `json:"color,omitempty"`
+}
+
+func genFirewallCategoryViewOf(id string, v *opnsense.FirewallCategory) genFirewallCategoryView {
+	return genFirewallCategoryView{
+		UUID:  id,
+		Name:  v.Name,
+		Auto:  bool(v.Auto),
+		Color: v.Color,
+	}
+}
+
+type genInterfaceGroupView struct {
+	UUID        string   `json:"uuid"`
+	Name        string   `json:"name,omitempty"`
+	Members     []string `json:"members,omitempty"`
+	NoGroup     bool     `json:"no_group"`
+	Sequence    *int64   `json:"sequence,omitempty"`
+	Description string   `json:"description,omitempty"`
+}
+
+func genInterfaceGroupViewOf(id string, v *opnsense.InterfaceGroup) genInterfaceGroupView {
+	return genInterfaceGroupView{
+		UUID:        id,
+		Name:        v.Name,
+		Members:     nonNil([]string(v.Members)),
+		NoGroup:     bool(v.NoGroup),
+		Sequence:    intPtr(v.Sequence),
+		Description: v.Description,
+	}
+}
+
+func genFirewallTools(c *opnsense.Client) []tool {
+	svc := c.Firewall
+	return []tool{
+		listTool(genFirewallToolset, "firewall_category_list", "List firewall categories", "List firewall categories. A category that groups firewall rules, NAT rules and aliases. Categories cannot be deleted while in use. Read-only: change them with Terraform (opnsense_firewall_category).", svc.Categories),
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_category_get",
+				Description: "Get a firewall category by UUID or name.",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall category", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, genFirewallCategoryView, error) {
+				id, err := resolveNamed(ctx, svc.Categories, in, "firewall category")
+				if err != nil {
+					return nil, genFirewallCategoryView{}, err
+				}
+				v, err := svc.Categories.Get(ctx, id)
+				if err != nil {
+					return nil, genFirewallCategoryView{}, notFoundAs(err, "firewall category", id)
+				}
+				return nil, genFirewallCategoryViewOf(id, v), nil
+			})
+		}},
+		listTool(genFirewallToolset, "firewall_interface_group_list", "List firewall interface groups", "List firewall interface groups. An interface group (Firewall → Groups): a named set of interfaces that rules can use like one interface. Read-only: change them with Terraform (opnsense_firewall_interface_group).", svc.InterfaceGroups),
+		{toolset: genFirewallToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "firewall_interface_group_get",
+				Description: "Get a firewall interface group by UUID or name.",
+				Annotations: &mcp.ToolAnnotations{Title: "Get firewall interface group", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, genInterfaceGroupView, error) {
+				id, err := resolveNamed(ctx, svc.InterfaceGroups, in, "firewall interface group")
+				if err != nil {
+					return nil, genInterfaceGroupView{}, err
+				}
+				v, err := svc.InterfaceGroups.Get(ctx, id)
+				if err != nil {
+					return nil, genInterfaceGroupView{}, notFoundAs(err, "firewall interface group", id)
+				}
+				return nil, genInterfaceGroupViewOf(id, v), nil
+			})
+		}},
+	}
+}

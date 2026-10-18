@@ -29,5 +29,36 @@ func registerGenFirewall(s *Server) {
 			return v
 		}
 	}
+	{ // firewall_category
+		c := s.add(&Collection{Base: "firewall/category", Suffix: "Item", Key: "category",
+			Fields: map[string]Field{
+				"name":  {Required: true, Mask: "[^,]+"},
+				"auto":  {},
+				"color": {Mask: "^([0-9a-fA-F]){6,6}$"},
+			},
+		})
+		c.Validate = func(s *Server, self string, r Record) map[string]string {
+			v := checkFields(s, "category", c.Fields, r)
+			checkUnique(c, self, r, v, "category", "name")
+			return v
+		}
+	}
+	{ // firewall_interface_group
+		c := s.add(&Collection{Base: "firewall/group", Suffix: "Item", Key: "group",
+			Fields: map[string]Field{
+				"ifname":   {Required: true},
+				"members":  {Kind: List, Sep: ",", Required: true},
+				"nogroup":  {},
+				"sequence": {Required: true, Default: "0", HasRange: true, Min: 0, Max: 9999},
+				"descr":    {},
+			},
+		})
+		c.Validate = func(s *Server, self string, r Record) map[string]string {
+			v := checkFields(s, "group", c.Fields, r)
+			checkUnique(c, self, r, v, "group", "ifname")
+			return v
+		}
+	}
 	s.reconfigure["firewall/alias/reconfigure"] = true
+	s.reconfigure["firewall/group/reconfigure"] = true
 }

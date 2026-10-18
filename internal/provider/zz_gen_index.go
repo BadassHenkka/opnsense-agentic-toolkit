@@ -24,6 +24,8 @@ func generatedResources() []func() resource.Resource {
 		NewDynDNSAccountResource,
 		NewDynDNSResource,
 		NewAliasResource,
+		NewFirewallCategoryResource,
+		NewInterfaceGroupResource,
 		NewNetworkInterfaceResource,
 		NewVLANResource,
 		NewVirtualIPResource,
