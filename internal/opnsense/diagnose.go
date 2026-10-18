@@ -99,7 +99,7 @@ func Diagnose(ctx context.Context, cfg Config) []Check {
 
 	if v := string(info.ProductVersion); v != "" && !strings.HasPrefix(v, TestedVersion) {
 		add(Check{Name: "version", Status: CheckWarn, Detail: "OPNsense " + v + ", tested against " + TestedVersion + ".x",
-			Hint: "most areas still work; if a call fails with a missing field or 404, run `make acc` and open an issue"})
+			Hint: "most areas still work; if a call fails with a missing field or 404, run `task acc` and open an issue"})
 	} else if v != "" {
 		add(Check{Name: "version", Status: CheckOK, Detail: v + " matches the tested series"})
 	}

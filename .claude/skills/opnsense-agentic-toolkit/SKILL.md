@@ -12,7 +12,7 @@ Three roles. **MCP explores**: read anything, as freely as needed. **MCP may ver
 Run this first whenever the OPNsense MCP tools are missing, return errors, or the user is new. Do the steps in order and stop at the first failure; the `--check` output says what to fix. Never ask the user to paste the secret into the chat and never write it to a file in the repo.
 
 1. **Is the MCP server connected?** If `firmware_status` (or any `opnsense` tool) is available and answers, skip to the Setup check below. Otherwise continue.
-2. **Binary.** In the clone: `make build` (Go 1.24+). The binary is `bin/mcp-opnsense`.
+2. **Binary.** In the clone: `task build` (Go 1.24+ and Task; `mise install` sets both up). The binary is `bin/mcp-opnsense`.
 3. **API user and key** (the user does this in the OPNsense UI; give them these steps): System > Access > Users > add `automation`; Effective Privileges > add only the areas they will use (search the list for *Firewall: Alias*, *Firewall: Rules*, *Services: Unbound DNS*, *VPN: WireGuard*, *System: Gateways*, *System: Static Routes*, *System: Firmware*, ...); then API keys > **+** downloads a file with `key=` and `secret=` (the secret is shown once).
 4. **Certificate.** If the firewall uses its own CA, export it (System > Trust > Authorities, PEM) to e.g. `~/.config/opnsense/ca.pem` and use `OPNSENSE_CA_FILE`. Do not use `OPNSENSE_INSECURE` except for a throwaway test.
 5. **Credentials in the shell** (the user types these; you do not need to see them): `export OPNSENSE_URL=https://<address-of-the-web-ui> OPNSENSE_API_KEY=... OPNSENSE_API_SECRET=... OPNSENSE_CA_FILE=...`
@@ -38,7 +38,7 @@ Do this once per Terraform directory. Ask the user for the bucket/endpoint; neve
 
 ```sh
 cd <clone>            # e.g. ~/git/opnsense-agentic-toolkit
-make install-tf       # builds terraform-provider-opnsense into $(go env GOPATH)/bin
+task install-tf       # builds terraform-provider-opnsense into $(go env GOPATH)/bin
 ```
 
 Tell Terraform to use that binary instead of downloading it, in `~/.terraformrc`:
@@ -50,7 +50,7 @@ provider_installation {
 }
 ```
 
-With a dev override, skip `terraform init` for the provider (the "development overrides" warning is expected). Rebuild with `make install-tf` after every `git pull` or code change; Terraform picks up the new binary on the next run.
+With a dev override, skip `terraform init` for the provider (the "development overrides" warning is expected). Rebuild with `task install-tf` after every `git pull` or code change; Terraform picks up the new binary on the next run.
 
 **2. Keep state in S3.** State holds sensitive values (API secrets, WireGuard keys), so it must not live in git or on a laptop disk only. Any S3-compatible store works (MinIO, Garage, AWS S3):
 

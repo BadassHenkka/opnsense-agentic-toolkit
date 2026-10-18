@@ -204,7 +204,7 @@ func (s *Server) collection(base, key string) *Collection {
 			return c
 		}
 	}
-	panic("opnsensetest: no collection " + base + " " + key + "; run make gen")
+	panic("opnsensetest: no collection " + base + " " + key + "; run task gen")
 }
 
 // alsoValidate chains an extra check after a collection's existing validation.

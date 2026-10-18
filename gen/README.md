@@ -1,13 +1,13 @@
 # Generator input
 
 `cmd/opnsense-gen` turns these files into `zz_gen_*.go` (client, fake, Terraform resources and
-tests, read-only MCP tools). Run `make gen` after editing; `make gen-check` (and the test
-`TestGeneratedUpToDate`) fails when generated code is stale. `make verify-upstream` checks every
+tests, read-only MCP tools). Run `task gen` after editing; `task gen-check` (and the test
+`TestGeneratedUpToDate`) fails when generated code is stale. `task verify-upstream` checks every
 spec against the PHP API controllers at the pinned refs (actions, `key`/`node` used by
 getBase/setBase/addBase, the settings root key, reconfigure endpoints). The fake server follows the
 specs, so a wrong key passes every local test; run it after adding or changing a spec.
 
-- `models/` — OPNsense model XML, pinned to the commits in `models/REFS`. `make fetch-models`
+- `models/` — OPNsense model XML, pinned to the commits in `models/REFS`. `task fetch-models`
   downloads every model a spec mentions. To follow upstream, bump `REFS`, fetch, regenerate and
   review the diff: new fields, changed options and removed fields all show up there.
 - `specs/<area>.json` — one file per area. The area name is the MCP toolset and, camel-cased,

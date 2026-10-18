@@ -61,7 +61,7 @@ func main() {
 		os.Exit(1)
 	}
 	if *check && len(stale) > 0 {
-		fmt.Fprintf(os.Stderr, "opnsense-gen: out of date: %s\nrun: make gen\n", strings.Join(stale, ", "))
+		fmt.Fprintf(os.Stderr, "opnsense-gen: out of date: %s\nrun: task gen\n", strings.Join(stale, ", "))
 		os.Exit(1)
 	}
 }

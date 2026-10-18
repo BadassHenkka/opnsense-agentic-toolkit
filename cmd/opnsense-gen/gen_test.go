@@ -8,7 +8,7 @@ import (
 )
 
 // TestGeneratedUpToDate fails when gen/specs, gen/models or the generator changed without
-// regenerating (make gen).
+// regenerating (task gen).
 func TestGeneratedUpToDate(t *testing.T) {
 	root := filepath.Join("..", "..")
 	files, err := generate(root)
@@ -20,7 +20,7 @@ func TestGeneratedUpToDate(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(stale) > 0 {
-		t.Fatalf("generated files are out of date, run `make gen`: %s", strings.Join(stale, ", "))
+		t.Fatalf("generated files are out of date, run `task gen`: %s", strings.Join(stale, ", "))
 	}
 }
 

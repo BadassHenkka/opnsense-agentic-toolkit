@@ -81,7 +81,7 @@ internal/
     settings_controller.go      generic get/set settings sections
     zz_gen_*.go                 generated areas (do not edit)
     opnsensetest/               in-memory fake OPNsense used by all tests (collections.go)
-  acceptance/                   tests against a real firewall (make acc)
+  acceptance/                   tests against a real firewall (task acc)
   mcpserver/                    MCP tools — one *_tools.go file per area, grouped in toolsets
   provider/                     Terraform provider and resources
     item_crud.go                generic Create/Read/Update/Delete + apply for item resources
@@ -113,7 +113,7 @@ Authorities → export the CA certificate as PEM and keep it at, say,
 **3. Build and configure.**
 
 ```sh
-make build                         # bin/mcp-opnsense and bin/terraform-provider-opnsense
+task build                         # bin/mcp-opnsense and bin/terraform-provider-opnsense
 export OPNSENSE_URL=https://opnsense.lan      # the address you open in the browser
 export OPNSENSE_API_KEY=...
 export OPNSENSE_API_SECRET=...
@@ -142,10 +142,14 @@ register the server with your MCP client ([MCP server](#mcp-server) below) and a
 
 ## Build and test
 
+Tools (Go, [Task](https://taskfile.dev), golangci-lint, Terraform) are pinned in `mise.toml`:
+`mise trust && mise install` sets them up. Without mise, install Go 1.24+ and Task yourself;
+`task --list` shows every task. A git-ignored `.env` with the `OPNSENSE_*` variables is loaded by mise.
+
 ```sh
-make tidy     # first run: resolves dependencies and writes go.sum
-make test
-make build    # binaries in ./bin
+task tidy     # first run: resolves dependencies and writes go.sum
+task test
+task build    # binaries in ./bin
 ```
 
 The tests run against an in-memory fake of the OPNsense API, so they need no firewall.
@@ -157,8 +161,8 @@ The fake follows the specs, so it cannot tell whether OPNsense really behaves th
 variables:
 
 ```sh
-make acc                          # read-only: safe on any firewall
-OPNSENSE_ACC_WRITE=1 make acc     # also create/update/delete test objects (use a test VM)
+task acc                          # read-only: safe on any firewall
+OPNSENSE_ACC_WRITE=1 task acc     # also create/update/delete test objects (use a test VM)
 ```
 
 - **Read-only (default):** lists every item collection and reads every settings section the
@@ -172,7 +176,7 @@ OPNSENSE_ACC_WRITE=1 make acc     # also create/update/delete test objects (use 
   sent and that writing back what was read changes nothing. Unbound is not applied (that
   would restart the resolver); everything created is deleted, also when a test fails.
 
-Without `OPNSENSE_ACC=1` the same tests run against the fake as part of `make test`.
+Without `OPNSENSE_ACC=1` the same tests run against the fake as part of `task test`.
 
 ## MCP server
 
@@ -236,7 +240,7 @@ from your password manager and then runs `exec bin/mcp-opnsense --read-only`.
 ## Terraform provider
 
 ```sh
-make install-tf   # builds into $(go env GOPATH)/bin
+task install-tf   # builds into $(go env GOPATH)/bin
 ```
 
 Add a dev override in `~/.terraformrc` (skip `terraform init` for this provider):
@@ -411,8 +415,8 @@ defaults, option lists, ranges, masks and uniqueness come from the XML.
    `controllers/OPNsense/<Module>/Api/*Controller.php` in opnsense/core (or the plugin).
    The controller gives `base`, `key`, `suffix` and any odd action names
    (`searchJobs` instead of `searchJob`).
-2. Add it to a spec (see [gen/README.md](gen/README.md)), then `make fetch-models gen test`
-   and `make verify-upstream` (checks actions and keys against the upstream controllers).
+2. Add it to a spec (see [gen/README.md](gen/README.md)), then `task fetch-models gen test`
+   and `task verify-upstream` (checks actions and keys against the upstream controllers).
 3. The generator stops on what it cannot know (custom field types, reserved names) and says
    which `fields.<name>` override to add.
 

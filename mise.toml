@@ -1,0 +1,10 @@
+# Tool versions for this repository. `mise install` fetches them; `mise trust` once per clone.
+[tools]
+go = "1.24"
+task = "latest"
+golangci-lint = "latest"
+terraform = "latest"   # only for examples/terraform and the provider dev override
+
+[env]
+# Optional, git-ignored file with OPNSENSE_URL, OPNSENSE_API_KEY, OPNSENSE_API_SECRET, ...
+_.file = { path = ".env", redact = true }

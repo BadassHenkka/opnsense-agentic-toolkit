@@ -25,15 +25,15 @@ Notes for agents using this project:
 
 ## Install and run
 
-- Build: `make build` produces `bin/mcp-opnsense` and `bin/terraform-provider-opnsense` (Go required).
+- Build: `task build` produces `bin/mcp-opnsense` and `bin/terraform-provider-opnsense` (Go required).
 - Register with Claude Code: `claude mcp add opnsense --scope user -e OPNSENSE_URL=... -e OPNSENSE_API_KEY=... -e OPNSENSE_API_SECRET=... -- $PWD/bin/mcp-opnsense --read-only`
-- Terraform provider for development: `make install-tf`, then a `dev_overrides` entry for `registry.terraform.io/smulis/opnsense` in `~/.terraformrc`.
+- Terraform provider for development: `task install-tf`, then a `dev_overrides` entry for `registry.terraform.io/smulis/opnsense` in `~/.terraformrc`.
 - Existing objects import by name or UUID, for example `terraform import opnsense_firewall_alias.servers homelab_servers`.
 
 ## Design and internals
 
 - [Design](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/docs/DESIGN.md): research, decisions, the generator, and each area in the order it was built
-- [Generator](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/gen/README.md): spec format; `cmd/opnsense-gen` turns specs and pinned OPNsense model XML into client, fake server, Terraform resources and read-only MCP tools (`make gen`, `make gen-check`, `make verify-upstream`)
+- [Generator](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/gen/README.md): spec format; `cmd/opnsense-gen` turns specs and pinned OPNsense model XML into client, fake server, Terraform resources and read-only MCP tools (`task gen`, `task gen-check`, `task verify-upstream`)
 - [TODO](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/docs/TODO.md): OPNsense areas not yet covered
 
 ## Coverage (summary)

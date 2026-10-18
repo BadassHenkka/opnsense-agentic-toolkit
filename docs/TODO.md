@@ -27,10 +27,10 @@ Hand-written: API keys, firewall filter rules, firmware/plugins, ACME challenge 
       Terraform schema + `toAPI`/`fromAPI`, MCP view types. Keep hand-written overrides for
       special cases (secrets, renamed fields, virtual fields). Pin the XML version per area and
       snapshot-test the generated output, so a plugin update shows up as a diff.
-- [x] **Upstream spec check** (`make verify-upstream`): every spec against the PHP controllers
+- [x] **Upstream spec check** (`task verify-upstream`): every spec against the PHP controllers
       at the pinned refs. Found four wrong keys/actions the fake could not catch.
 - [x] **Schema drift test**: part of the acceptance read sweep (needs a real firewall).
-- [x] **Acceptance tests** (`make acc`, `internal/acceptance`): read sweep of every area with a
+- [x] **Acceptance tests** (`task acc`, `internal/acceptance`): read sweep of every area with a
       field-name drift check, plus write round trips for an alias, a cron job and a host override.
       Not yet: Terraform-level acceptance tests (terraform-plugin-testing needs the terraform binary).
 - [ ] **Run the acceptance tests on an OPNsense VM** and fix what they find.

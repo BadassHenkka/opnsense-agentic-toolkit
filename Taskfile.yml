@@ -1,0 +1,83 @@
+version: '3'
+
+vars:
+  VERSION:
+    sh: git describe --tags --always --dirty 2>/dev/null || echo dev
+  LDFLAGS: -s -w -X main.version={{.VERSION}}
+
+tasks:
+  default:
+    desc: Check generated code, vet, test and build
+    cmds:
+      - task: gen-check
+      - task: vet
+      - task: test
+      - task: build
+
+  gen:
+    desc: Regenerate zz_gen_*.go from gen/specs and gen/models
+    cmds:
+      - go run ./cmd/opnsense-gen
+
+  gen-check:
+    desc: Fail if generated code is out of date
+    cmds:
+      - go run ./cmd/opnsense-gen -check
+
+  fetch-models:
+    desc: Download the model XML the specs use, at the commits in gen/models/REFS
+    cmds:
+      - go run ./cmd/opnsense-gen -fetch
+
+  verify-upstream:
+    desc: Check every spec against the PHP API controllers at the pinned refs (needs network)
+    cmds:
+      - go run ./cmd/opnsense-gen -verify
+
+  acc:
+    desc: Acceptance tests against a real firewall (read-only; OPNSENSE_ACC_WRITE=1 also writes acc-test-* objects)
+    env:
+      OPNSENSE_ACC: '1'
+    cmds:
+      - go test -count=1 -v ./internal/acceptance
+
+  tidy:
+    desc: Resolve dependencies and write go.sum
+    cmds:
+      - go mod tidy
+
+  build:
+    desc: Build bin/mcp-opnsense and bin/terraform-provider-opnsense
+    cmds:
+      - go build -ldflags "{{.LDFLAGS}}" -o bin/mcp-opnsense ./cmd/mcp-opnsense
+      - go build -ldflags "{{.LDFLAGS}}" -o bin/terraform-provider-opnsense ./cmd/terraform-provider-opnsense
+
+  test:
+    desc: Run all tests with the race detector
+    cmds:
+      - go test -race ./...
+
+  vet:
+    desc: Run go vet
+    cmds:
+      - go vet ./...
+
+  lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run
+
+  install-tf:
+    desc: Install terraform-provider-opnsense into $(go env GOPATH)/bin
+    cmds:
+      - go install -ldflags "{{.LDFLAGS}}" ./cmd/terraform-provider-opnsense
+
+  site:
+    desc: Build the GitHub Pages site into _site
+    cmds:
+      - scripts/build-site.sh _site
+
+  clean:
+    desc: Remove build output
+    cmds:
+      - rm -rf bin _site
