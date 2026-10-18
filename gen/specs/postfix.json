@@ -1,0 +1,258 @@
+{
+  "area": "postfix",
+  "title": "Services \u2192 Postfix (plugin os-postfix)",
+  "items": [
+    {
+      "resource": "postfix_domain",
+      "go_name": "PostfixDomain",
+      "plural": "Domains",
+      "description": "A domain Postfix accepts mail for and where it forwards it (Services \u2192 Postfix \u2192 Domains).",
+      "model": "plugins/mail/postfix/Postfix/Domain.xml",
+      "node": "domains.domain",
+      "base": "postfix/domain",
+      "key": "domain",
+      "suffix": "Domain",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "domainname",
+      "zero_field": "domainname",
+      "fields": {
+        "domainname": {
+          "attr": "domain"
+        },
+        "destination": {
+          "description": "Where to deliver: `[host]:port`; empty to use the relay host."
+        }
+      },
+      "example": {
+        "domainname": "example.com",
+        "destination": "[mail.lan]:25"
+      }
+    },
+    {
+      "resource": "postfix_recipient",
+      "go_name": "PostfixRecipient",
+      "plural": "Recipients",
+      "description": "An allowed or rejected recipient address (Services \u2192 Postfix \u2192 Recipients).",
+      "model": "plugins/mail/postfix/Postfix/Recipient.xml",
+      "node": "recipients.recipient",
+      "base": "postfix/recipient",
+      "key": "recipient",
+      "suffix": "Recipient",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "address",
+      "zero_field": "address",
+      "fields": {
+        "action": {
+          "description": "`OK` to allow or `REJECT` to refuse."
+        }
+      },
+      "example": {
+        "address": "info@example.com",
+        "action": "OK"
+      }
+    },
+    {
+      "resource": "postfix_sender",
+      "go_name": "PostfixSender",
+      "plural": "Senders",
+      "description": "An allowed or rejected sender address (Services \u2192 Postfix \u2192 Senders).",
+      "model": "plugins/mail/postfix/Postfix/Sender.xml",
+      "node": "senders.sender",
+      "base": "postfix/sender",
+      "key": "sender",
+      "suffix": "Sender",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "address",
+      "zero_field": "address",
+      "fields": {
+        "action": {
+          "description": "`OK` to allow or `REJECT` to refuse."
+        }
+      },
+      "example": {
+        "address": "spam@example.net",
+        "action": "REJECT"
+      }
+    },
+    {
+      "resource": "postfix_header_check",
+      "go_name": "PostfixHeaderCheck",
+      "plural": "HeaderChecks",
+      "description": "A header check expression (Services \u2192 Postfix \u2192 Header Checks).",
+      "model": "plugins/mail/postfix/Postfix/Headerchecks.xml",
+      "node": "headerchecks.headercheck",
+      "base": "postfix/headerchecks",
+      "key": "headercheck",
+      "suffix": "Headercheck",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "expression",
+      "zero_field": "expression",
+      "fields": {
+        "filter": {
+          "description": "`WHILE_DELIVERING` or `WHILE_RECEIVING`."
+        }
+      },
+      "example": {
+        "expression": "/^Subject: viagra/ REJECT",
+        "filter": "WHILE_RECEIVING"
+      },
+      "actions": {
+        "search": "searchHeaderchecks"
+      }
+    },
+    {
+      "resource": "postfix_recipient_bcc",
+      "go_name": "PostfixRecipientBcc",
+      "plural": "RecipientBccs",
+      "description": "Send a copy of mail to a recipient to other addresses (Services \u2192 Postfix \u2192 Recipient BCC).",
+      "model": "plugins/mail/postfix/Postfix/Recipientbcc.xml",
+      "node": "recipientbccs.recipientbcc",
+      "base": "postfix/recipientbcc",
+      "key": "recipientbcc",
+      "suffix": "Recipientbcc",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "from",
+      "zero_field": "from",
+      "fields": {
+        "from": {
+          "attr": "from_address"
+        },
+        "to": {
+          "attr": "to_addresses",
+          "tf_type": "set"
+        }
+      },
+      "example": {
+        "from": "info@example.com",
+        "to": "archive@example.com"
+      }
+    },
+    {
+      "resource": "postfix_sender_bcc",
+      "go_name": "PostfixSenderBcc",
+      "plural": "SenderBccs",
+      "description": "Send a copy of mail from a sender to other addresses (Services \u2192 Postfix \u2192 Sender BCC).",
+      "model": "plugins/mail/postfix/Postfix/Senderbcc.xml",
+      "node": "senderbccs.senderbcc",
+      "base": "postfix/senderbcc",
+      "key": "senderbcc",
+      "suffix": "Senderbcc",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "from",
+      "zero_field": "from",
+      "fields": {
+        "from": {
+          "attr": "from_address"
+        },
+        "to": {
+          "attr": "to_addresses",
+          "tf_type": "set"
+        }
+      },
+      "example": {
+        "from": "me@example.com",
+        "to": "archive@example.com"
+      }
+    },
+    {
+      "resource": "postfix_address",
+      "go_name": "PostfixAddress",
+      "plural": "Addresses",
+      "description": "Rewrite an address (Services \u2192 Postfix \u2192 Address Rewriting).",
+      "model": "plugins/mail/postfix/Postfix/Address.xml",
+      "node": "addresses.address",
+      "base": "postfix/address",
+      "key": "address",
+      "suffix": "Address",
+      "reconfigure": "postfix/service/reconfigure",
+      "name_field": "from",
+      "zero_field": "from",
+      "fields": {
+        "from": {
+          "attr": "from_address"
+        },
+        "to": {
+          "attr": "to_addresses",
+          "tf_type": "set"
+        }
+      },
+      "example": {
+        "from": "root@lan.example.com",
+        "to": "admin@example.com"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "postfix_settings",
+      "go_name": "PostfixGeneral",
+      "plural": "General",
+      "description": "Postfix general settings (Services \u2192 Postfix \u2192 General): network, TLS, relay host and the recipient/sender restrictions.",
+      "model": "plugins/mail/postfix/Postfix/General.xml",
+      "node": "",
+      "get": "postfix/general/get",
+      "set": "postfix/general/set",
+      "path": [
+        "general"
+      ],
+      "reconfigure": "postfix/service/reconfigure",
+      "fields": {
+        "smtpauth_user": {
+          "description": "User for SMTP authentication to the relay."
+        },
+        "smtpauth_password": {
+          "sensitive": true
+        },
+        "certificate": {
+          "type": "ref",
+          "description": "Server certificate (`opnsense_trust_cert` refid)."
+        },
+        "ca": {
+          "type": "ref",
+          "description": "CA certificate."
+        },
+        "mynetworks": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Networks allowed to relay."
+        },
+        "masquerade_domains": {
+          "type": "list",
+          "tf_type": "set"
+        },
+        "relayhost": {
+          "description": "Smarthost, e.g. `[smtp.example.com]:587`."
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "myhostname": "fw.example.com"
+      }
+    },
+    {
+      "resource": "postfix_antispam_settings",
+      "go_name": "PostfixAntispam",
+      "plural": "Antispam",
+      "description": "Postfix antispam integration with Rspamd (Services \u2192 Postfix \u2192 Antispam).",
+      "model": "plugins/mail/postfix/Postfix/Antispam.xml",
+      "node": "",
+      "get": "postfix/antispam/get",
+      "set": "postfix/antispam/set",
+      "path": [
+        "antispam"
+      ],
+      "reconfigure": "postfix/service/reconfigure",
+      "fields": {
+        "enable_rspamd": {
+          "description": "Pass mail through Rspamd as a milter."
+        },
+        "default_action": {
+          "description": "`accept` or `tempfail` when Rspamd is unreachable."
+        }
+      },
+      "example": {
+        "enable_rspamd": "1"
+      }
+    }
+  ]
+}

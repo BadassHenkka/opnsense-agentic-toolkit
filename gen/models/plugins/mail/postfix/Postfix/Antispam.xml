@@ -1,0 +1,19 @@
+<model>
+    <mount>//OPNsense/postfix/antispam</mount>
+    <description>Postfix Antispam configuration</description>
+    <version>1.0.2</version>
+    <items>
+        <enable_rspamd type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </enable_rspamd>
+        <default_action type="OptionField">
+            <Default>accept</Default>
+            <Required>Y</Required>
+            <OptionValues>
+                <accept>accept</accept>
+                <tempfail>tempfail</tempfail>
+            </OptionValues>
+        </default_action>
+    </items>
+</model>

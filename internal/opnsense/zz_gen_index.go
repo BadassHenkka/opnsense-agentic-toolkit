@@ -30,6 +30,8 @@ type generatedServices struct {
 	Monit *MonitService
 	// NodeExporter manages Services → Prometheus Exporter (plugin os-node_exporter).
 	NodeExporter *NodeExporterService
+	// Postfix manages Services → Postfix (plugin os-postfix).
+	Postfix *PostfixService
 	// Routing manages System → Gateways and System → Routes.
 	Routing *RoutingService
 	// System manages System → Settings: cron, logging and tunables.
@@ -60,6 +62,7 @@ func (c *Client) initGenerated() {
 	c.Kea = newKeaService(c)
 	c.Monit = newMonitService(c)
 	c.NodeExporter = newNodeExporterService(c)
+	c.Postfix = newPostfixService(c)
 	c.Routing = newRoutingService(c)
 	c.System = newSystemService(c)
 	c.TrafficShaper = newTrafficShaperService(c)
