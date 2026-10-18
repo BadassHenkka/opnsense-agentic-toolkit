@@ -1,0 +1,138 @@
+{
+  "area": "ids",
+  "title": "Services \u2192 Intrusion Detection (Suricata)",
+  "service": "IDS",
+  "items": [
+    {
+      "resource": "ids_policy",
+      "go_name": "IDSPolicy",
+      "plural": "Policies",
+      "description": "An IDS policy: selects rules from enabled rulesets by their properties and changes their action (Services \u2192 Intrusion Detection \u2192 Policy).",
+      "node": "policies.policy",
+      "key": "policy",
+      "suffix": "Policy",
+      "actions": {
+        "search": "searchPolicy"
+      },
+      "name_field": "description",
+      "zero_field": "description",
+      "model": "core/IDS/IDS.xml",
+      "base": "ids/settings",
+      "reconfigure": "ids/service/reconfigure",
+      "fields": {
+        "prio": {
+          "type": "int",
+          "description": "Priority; lower numbers are evaluated first."
+        },
+        "action": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Rule actions the policy matches: `disable`, `alert`, `drop`."
+        },
+        "rulesets": {
+          "type": "refs",
+          "description": "Ruleset (file) ids the policy applies to; empty for all."
+        },
+        "content": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Rule metadata filters, e.g. `classtype.trojan-activity`."
+        },
+        "new_action": {
+          "description": "Action to apply: `default`, `alert`, `drop` or `disable`."
+        }
+      },
+      "example": {
+        "description": "drop trojans",
+        "new_action": "drop",
+        "action": "alert"
+      }
+    },
+    {
+      "resource": "ids_user_rule",
+      "go_name": "IDSUserRule",
+      "plural": "UserRules",
+      "description": "A user-defined IDS rule: alert, drop or pass for a source/destination pair, or for a TLS fingerprint (Services \u2192 Intrusion Detection \u2192 User defined).",
+      "node": "userDefinedRules.rule",
+      "key": "rule",
+      "suffix": "UserRule",
+      "actions": {
+        "search": "searchUserRule"
+      },
+      "name_field": "description",
+      "zero_field": "description",
+      "model": "core/IDS/IDS.xml",
+      "base": "ids/settings",
+      "reconfigure": "ids/service/reconfigure",
+      "fields": {
+        "fingerprint": {
+          "description": "TLS certificate SHA1 fingerprint (colon separated)."
+        },
+        "bypass": {
+          "description": "Bypass the engine for matching traffic (IPS)."
+        },
+        "source": {
+          "attr": "source_network",
+          "description": "Source address or network; empty for any."
+        },
+        "destination": {
+          "attr": "destination_network",
+          "description": "Destination address or network; empty for any."
+        }
+      },
+      "example": {
+        "description": "block bad host",
+        "source": "10.0.0.5",
+        "action": "drop"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "ids_settings",
+      "go_name": "IDSGeneral",
+      "plural": "General",
+      "description": "Intrusion detection general settings (Services \u2192 Intrusion Detection \u2192 Settings). Enabling IPS mode (netmap/divert) changes how traffic flows; test on a spare interface first.",
+      "model": "core/IDS/IDS.xml",
+      "node": "general",
+      "get": "ids/settings/get",
+      "set": "ids/settings/set",
+      "path": [
+        "ids",
+        "general"
+      ],
+      "reconfigure": "ids/service/reconfigure",
+      "fields": {
+        "interfaces": {
+          "type": "refs",
+          "description": "Interfaces to inspect."
+        },
+        "homenet": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Local networks (HOME_NET)."
+        },
+        "UpdateCron": {
+          "skip": true
+        },
+        "detect.Profile": {
+          "attr": "detect_profile",
+          "type": "string"
+        },
+        "detect.toclient_groups": {
+          "attr": "detect_toclient_groups",
+          "type": "int"
+        },
+        "detect.toserver_groups": {
+          "attr": "detect_toserver_groups",
+          "type": "int"
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "mode": "pcap",
+        "interfaces": "wan"
+      }
+    }
+  ]
+}

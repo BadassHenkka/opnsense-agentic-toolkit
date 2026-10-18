@@ -44,6 +44,7 @@ Supported so far:
 | Interfaces → VLAN, Virtual IPs | `opnsense_vlan`, `opnsense_virtual_ip` | `interfaces` (read-only) |
 | Firewall → Categories | `opnsense_firewall_category` | `firewall` (read-only) |
 | Firewall → NAT → Port Forward, Outbound, One-to-One, NPTv6 | `opnsense_firewall_nat_port_forward`, `opnsense_firewall_nat_outbound` (+ `_mode`), `opnsense_firewall_nat_one_to_one`, `opnsense_firewall_nat_npt` | `firewall` (read-only) |
+| Services → Intrusion Detection | `opnsense_ids_settings`, `opnsense_ids_policy`, `opnsense_ids_user_rule`, `opnsense_ids_ruleset` | `ids` (read-only) |
 | Firewall → Groups | `opnsense_firewall_interface_group` | `firewall` (read-only) |
 | System → Cron, Logging, Tunables | `opnsense_cron_job`, `opnsense_syslog_destination`, `opnsense_syslog_settings`, `opnsense_tunable` | `system` (read-only) |
 | Services → Caddy Web Server (plugin os-caddy) | `opnsense_caddy_settings`, `opnsense_caddy_domain`, `opnsense_caddy_subdomain`, `opnsense_caddy_handler`, `opnsense_caddy_access_list`, `opnsense_caddy_basic_auth`, `opnsense_caddy_header`, `opnsense_caddy_layer4_route` | `caddy` |

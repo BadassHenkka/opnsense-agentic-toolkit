@@ -14,6 +14,7 @@ func generatedTools(c *opnsense.Client) []tool {
 	tools = append(tools, genDnsmasqTools(c)...)
 	tools = append(tools, genDynDNSTools(c)...)
 	tools = append(tools, genFirewallTools(c)...)
+	tools = append(tools, genIDSTools(c)...)
 	tools = append(tools, genInterfacesTools(c)...)
 	tools = append(tools, genKeaTools(c)...)
 	tools = append(tools, genNodeExporterTools(c)...)
@@ -39,4 +40,4 @@ func genMapValues(vs []string, m map[string]string) []string {
 }
 
 // generatedToolsets lists the toolsets of generated areas.
-var generatedToolsets = []string{genAuthToolset, genCaptivePortalToolset, genDnsmasqToolset, genDynDNSToolset, genFirewallToolset, genInterfacesToolset, genKeaToolset, genNodeExporterToolset, genSystemToolset, genTrustToolset, genUnboundToolset}
+var generatedToolsets = []string{genAuthToolset, genCaptivePortalToolset, genDnsmasqToolset, genDynDNSToolset, genFirewallToolset, genIDSToolset, genInterfacesToolset, genKeaToolset, genNodeExporterToolset, genSystemToolset, genTrustToolset, genUnboundToolset}

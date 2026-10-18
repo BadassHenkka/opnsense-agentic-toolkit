@@ -134,6 +134,7 @@ func (p *opnsenseProvider) Resources(context.Context) []func() resource.Resource
 		NewFirewallRuleResource,
 		NewPluginResource,
 		NewAuthAPIKeyResource,
+		NewIDSRulesetResource,
 	}, generatedResources()...) // zz_gen_*.go
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"auth", "captiveportal", "dnsmasq", "dyndns", "firewall", "interfaces", "kea", "nodeexporter", "system", "trust", "unbound"}})
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"auth", "captiveportal", "dnsmasq", "dyndns", "firewall", "ids", "interfaces", "kea", "nodeexporter", "system", "trust", "unbound"}})
 	for _, name := range []string{
 		"auth_group_list",
 		"auth_user_list",
@@ -30,6 +30,9 @@ func TestGeneratedTools(t *testing.T) {
 		"firewall_nat_npt_list",
 		"firewall_interface_group_list",
 		"firewall_nat_outbound_mode_get",
+		"ids_policy_list",
+		"ids_user_rule_list",
+		"ids_settings_get",
 		"interface_list",
 		"vlan_list",
 		"virtual_ip_list",
