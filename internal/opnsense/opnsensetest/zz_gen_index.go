@@ -3,4 +3,5 @@
 package opnsensetest
 
 func registerGenerated(s *Server) {
+	registerGenFirewall(s)
 }

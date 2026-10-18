@@ -33,12 +33,13 @@ type tool struct {
 // Add a new resource by writing its <area>_tools.go file and appending it here.
 func allTools(c *opnsense.Client) []tool {
 	var tools []tool
+	tools = append(tools, aliasTools(c)...)
 	tools = append(tools, generatedTools(c)...) // zz_gen_*.go, read-only
 	return tools
 }
 
 // toolsetNames lists every toolset. TestToolsetNames checks it matches the tools.
-var toolsetNames = append([]string{}, generatedToolsets...)
+var toolsetNames = append([]string{aliasToolset}, generatedToolsets...)
 
 // Toolsets lists the toolset names, for --help output.
 func Toolsets() []string {

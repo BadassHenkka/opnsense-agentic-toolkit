@@ -8,7 +8,9 @@ import (
 
 // generatedResources lists every generated resource.
 func generatedResources() []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		NewAliasResource,
+	}
 }
 
 // genMapValue translates v through m, or returns it unchanged.

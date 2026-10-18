@@ -90,3 +90,20 @@ already holds the facts: field types, defaults, option values, ranges, masks, un
 
 Pilot areas: VLANs, virtual IPs, firewall categories, cron jobs, syslog destinations and
 settings, tunables.
+
+## First resource: firewall alias
+
+Chosen because it is a clean MVC controller (`/api/firewall/alias`), easy to test safely
+(an unused alias affects nothing), and the natural building block for firewall rules later.
+
+Fields handled: `name`, `type`, `content` (list), `description`, `enabled`, `proto`,
+`categories`, `updatefreq`. Interface-scoped and GeoIP-specific fields come later.
+
+OPNsense quirks the client absorbs:
+- Writes are wrapped: `{"alias": {...}}`.
+- `getItem` returns option fields as maps (`{"host": {"value": "Host(s)", "selected": 1}}`);
+  the client decodes them to the selected key(s).
+- Booleans are `"1"`/`"0"`; `content` is newline-separated on write.
+- Validation failures come back as HTTP 200 with `{"result":"failed","validations":{...}}`;
+  the client turns that into a `*ValidationError`.
+- `delItem` fails while the alias is referenced by a rule.

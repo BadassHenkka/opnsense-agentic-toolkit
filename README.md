@@ -19,6 +19,12 @@ once:
 - **`mcp-opnsense`**: local MCP server (stdio) for steps 1 and 2.
 - **`terraform-provider-opnsense`**: Terraform provider (Plugin Framework, protocol 6) for step 3.
 
+Supported so far:
+
+| OPNsense page | Terraform resources | MCP toolset |
+|---|---|---|
+| Firewall → Aliases | `opnsense_firewall_alias` | `firewall_alias` |
+
 ## Quick start
 
 Four steps, then one command tells you whether it worked.
@@ -94,6 +100,7 @@ through Terraform. Use `--read-only` when you only want exploration.
 
 | Toolset | Tools |
 |---|---|
+| `firewall_alias` | `firewall_alias_{list,get,create,update,delete}`, `firewall_alias_apply` |
 
 Client config examples: [examples/mcp](examples/mcp). Run `./bin/mcp-opnsense --check` first. For Claude Code:
 
@@ -131,6 +138,7 @@ Then see [examples/terraform/main.tf](examples/terraform/main.tf). Existing obje
 name or UUID:
 
 ```sh
+terraform import opnsense_firewall_alias.servers homelab_servers
 ```
 
 ## Adding a resource

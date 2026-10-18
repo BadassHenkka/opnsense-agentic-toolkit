@@ -1,0 +1,68 @@
+{
+  "area": "firewall",
+  "title": "Firewall → Aliases, NAT → Port Forward and Settings → Categories",
+  "items": [
+    {
+      "resource": "firewall_alias",
+      "go_name": "Alias",
+      "plural": "Aliases",
+      "description": "A firewall alias (Firewall → Aliases). Changes are applied (reconfigured) after every write.",
+      "model": "core/Firewall/Alias.xml",
+      "node": "aliases.alias",
+      "base": "firewall/alias",
+      "key": "alias",
+      "suffix": "Item",
+      "reconfigure": "firewall/alias/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "mcp": false,
+      "fields": {
+        "name": {
+          "type": "string",
+          "description": "Alias name: letters, digits and underscores, at most 32 characters.",
+          "validators": [
+            "stringvalidator.RegexMatches(aliasNameRe, \"must be 1-32 letters, digits or underscores\")"
+          ]
+        },
+        "type": {
+          "description": "Alias type."
+        },
+        "content": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Entries: hosts, networks, ports, URLs or nested alias names, depending on type.",
+          "sep": "\n"
+        },
+        "proto": {
+          "description": "IPv4 and/or IPv6, for geoip and asn aliases."
+        },
+        "categories": {
+          "description": "Category IDs (opnsense_firewall_category)."
+        },
+        "updatefreq": {
+          "attr": "update_freq",
+          "go_name": "UpdateFreq",
+          "description": "Refresh interval in days for url and urltable aliases."
+        },
+        "interface": {
+          "description": "Interface for dynipv6host aliases."
+        },
+        "password": {
+          "sensitive": true,
+          "description": "Password or token for url aliases behind authentication."
+        },
+        "username": {
+          "description": "User name for url aliases behind authentication."
+        }
+      },
+      "example": {
+        "name": "homelab_servers",
+        "type": "host",
+        "content": "192.168.1.10\n192.168.1.11"
+      },
+      "update": {
+        "content": "192.168.1.10\n192.168.1.12"
+      }
+    }
+  ]
+}

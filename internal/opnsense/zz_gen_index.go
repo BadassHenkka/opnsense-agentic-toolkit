@@ -4,7 +4,10 @@ package opnsense
 
 // generatedServices holds every generated area; Client embeds it.
 type generatedServices struct {
+	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
+	Firewall *FirewallService
 }
 
 func (c *Client) initGenerated() {
+	c.Firewall = newFirewallService(c)
 }

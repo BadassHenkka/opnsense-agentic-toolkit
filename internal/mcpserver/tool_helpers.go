@@ -103,3 +103,22 @@ func listTool[T any, S any](toolset, name, title, desc string, ic *opnsense.Item
 		})
 	}}
 }
+
+// deleteTool is a generic delete tool; note is returned to tell the model how to apply.
+func deleteTool[T any, S opnsense.NamedRow](toolset, name, title, what, extra, note string, ic *opnsense.ItemController[T, S]) tool {
+	return tool{toolset: toolset, register: func(s *mcp.Server) {
+		mcp.AddTool(s, &mcp.Tool{Name: name,
+			Description: "Delete a " + what + ", by UUID or name." + extra,
+			Annotations: &mcp.ToolAnnotations{Title: title, DestructiveHint: ptr(true), IdempotentHint: true},
+		}, func(ctx context.Context, _ *mcp.CallToolRequest, in NameRef) (*mcp.CallToolResult, stagedOut, error) {
+			id, err := resolveNamed(ctx, ic, in, what)
+			if err != nil {
+				return nil, stagedOut{}, err
+			}
+			if err := ic.Delete(ctx, id); err != nil {
+				return nil, stagedOut{}, notFoundAs(err, what, id)
+			}
+			return nil, stagedOut{UUID: id, Staged: true, Note: note}, nil
+		})
+	}}
+}
