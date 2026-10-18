@@ -31,6 +31,7 @@ Supported so far:
 | Firewall → Rules | `opnsense_firewall_rule` | `firewall_rule` |
 | System → Firmware (plugins, updates) | `opnsense_plugin` | `firmware` |
 | Services → Wake on LAN (plugin os-wol) | `opnsense_wol_host`, action `opnsense_wol_wake` | `wol` |
+| Services → Caddy Web Server (plugin os-caddy) | `opnsense_caddy_settings`, `opnsense_caddy_domain`, `opnsense_caddy_subdomain`, `opnsense_caddy_handler`, `opnsense_caddy_access_list`, `opnsense_caddy_basic_auth`, `opnsense_caddy_header`, `opnsense_caddy_layer4_route` | `caddy` |
 
 ## Quick start
 
@@ -114,6 +115,7 @@ through Terraform. Use `--read-only` when you only want exploration.
 | `firewall_rule` | `firewall_interface_list`; `firewall_rule_{list,get,create,update,delete,move}`; `firewall_rule_apply` (verifies the API is still reachable) |
 | `firmware` | `firmware_status`, `firmware_plugin_list`, `firmware_plugin_{install,remove}`, `firmware_update` (minor updates; never reboots) |
 | `wol` | `wol_host_{list,create,update,delete}`, `wol_wake` (saved host or any MAC), `wol_wake_all` |
+| `caddy` | `caddy_status`, `caddy_settings_update`, `caddy_caddyfile_get`; `caddy_expose` (hostname → LAN service in one call); `caddy_{domain,subdomain,handler,access_list}_{list,delete}`, `caddy_handler_{get,update}`, `caddy_access_list_create`; `caddy_apply` |
 | `acme` | `acme_settings_{get,update}`; `acme_{account,challenge_type,automation,certificate}_{list,get,create,update,delete}`; `acme_challenge_type_fields`, `acme_automation_fields` (discover provider fields); `acme_account_register`; `acme_certificate_{issue,revoke,run_automations}`; `acme_apply` |
 
 ACME credentials (DNS API tokens, EAB keys, automation passwords) can be set through MCP but
@@ -222,6 +224,46 @@ action "opnsense_wol_wake" "nas" {
 Run it with `terraform apply -invoke=action.opnsense_wol_wake.nas`. The plugin sends to the
 interface's broadcast address, which it computes from the interface's *static* IPv4 address,
 so waking on a DHCP-configured interface fails with "Incorrect IPv4 configuration on interface".
+
+### Caddy reverse proxy
+
+A **domain** is a site (`app.example.com`, or `*.example.com` with the DNS-01 challenge); a
+**handler** sends its requests, optionally only below a path, to upstreams on the LAN; a
+**subdomain** is one name under a wildcard domain, so all of them share one certificate:
+
+```hcl
+resource "opnsense_plugin" "caddy" { name = "os-caddy" }
+
+resource "opnsense_caddy_settings" "this" {
+  acme_email   = "me@example.com"
+  dns_provider = "cloudflare"          # only needed for wildcards / DNS-01
+  dns_api_key  = var.cloudflare_token
+  depends_on   = [opnsense_plugin.caddy]
+}
+
+resource "opnsense_caddy_domain" "lab" {
+  domain        = "*.lab.example.com"
+  dns_challenge = true
+}
+
+resource "opnsense_caddy_subdomain" "grafana" {
+  domain_id = opnsense_caddy_domain.lab.id
+  subdomain = "grafana.lab.example.com"
+}
+
+resource "opnsense_caddy_handler" "grafana" {
+  domain_id     = opnsense_caddy_domain.lab.id
+  subdomain_id  = opnsense_caddy_subdomain.grafana.id
+  upstreams     = ["192.168.1.30"]
+  upstream_port = 3000
+}
+```
+
+Before enabling Caddy on 80/443, move the web GUI to another port (System → Settings →
+Administration). For LAN-only names, point them at the firewall with an Unbound host override.
+Through MCP, `caddy_expose` does the domain/subdomain/handler dance in one call. Basic auth users,
+headers and layer4 routes are Terraform resources (`opnsense_caddy_basic_auth`, `_header`,
+`_layer4_route`); the layer4 OpenVPN static keys are not modelled.
 
 ### Firewall rules and lockout
 

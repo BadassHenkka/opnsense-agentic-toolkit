@@ -312,3 +312,29 @@ Source: opnsense/plugins `net/wol` (`Wol.xml`, `Api/WolController.php`, `actions
   `action` (terraform-plugin-framework `action` package, Terraform 1.14+): `Schema`, `Configure`
   (provider sets `ActionData`), `ValidateConfig` (host_id xor interface+mac) and `Invoke`, which
   reports progress with `SendProgress`.
+
+## Ninth area: Caddy reverse proxy (plugin os-caddy 2.x)
+
+Source: opnsense/plugins `www/caddy` (`Caddy.xml` 1.4.0, `Api/ReverseProxyController.php`,
+`GeneralController`, `ServiceController`, `DiagnosticsController`).
+
+- One model with a `general` section and arrays under `reverseproxy`. Items live at
+  `caddy/reverse_proxy/{add,get,set,del,search}<Suffix>`: `ReverseProxy` (key `reverse`,
+  domains), `Subdomain`, `Handle`, `AccessList`; also BasicAuth, Header, Layer4, Layer4Openvpn
+  (not modelled yet). `caddy/general/get` returns the *whole* model under `caddy`; set posts
+  `{"caddy": {"general": {...}}}` and only changes posted fields, so unmodelled settings survive.
+- Apply is `caddy/service/reconfigure`; the controller overrides `reconfigureForceRestart` to
+  reload instead of restart. `caddy/diagnostics/caddyfile` returns the generated Caddyfile,
+  exposed as the read-only MCP tool `caddy_caddyfile_get` — the best way to see what really runs.
+- **Safe delete** (`$internalModelUseSafeDelete`): deleting an item still referenced by another
+  (a domain used by a handler, an access list used by a domain) throws a UserException. In
+  Terraform, referencing ids gives the right destroy order; the fake implements `CanDelete`.
+- Numeric options: `DisableTls` 0 = https, 1 = http; `HttpTls` 0 = http, 1 = https, 2 = h2c.
+  Terraform and MCP expose `tls` (bool) and `upstream_scheme` (`http`/`https`/`h2c`) instead.
+  `HandleType` handle/handle_path is exposed as `strip_path`.
+- Model validation reproduced in the fake: unique domain + port (an empty port counts as both 80
+  and 443), plain HTTP cannot combine with DNS-01 or a custom certificate, paths start with `/`.
+- Handlers have no name; their description doubles as the import/lookup name.
+- `caddy_expose` (MCP) reuses an exact domain, or a wildcard one level up (creating the subdomain),
+  or creates the domain, then adds the handler. It refuses a second handler for the same
+  domain/subdomain/path and rolls back what it created when a later step fails.

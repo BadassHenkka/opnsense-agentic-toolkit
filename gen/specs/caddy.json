@@ -1,0 +1,583 @@
+{
+  "area": "caddy",
+  "title": "Services \u2192 Caddy Web Server (plugin os-caddy)",
+  "mcp": false,
+  "settings": [
+    {
+      "resource": "caddy_settings",
+      "go_name": "CaddyGeneral",
+      "plural": "General",
+      "description": "Caddy general settings (Services \u2192 Caddy Web Server \u2192 General Settings). Move the web GUI off ports 80/443 (System \u2192 Settings \u2192 Administration) before enabling Caddy on them.",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "node": "general",
+      "get": "caddy/general/get",
+      "set": "caddy/general/set",
+      "path": [
+        "caddy",
+        "general"
+      ],
+      "reconfigure": "caddy/service/reconfigure",
+      "disable": "enabled",
+      "fields": {
+        "enabled": {
+          "default": "1",
+          "description": "Run Caddy."
+        },
+        "HttpPort": {
+          "attr": "http_port",
+          "go_name": "HTTPPort",
+          "type": "int",
+          "description": "HTTP port; unset means 80."
+        },
+        "HttpsPort": {
+          "attr": "https_port",
+          "go_name": "HTTPSPort",
+          "type": "int",
+          "description": "HTTPS port; unset means 443."
+        },
+        "TlsEmail": {
+          "attr": "acme_email",
+          "go_name": "TLSEmail",
+          "description": "Email for the ACME account used for automatic certificates."
+        },
+        "TlsAutoHttps": {
+          "attr": "auto_https",
+          "go_name": "TLSAutoHTTPS",
+          "description": "Empty keeps automatic HTTPS on."
+        },
+        "TlsDnsProvider": {
+          "attr": "dns_provider",
+          "go_name": "TLSDNSProvider",
+          "description": "DNS provider for the DNS-01 challenge. Needed for wildcard domains."
+        },
+        "TlsDnsApiKey": {
+          "attr": "dns_api_key",
+          "go_name": "TLSDNSAPIKey",
+          "sensitive": true,
+          "description": "API key/token for dns_provider."
+        },
+        "LogLevel": {
+          "description": "Empty for INFO."
+        },
+        "accesslist": {
+          "attr": "access_list_id",
+          "go_name": "AccessList",
+          "description": "opnsense_caddy_access_list id applied to every domain."
+        }
+      },
+      "example": {
+        "TlsEmail": "me@example.com",
+        "TlsDnsProvider": "cloudflare",
+        "TlsDnsApiKey": "token",
+        "HttpsPort": "8443"
+      }
+    }
+  ],
+  "items": [
+    {
+      "resource": "caddy_domain",
+      "go_name": "CaddyDomain",
+      "plural": "Domains",
+      "description": "A Caddy reverse proxy domain (Services \u2192 Caddy \u2192 Reverse Proxy \u2192 Domains). Caddy obtains its certificate automatically. Add an opnsense_caddy_handler to say where its requests go.",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "node": "reverseproxy.reverse",
+      "base": "caddy/reverse_proxy",
+      "key": "reverse",
+      "suffix": "ReverseProxy",
+      "reconfigure": "caddy/service/reconfigure",
+      "name_field": "FromDomain",
+      "zero_field": "FromDomain",
+      "fields": {
+        "FromDomain": {
+          "attr": "domain",
+          "go_name": "Domain",
+          "description": "Hostname, e.g. `app.example.com`, or a wildcard such as `*.example.com` (needs dns_challenge)."
+        },
+        "FromPort": {
+          "attr": "port",
+          "go_name": "Port",
+          "type": "int",
+          "description": "Listen port; unset uses the general HTTP/HTTPS ports."
+        },
+        "accesslist": {
+          "attr": "access_list_id",
+          "go_name": "AccessList",
+          "description": "opnsense_caddy_access_list id that applies to the whole domain."
+        },
+        "basicauth": {
+          "attr": "basic_auth_ids",
+          "go_name": "BasicAuth",
+          "description": "Basic auth user ids (opnsense_caddy_basic_auth)."
+        },
+        "DisableTls": {
+          "attr": "tls",
+          "go_name": "DisableTLS",
+          "as_bool": {
+            "true": "0",
+            "false": "1"
+          },
+          "description": "Serve HTTPS. Set false for a plain http:// site; it cannot be combined with dns_challenge or custom_certificate."
+        },
+        "DnsChallenge": {
+          "attr": "dns_challenge",
+          "go_name": "DNSChallenge",
+          "description": "Get the certificate with DNS-01 (configure dns_provider in opnsense_caddy_settings). Required for wildcard domains."
+        },
+        "DnsChallengeOverrideDomain": {
+          "attr": "dns_challenge_override_domain",
+          "go_name": "DNSChallengeOverrideDomain"
+        },
+        "CustomCertificate": {
+          "attr": "custom_certificate",
+          "description": "Refid of a certificate in System \u2192 Trust \u2192 Certificates, instead of ACME."
+        },
+        "AccessLog": {
+          "attr": "access_log",
+          "description": "Write an access log for this domain."
+        },
+        "DynDns": {
+          "attr": "dyn_dns",
+          "go_name": "DynDNS",
+          "description": "Update this name with the dynamic DNS settings."
+        },
+        "AcmePassthrough": {
+          "attr": "acme_passthrough",
+          "go_name": "ACMEPassthrough"
+        },
+        "ClientAuthMode": {
+          "attr": "client_auth_mode"
+        },
+        "ClientAuthTrustPool": {
+          "attr": "client_auth_trust_pool"
+        }
+      },
+      "example": {
+        "FromDomain": "*.example.com",
+        "DnsChallenge": "1"
+      }
+    },
+    {
+      "resource": "caddy_subdomain",
+      "go_name": "CaddySubdomain",
+      "plural": "Subdomains",
+      "description": "A subdomain of a wildcard Caddy domain, e.g. `app.example.com` under `*.example.com`. All subdomains share the wildcard certificate.",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "node": "reverseproxy.subdomain",
+      "base": "caddy/reverse_proxy",
+      "key": "subdomain",
+      "suffix": "Subdomain",
+      "reconfigure": "caddy/service/reconfigure",
+      "name_field": "FromDomain",
+      "zero_field": "FromDomain",
+      "no_test": true,
+      "fields": {
+        "reverse": {
+          "attr": "domain_id",
+          "go_name": "Domain",
+          "description": "opnsense_caddy_domain id of the wildcard domain."
+        },
+        "FromDomain": {
+          "attr": "subdomain",
+          "go_name": "Subdomain",
+          "description": "Full name, e.g. `app.example.com`."
+        },
+        "accesslist": {
+          "attr": "access_list_id",
+          "go_name": "AccessList",
+          "description": "opnsense_caddy_access_list id."
+        },
+        "basicauth": {
+          "attr": "basic_auth_ids",
+          "go_name": "BasicAuth"
+        },
+        "DynDns": {
+          "attr": "dyn_dns",
+          "go_name": "DynDNS",
+          "description": "Update this name with the dynamic DNS settings."
+        },
+        "AcmePassthrough": {
+          "attr": "acme_passthrough",
+          "go_name": "ACMEPassthrough"
+        },
+        "ClientAuthMode": {
+          "attr": "client_auth_mode"
+        },
+        "ClientAuthTrustPool": {
+          "attr": "client_auth_trust_pool"
+        }
+      }
+    },
+    {
+      "resource": "caddy_handler",
+      "go_name": "CaddyHandler",
+      "plural": "Handlers",
+      "description": "A Caddy handler (Services \u2192 Caddy \u2192 Reverse Proxy \u2192 Handlers): send a domain's or subdomain's requests, optionally only those below a path, to one or more upstreams.",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "node": "reverseproxy.handle",
+      "base": "caddy/reverse_proxy",
+      "key": "handle",
+      "suffix": "Handle",
+      "reconfigure": "caddy/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "-",
+      "no_test": true,
+      "fields": {
+        "reverse": {
+          "attr": "domain_id",
+          "go_name": "Domain",
+          "description": "opnsense_caddy_domain id."
+        },
+        "subdomain": {
+          "attr": "subdomain_id",
+          "go_name": "Subdomain",
+          "description": "opnsense_caddy_subdomain id, for a subdomain of a wildcard domain."
+        },
+        "HandleType": {
+          "attr": "strip_path",
+          "go_name": "HandleType",
+          "as_bool": {
+            "true": "handle_path",
+            "false": "handle"
+          },
+          "description": "Strip the matched path prefix before proxying (Caddy handle_path)."
+        },
+        "HandlePath": {
+          "attr": "path",
+          "go_name": "Path",
+          "description": "Path matcher, e.g. `/api/*`. Empty matches every request."
+        },
+        "accesslist": {
+          "attr": "access_list_id",
+          "go_name": "AccessList",
+          "description": "opnsense_caddy_access_list id."
+        },
+        "basicauth": {
+          "attr": "basic_auth_ids",
+          "go_name": "BasicAuth"
+        },
+        "header": {
+          "attr": "header_ids",
+          "go_name": "Headers"
+        },
+        "HandleDirective": {
+          "attr": "directive",
+          "go_name": "Directive"
+        },
+        "ToDomain": {
+          "attr": "upstreams",
+          "go_name": "Upstreams",
+          "description": "Upstream IPs or hostnames, e.g. `[\"192.168.1.20\"]`. Several mean load balancing."
+        },
+        "ToPort": {
+          "attr": "upstream_port",
+          "go_name": "UpstreamPort",
+          "type": "int",
+          "description": "Upstream port; unset uses the scheme's default."
+        },
+        "ToPath": {
+          "attr": "upstream_path",
+          "go_name": "UpstreamPath",
+          "description": "Path prefix to add upstream."
+        },
+        "HttpTls": {
+          "attr": "upstream_scheme",
+          "go_name": "UpstreamScheme",
+          "values": {
+            "http": "0",
+            "https": "1",
+            "h2c": "2"
+          },
+          "description": "How Caddy talks to the upstream."
+        },
+        "HttpTlsInsecureSkipVerify": {
+          "attr": "tls_insecure_skip_verify",
+          "go_name": "TLSInsecureSkipVerify",
+          "description": "Accept any certificate from an https upstream (self-signed)."
+        },
+        "HttpTlsServerName": {
+          "attr": "tls_server_name",
+          "go_name": "TLSServerName",
+          "description": "SNI/server name to use towards an https upstream."
+        },
+        "HttpTlsTrustedCaCerts": {
+          "attr": "tls_trusted_ca_certs",
+          "go_name": "TLSTrustedCACerts"
+        },
+        "ForwardAuth": {
+          "attr": "forward_auth"
+        },
+        "HttpVersion": {
+          "attr": "http_version",
+          "go_name": "HTTPVersion"
+        },
+        "HttpKeepalive": {
+          "attr": "http_keepalive",
+          "go_name": "HTTPKeepalive"
+        }
+      },
+      "example": {
+        "ToDomain": "192.168.1.20",
+        "description": "app"
+      }
+    },
+    {
+      "resource": "caddy_access_list",
+      "go_name": "CaddyAccessList",
+      "plural": "AccessLists",
+      "description": "A Caddy access list: only the listed client IPs may connect (or, with invert, they may not). Attach it to a domain, subdomain or handler with access_list_id.",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "node": "reverseproxy.accesslist",
+      "base": "caddy/reverse_proxy",
+      "key": "accesslist",
+      "suffix": "AccessList",
+      "reconfigure": "caddy/service/reconfigure",
+      "name_field": "accesslistName",
+      "zero_field": "accesslistName",
+      "fields": {
+        "accesslistName": {
+          "attr": "name",
+          "go_name": "Name"
+        },
+        "clientIps": {
+          "attr": "client_ips",
+          "go_name": "ClientIPs",
+          "tf_type": "set",
+          "description": "IP addresses or networks, e.g. `192.168.1.0/24`.",
+          "validators": [
+            "setvalidator.ValueStringsAre(ipOrCIDR{})"
+          ]
+        },
+        "accesslistInvert": {
+          "attr": "invert",
+          "go_name": "Invert",
+          "description": "Deny the listed IPs instead of allowing only them."
+        },
+        "HttpResponseCode": {
+          "attr": "response_code",
+          "go_name": "ResponseCode",
+          "description": "HTTP status for refused clients; unset closes the connection."
+        },
+        "HttpResponseMessage": {
+          "attr": "response_message",
+          "go_name": "ResponseMessage",
+          "description": "Body sent with response_code."
+        },
+        "RequestMatcher": {
+          "attr": "request_matcher",
+          "description": "`client_ip` honours trusted proxy headers; `remote_ip` is the TCP peer."
+        }
+      },
+      "example": {
+        "accesslistName": "lan",
+        "clientIps": "192.168.1.0/24"
+      }
+    },
+    {
+      "resource": "caddy_basic_auth",
+      "go_name": "CaddyBasicAuth",
+      "plural": "BasicAuths",
+      "description": "A Caddy basic auth user. Attach it to a domain, subdomain or handler with basic_auth_ids. Caddy hashes the password on save, so it is write-only here.",
+      "node": "reverseproxy.basicauth",
+      "key": "basicauth",
+      "suffix": "BasicAuth",
+      "name_field": "basicauthuser",
+      "zero_field": "basicauthuser",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "base": "caddy/reverse_proxy",
+      "reconfigure": "caddy/service/reconfigure",
+      "fields": {
+        "basicauthuser": {
+          "attr": "username",
+          "go_name": "Username",
+          "description": "Letters and digits only, 2-72 characters."
+        },
+        "basicauthpass": {
+          "attr": "password",
+          "go_name": "Password",
+          "sensitive": true,
+          "write_only": true,
+          "description": "Plain password; Caddy stores a hash and never returns it."
+        }
+      },
+      "example": {
+        "basicauthuser": "alice",
+        "basicauthpass": "secret"
+      }
+    },
+    {
+      "resource": "caddy_header",
+      "go_name": "CaddyHeader",
+      "plural": "Headers",
+      "description": "A Caddy header rule (header_up changes the request to the upstream, header_down the response). Attach it to a handler with header_ids.",
+      "node": "reverseproxy.header",
+      "key": "header",
+      "suffix": "Header",
+      "name_field": "HeaderType",
+      "zero_field": "HeaderType",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "base": "caddy/reverse_proxy",
+      "reconfigure": "caddy/service/reconfigure",
+      "fields": {
+        "HeaderUpDown": {
+          "attr": "direction",
+          "go_name": "Direction",
+          "description": "`header_up` or `header_down`."
+        },
+        "HeaderType": {
+          "attr": "name",
+          "go_name": "Name",
+          "description": "Header name; a leading `-` removes it."
+        },
+        "HeaderValue": {
+          "attr": "value",
+          "go_name": "Value"
+        },
+        "HeaderReplace": {
+          "attr": "replace",
+          "go_name": "Replace",
+          "description": "Replacement for a regex match in value."
+        }
+      },
+      "example": {
+        "HeaderType": "X-Forwarded-Proto",
+        "HeaderValue": "https"
+      }
+    },
+    {
+      "resource": "caddy_layer4_route",
+      "go_name": "CaddyLayer4",
+      "plural": "Layer4Routes",
+      "description": "A Caddy layer 4 (TCP/UDP) route that matches by protocol or SNI and proxies to another host. Needs the layer4 module in os-caddy.",
+      "node": "reverseproxy.layer4",
+      "key": "layer4",
+      "suffix": "Layer4",
+      "name_field": "description",
+      "zero_field": "description",
+      "model": "plugins/www/caddy/Caddy/Caddy.xml",
+      "base": "caddy/reverse_proxy",
+      "reconfigure": "caddy/service/reconfigure",
+      "fields": {
+        "Sequence": {
+          "attr": "sequence",
+          "go_name": "Sequence",
+          "type": "int"
+        },
+        "Type": {
+          "attr": "type",
+          "go_name": "Type",
+          "description": "`listener_wrappers` or `global`."
+        },
+        "Protocol": {
+          "attr": "protocol",
+          "go_name": "Protocol",
+          "description": "`tcp` or `udp`."
+        },
+        "FromPort": {
+          "attr": "from_port",
+          "go_name": "FromPort",
+          "type": "int"
+        },
+        "FromDomain": {
+          "attr": "from_domains",
+          "go_name": "FromDomains",
+          "tf_type": "set",
+          "description": "Hostnames matched (SNI/Host)."
+        },
+        "FromOpenvpnModes": {
+          "skip": true
+        },
+        "FromOpenvpnStaticKey": {
+          "skip": true
+        },
+        "Matchers": {
+          "attr": "matcher",
+          "go_name": "Matcher",
+          "description": "tlssni, http, ssh, wireguard, rdp, ... as in the web UI."
+        },
+        "InvertMatchers": {
+          "attr": "invert_matcher",
+          "go_name": "InvertMatcher"
+        },
+        "ToDomain": {
+          "attr": "to_domains",
+          "go_name": "ToDomains",
+          "tf_type": "set"
+        },
+        "TerminateTls": {
+          "attr": "terminate_tls",
+          "go_name": "TerminateTLS"
+        },
+        "ToPort": {
+          "attr": "to_port",
+          "go_name": "ToPort",
+          "type": "int"
+        },
+        "OriginateTls": {
+          "attr": "originate_tls",
+          "go_name": "OriginateTLS"
+        },
+        "ProxyProtocol": {
+          "attr": "proxy_protocol",
+          "go_name": "ProxyProtocol",
+          "description": "`v1`, `v2` or empty."
+        },
+        "lb_policy": {
+          "attr": "lb_policy",
+          "go_name": "LBPolicy"
+        },
+        "lb_try_duration": {
+          "attr": "lb_try_duration",
+          "go_name": "LBTryDuration",
+          "type": "int"
+        },
+        "lb_try_interval": {
+          "attr": "lb_try_interval",
+          "go_name": "LBTryInterval",
+          "type": "int"
+        },
+        "ActiveHealthPort": {
+          "attr": "active_health_port",
+          "go_name": "ActiveHealthPort",
+          "type": "int"
+        },
+        "ActiveHealthInterval": {
+          "attr": "active_health_interval",
+          "go_name": "ActiveHealthInterval",
+          "type": "int"
+        },
+        "ActiveHealthTimeout": {
+          "attr": "active_health_timeout",
+          "go_name": "ActiveHealthTimeout",
+          "type": "int"
+        },
+        "PassiveHealthFailDuration": {
+          "attr": "passive_health_fail_duration",
+          "go_name": "PassiveHealthFailDuration",
+          "type": "int"
+        },
+        "PassiveHealthMaxFails": {
+          "attr": "passive_health_max_fails",
+          "go_name": "PassiveHealthMaxFails",
+          "type": "int"
+        },
+        "PassiveHealthUnhealthyConnectionCount": {
+          "attr": "passive_health_unhealthy_connection_count",
+          "go_name": "PassiveHealthUnhealthyConnectionCount",
+          "type": "int"
+        },
+        "RemoteIp": {
+          "attr": "remote_ips",
+          "go_name": "RemoteIPs",
+          "tf_type": "set"
+        }
+      },
+      "example": {
+        "description": "ssh",
+        "FromPort": "2222",
+        "Matchers": "ssh",
+        "ToDomain": "192.168.1.10",
+        "ToPort": "22"
+      }
+    }
+  ]
+}

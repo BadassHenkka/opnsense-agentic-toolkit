@@ -6,6 +6,8 @@ package opnsense
 type generatedServices struct {
 	// Acme manages Services → ACME Client (plugin os-acme-client).
 	Acme *AcmeService
+	// Caddy manages Services → Caddy Web Server (plugin os-caddy).
+	Caddy *CaddyService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
 	// Routing manages System → Gateways and System → Routes.
@@ -20,6 +22,7 @@ type generatedServices struct {
 
 func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
+	c.Caddy = newCaddyService(c)
 	c.Firewall = newFirewallService(c)
 	c.Routing = newRoutingService(c)
 	c.Unbound = newUnboundService(c)
