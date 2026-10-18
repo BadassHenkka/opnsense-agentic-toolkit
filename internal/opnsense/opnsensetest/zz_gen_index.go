@@ -8,6 +8,7 @@ func registerGenerated(s *Server) {
 	registerGenCaptivePortal(s)
 	registerGenDynDNS(s)
 	registerGenFirewall(s)
+	registerGenInterfaces(s)
 	registerGenNodeExporter(s)
 	registerGenRouting(s)
 	registerGenSystem(s)

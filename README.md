@@ -36,6 +36,8 @@ Supported so far:
 | Services → Dynamic DNS (plugin os-ddclient) | `opnsense_dyndns_settings`, `opnsense_dyndns_account` | `dyndns` (read-only) |
 | Services → Captive Portal | `opnsense_captive_portal_zone` | `captiveportal` (read-only) |
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
+| Interfaces → Assignments, Other Types, Neighbors | `opnsense_interface`, `opnsense_vlan`, `opnsense_virtual_ip`, `opnsense_bridge`, `opnsense_lagg`, `opnsense_gif`, `opnsense_gre`, `opnsense_vxlan`, `opnsense_loopback`, `opnsense_neighbor` | `interfaces` (read-only) |
+| Interfaces → VLAN, Virtual IPs | `opnsense_vlan`, `opnsense_virtual_ip` | `interfaces` (read-only) |
 | System → Cron, Logging, Tunables | `opnsense_cron_job`, `opnsense_syslog_destination`, `opnsense_syslog_settings`, `opnsense_tunable` | `system` (read-only) |
 | Services → Caddy Web Server (plugin os-caddy) | `opnsense_caddy_settings`, `opnsense_caddy_domain`, `opnsense_caddy_subdomain`, `opnsense_caddy_handler`, `opnsense_caddy_access_list`, `opnsense_caddy_basic_auth`, `opnsense_caddy_header`, `opnsense_caddy_layer4_route` | `caddy` |
 
@@ -182,6 +184,7 @@ name or UUID:
 terraform import opnsense_firewall_alias.servers homelab_servers
 terraform import opnsense_unbound_host_override.nas nas.home.lan/A   # name/TYPE if ambiguous
 terraform import opnsense_unbound_host_alias.truenas truenas.home.lan
+terraform import opnsense_interface.lan lan                          # identifier or description
 terraform import opnsense_acme_certificate.fw fw.example.com            # ACME objects by name
 terraform import opnsense_acme_settings.this acmeclient
 terraform import opnsense_wireguard_instance.home home                # WireGuard by name

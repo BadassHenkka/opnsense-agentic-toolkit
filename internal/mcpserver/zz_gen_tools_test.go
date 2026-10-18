@@ -9,11 +9,21 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"captiveportal", "dyndns", "nodeexporter", "system", "unbound"}})
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"captiveportal", "dyndns", "interfaces", "nodeexporter", "system", "unbound"}})
 	for _, name := range []string{
 		"captive_portal_zone_list",
 		"dyndns_account_list",
 		"dyndns_settings_get",
+		"interface_list",
+		"vlan_list",
+		"virtual_ip_list",
+		"bridge_list",
+		"lagg_list",
+		"gif_list",
+		"gre_list",
+		"vxlan_list",
+		"loopback_list",
+		"neighbor_list",
 		"node_exporter_settings_get",
 		"cron_job_list",
 		"syslog_destination_list",

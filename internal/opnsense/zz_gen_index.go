@@ -14,6 +14,8 @@ type generatedServices struct {
 	DynDNS *DynDNSService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
+	// Interfaces manages Interfaces → Assignments, Other Types (VLAN) and Virtual IPs.
+	Interfaces *InterfacesService
 	// NodeExporter manages Services → Prometheus Exporter (plugin os-node_exporter).
 	NodeExporter *NodeExporterService
 	// Routing manages System → Gateways and System → Routes.
@@ -34,6 +36,7 @@ func (c *Client) initGenerated() {
 	c.CaptivePortal = newCaptivePortalService(c)
 	c.DynDNS = newDynDNSService(c)
 	c.Firewall = newFirewallService(c)
+	c.Interfaces = newInterfacesService(c)
 	c.NodeExporter = newNodeExporterService(c)
 	c.Routing = newRoutingService(c)
 	c.System = newSystemService(c)

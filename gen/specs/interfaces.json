@@ -1,0 +1,579 @@
+{
+  "area": "interfaces",
+  "title": "Interfaces \u2192 Assignments, Other Types (VLAN) and Virtual IPs",
+  "items": [
+    {
+      "resource": "interface",
+      "go_name": "NetworkInterface",
+      "plural": "Assignments",
+      "description": "An assigned interface and its configuration (Interfaces \u2192 Assignments and Interfaces \u2192 [name]): which device it uses, its IPv4/IPv6 setup and hardware options. The id is the identifier OPNsense picks (`lan`, `wan`, `opt3`, ...). Changes are applied with a reachability check, because a wrong address can cut off the API.",
+      "model": "core/Interfaces/NetworkInterface.xml",
+      "node": "interface",
+      "base": "interfaces/assignment",
+      "key": "interface",
+      "suffix": "Item",
+      "reconfigure": "interfaces/assignment/reconfigure",
+      "apply": "ApplyAssignments",
+      "name_field": "descr",
+      "zero_field": "if",
+      "custom_import": true,
+      "fields": {
+        "descr": {
+          "description": "Name shown in the UI, e.g. `IOT` (letters, digits and _).",
+          "type": "string"
+        },
+        "identifier": {
+          "computed": true,
+          "description": "Identifier OPNsense picked, e.g. `opt3`; the same as id."
+        },
+        "pending_action": {
+          "computed": true,
+          "tf": false
+        },
+        "if": {
+          "attr": "device",
+          "go_name": "Device",
+          "type": "ref",
+          "description": "Device, e.g. `igb2`, `vlan0.30` (opnsense_vlan.device) or `wg0` (opnsense_wireguard_instance.interface)."
+        },
+        "lock": {
+          "description": "Prevent removal in the UI."
+        },
+        "enable": {
+          "attr": "enabled",
+          "go_name": "Enabled"
+        },
+        "blockpriv": {
+          "attr": "block_private",
+          "go_name": "BlockPrivate",
+          "description": "Block private networks (RFC 1918) arriving on this interface; for WAN."
+        },
+        "blockbogons": {
+          "attr": "block_bogons",
+          "go_name": "BlockBogons",
+          "description": "Block bogon networks; for WAN."
+        },
+        "spoofmac": {
+          "attr": "spoof_mac",
+          "go_name": "SpoofMAC"
+        },
+        "media": {
+          "type": "ref",
+          "description": "Link speed/duplex; empty for autoselect."
+        },
+        "type4": {
+          "attr": "ipv4_type",
+          "go_name": "IPv4Type",
+          "description": "IPv4 configuration; empty for none."
+        },
+        "type6": {
+          "attr": "ipv6_type",
+          "go_name": "IPv6Type",
+          "description": "IPv6 configuration; empty for none."
+        },
+        "ipaddr": {
+          "attr": "ipv4_address",
+          "go_name": "IPv4Address",
+          "description": "Static IPv4 address with prefix, e.g. `10.30.0.1/24`.",
+          "validators": [
+            "cidr{}"
+          ]
+        },
+        "ipaddrv6": {
+          "attr": "ipv6_address",
+          "go_name": "IPv6Address",
+          "description": "Static IPv6 address with prefix."
+        },
+        "gateway": {
+          "attr": "ipv4_gateway",
+          "go_name": "Gateway",
+          "type": "ref",
+          "description": "Upstream IPv4 gateway name, for WAN-type interfaces."
+        },
+        "gatewayv6": {
+          "attr": "ipv6_gateway",
+          "go_name": "GatewayV6",
+          "type": "ref",
+          "description": "Upstream IPv6 gateway name."
+        },
+        "track6-interface": {
+          "attr": "track6_interface",
+          "type": "ref"
+        },
+        "dhcp_send_options": {
+          "type": "string"
+        },
+        "dhcp_request_options": {
+          "type": "string"
+        },
+        "dhcp6_send_options": {
+          "type": "string"
+        },
+        "dhcp6_request_options": {
+          "type": "string"
+        },
+        "dhcp6-ia-pd-len": {
+          "default": "none",
+          "description": "Prefix delegation size requested with DHCPv6."
+        }
+      },
+      "example": {
+        "descr": "IOT",
+        "if": "vlan0.30",
+        "type4": "staticv4",
+        "ipaddr": "10.30.0.1/24"
+      },
+      "update": {
+        "ipaddr": "10.30.0.2/24"
+      }
+    },
+    {
+      "resource": "vlan",
+      "go_name": "VLAN",
+      "description": "An 802.1Q/802.1ad VLAN device on a parent interface (Interfaces \u2192 Other Types \u2192 VLAN). Assign the device (vlan0.N) to use it.",
+      "model": "core/Interfaces/Vlan.xml",
+      "node": "vlan",
+      "base": "interfaces/vlan_settings",
+      "key": "vlan",
+      "suffix": "Item",
+      "reconfigure": "interfaces/vlan_settings/reconfigure",
+      "name_field": "vlanif",
+      "fields": {
+        "if": {
+          "attr": "parent",
+          "type": "ref",
+          "description": "Parent device, e.g. `igb1`."
+        },
+        "tag": {
+          "description": "VLAN tag."
+        },
+        "pcp": {
+          "description": "802.1p priority."
+        },
+        "proto": {
+          "description": "Empty for automatic."
+        },
+        "vlanif": {
+          "attr": "device",
+          "computed": true,
+          "fake_value": "vlan0.%d",
+          "description": "Device name chosen by OPNsense, e.g. `vlan0.10`."
+        }
+      },
+      "example": {
+        "if": "igb1",
+        "tag": "10",
+        "descr": "IoT"
+      },
+      "update": {
+        "tag": "20"
+      }
+    },
+    {
+      "resource": "virtual_ip",
+      "go_name": "VirtualIP",
+      "description": "A virtual IP: IP alias, CARP or proxy ARP address on an interface (Interfaces \u2192 Virtual IPs \u2192 Settings).",
+      "model": "core/Interfaces/Vip.xml",
+      "node": "vip",
+      "base": "interfaces/vip_settings",
+      "key": "vip",
+      "suffix": "Item",
+      "reconfigure": "interfaces/vip_settings/reconfigure",
+      "name_field": "descr",
+      "fields": {
+        "interface": {
+          "type": "ref",
+          "description": "Assigned interface, e.g. `lan`."
+        },
+        "subnet": {
+          "type": "string",
+          "description": "Address, e.g. `192.168.1.250`."
+        },
+        "subnet_bits": {
+          "type": "int",
+          "description": "Prefix length, e.g. `32`."
+        },
+        "password": {
+          "sensitive": true,
+          "description": "CARP password."
+        }
+      },
+      "example": {
+        "interface": "lan",
+        "subnet": "192.168.1.250",
+        "subnet_bits": "32",
+        "descr": "dns-vip"
+      }
+    },
+    {
+      "resource": "bridge",
+      "go_name": "Bridge",
+      "plural": "Bridges",
+      "description": "A bridge device joining interfaces (Interfaces \u2192 Other Types \u2192 Bridge). Assign the device (bridgeN) to use it.",
+      "model": "core/Interfaces/Bridge.xml",
+      "node": "bridged",
+      "base": "interfaces/bridge_settings",
+      "key": "bridge",
+      "suffix": "Item",
+      "reconfigure": "interfaces/bridge_settings/reconfigure",
+      "name_field": "bridgeif",
+      "fields": {
+        "bridgeif": {
+          "attr": "device",
+          "computed": true,
+          "fake_value": "bridge%d",
+          "description": "Device name chosen by OPNsense, e.g. `bridge0`."
+        },
+        "members": {
+          "type": "refs",
+          "description": "Member interfaces, e.g. `lan`, `opt1`."
+        },
+        "linklocal": {
+          "description": "Enable IPv6 link-local address on the bridge."
+        },
+        "enablestp": {
+          "description": "Enable (R)STP."
+        },
+        "proto": {
+          "description": "`rstp` or `stp`."
+        },
+        "stp": {
+          "type": "refs",
+          "description": "Interfaces with STP enabled."
+        },
+        "span": {
+          "type": "refs",
+          "description": "Span ports."
+        },
+        "edge": {
+          "type": "refs",
+          "description": "Edge ports."
+        },
+        "autoedge": {
+          "type": "refs",
+          "description": "Auto edge ports."
+        },
+        "ptp": {
+          "type": "refs",
+          "description": "Point-to-point ports."
+        },
+        "autoptp": {
+          "type": "refs",
+          "description": "Auto point-to-point ports."
+        },
+        "static": {
+          "type": "refs",
+          "description": "Sticky ports."
+        },
+        "private": {
+          "type": "refs",
+          "description": "Private ports."
+        },
+        "maxage": {
+          "type": "int"
+        },
+        "fwdelay": {
+          "type": "int"
+        },
+        "holdcnt": {
+          "type": "int"
+        },
+        "maxaddr": {
+          "type": "int"
+        },
+        "timeout": {
+          "type": "int"
+        },
+        "descr": {
+          "attr": "description"
+        }
+      },
+      "example": {
+        "members": "lan",
+        "descr": "lab bridge"
+      }
+    },
+    {
+      "resource": "lagg",
+      "go_name": "Lagg",
+      "plural": "Laggs",
+      "description": "A link aggregation device (Interfaces \u2192 Other Types \u2192 LAGG). Assign the device (laggN) to use it.",
+      "model": "core/Interfaces/Lagg.xml",
+      "node": "lagg",
+      "base": "interfaces/lagg_settings",
+      "key": "lagg",
+      "suffix": "Item",
+      "reconfigure": "interfaces/lagg_settings/reconfigure",
+      "name_field": "laggif",
+      "fields": {
+        "laggif": {
+          "attr": "device",
+          "computed": true,
+          "fake_value": "lagg%d",
+          "description": "Device name chosen by OPNsense, e.g. `lagg0`."
+        },
+        "members": {
+          "type": "refs",
+          "description": "Member devices, e.g. `igb1`, `igb2`."
+        },
+        "primary_member": {
+          "type": "ref",
+          "description": "Primary member for failover."
+        },
+        "proto": {
+          "description": "`none`, `lacp`, `failover`, `fec`, `loadbalance` or `roundrobin`."
+        },
+        "lacp_fast_timeout": {},
+        "use_flowid": {
+          "description": "`default`, `yes` or `no`."
+        },
+        "lagghash": {
+          "type": "refs",
+          "description": "Hash layers: `l2`, `l3`, `l4`."
+        },
+        "lacp_strict": {
+          "description": "`default`, `yes` or `no`."
+        },
+        "mtu": {
+          "type": "int"
+        },
+        "descr": {
+          "attr": "description"
+        }
+      },
+      "example": {
+        "members": "igb1,igb2",
+        "proto": "lacp"
+      }
+    },
+    {
+      "resource": "gif",
+      "go_name": "Gif",
+      "plural": "Gifs",
+      "description": "A GIF tunnel device (Interfaces \u2192 Other Types \u2192 GIF). Assign the device (gifN) to use it.",
+      "model": "core/Interfaces/Gif.xml",
+      "node": "gif",
+      "base": "interfaces/gif_settings",
+      "key": "gif",
+      "suffix": "Item",
+      "reconfigure": "interfaces/gif_settings/reconfigure",
+      "name_field": "gifif",
+      "fields": {
+        "gifif": {
+          "attr": "device",
+          "computed": true,
+          "fake_value": "gif%d",
+          "description": "Device name chosen by OPNsense."
+        },
+        "local-addr": {
+          "attr": "local_address",
+          "type": "string",
+          "description": "Local address or interface (e.g. `wan`)."
+        },
+        "if": {
+          "skip": true
+        },
+        "ipaddr": {
+          "skip": true
+        },
+        "remote-addr": {
+          "attr": "remote_address",
+          "description": "Remote tunnel endpoint."
+        },
+        "tunnel-local-addr": {
+          "attr": "tunnel_local_address"
+        },
+        "tunnel-remote-addr": {
+          "attr": "tunnel_remote_address"
+        },
+        "tunnel-remote-net": {
+          "attr": "tunnel_remote_net",
+          "type": "int",
+          "description": "Prefix length of the tunnel network."
+        },
+        "descr": {
+          "attr": "description"
+        },
+        "link1": {
+          "description": "ECN friendly behaviour off."
+        },
+        "link2": {
+          "description": "Disable outer header route lookup."
+        },
+        "noclamp": {
+          "description": "Do not clamp TCP MSS."
+        }
+      },
+      "example": {
+        "remote-addr": "198.51.100.1",
+        "tunnel-local-addr": "10.9.0.1",
+        "tunnel-remote-addr": "10.9.0.2"
+      }
+    },
+    {
+      "resource": "gre",
+      "go_name": "Gre",
+      "plural": "Gres",
+      "description": "A GRE tunnel device (Interfaces \u2192 Other Types \u2192 GRE). Assign the device (greN) to use it.",
+      "model": "core/Interfaces/Gre.xml",
+      "node": "gre",
+      "base": "interfaces/gre_settings",
+      "key": "gre",
+      "suffix": "Item",
+      "reconfigure": "interfaces/gre_settings/reconfigure",
+      "name_field": "greif",
+      "fields": {
+        "greif": {
+          "attr": "device",
+          "computed": true,
+          "fake_value": "gre%d",
+          "description": "Device name chosen by OPNsense."
+        },
+        "local-addr": {
+          "attr": "local_address",
+          "type": "string",
+          "description": "Local address or interface (e.g. `wan`)."
+        },
+        "if": {
+          "skip": true
+        },
+        "ipaddr": {
+          "skip": true
+        },
+        "remote-addr": {
+          "attr": "remote_address",
+          "description": "Remote tunnel endpoint."
+        },
+        "tunnel-local-addr": {
+          "attr": "tunnel_local_address"
+        },
+        "tunnel-remote-addr": {
+          "attr": "tunnel_remote_address"
+        },
+        "tunnel-remote-net": {
+          "attr": "tunnel_remote_net",
+          "type": "int"
+        },
+        "descr": {
+          "attr": "description"
+        }
+      },
+      "example": {
+        "remote-addr": "198.51.100.1",
+        "tunnel-local-addr": "10.9.0.1",
+        "tunnel-remote-addr": "10.9.0.2"
+      }
+    },
+    {
+      "resource": "vxlan",
+      "go_name": "VxLan",
+      "plural": "VxLans",
+      "description": "A VXLAN device (Interfaces \u2192 Other Types \u2192 VXLAN).",
+      "model": "core/Interfaces/VxLan.xml",
+      "node": "vxlan",
+      "base": "interfaces/vxlan_settings",
+      "key": "vxlan",
+      "suffix": "Item",
+      "reconfigure": "interfaces/vxlan_settings/reconfigure",
+      "name_field": "vxlanid",
+      "fields": {
+        "deviceId": {
+          "attr": "device_id",
+          "computed": true,
+          "type": "int",
+          "description": "Device number chosen by OPNsense."
+        },
+        "vxlanid": {
+          "attr": "vni",
+          "go_name": "VNI",
+          "type": "int",
+          "description": "VXLAN network identifier."
+        },
+        "vxlanlocal": {
+          "attr": "local_address",
+          "description": "Local source address."
+        },
+        "vxlanlocalport": {
+          "attr": "local_port",
+          "type": "int"
+        },
+        "vxlanremote": {
+          "attr": "remote_address"
+        },
+        "vxlanremoteport": {
+          "attr": "remote_port",
+          "type": "int"
+        },
+        "vxlangroup": {
+          "attr": "multicast_group"
+        },
+        "vxlandev": {
+          "attr": "parent",
+          "type": "ref",
+          "description": "Parent device for multicast."
+        }
+      },
+      "example": {
+        "vxlanid": "100",
+        "vxlanlocal": "192.168.1.1",
+        "vxlanremote": "192.168.2.1"
+      }
+    },
+    {
+      "resource": "loopback",
+      "go_name": "Loopback",
+      "plural": "Loopbacks",
+      "description": "A loopback device (Interfaces \u2192 Other Types \u2192 Loopback).",
+      "model": "core/Interfaces/Loopback.xml",
+      "node": "loopback",
+      "base": "interfaces/loopback_settings",
+      "key": "loopback",
+      "suffix": "Item",
+      "reconfigure": "interfaces/loopback_settings/reconfigure",
+      "name_field": "description",
+      "fields": {
+        "deviceId": {
+          "attr": "device_id",
+          "computed": true,
+          "type": "int",
+          "description": "Device number chosen by OPNsense."
+        },
+        "description": {}
+      },
+      "example": {
+        "description": "lo1"
+      }
+    },
+    {
+      "resource": "neighbor",
+      "go_name": "Neighbor",
+      "plural": "Neighbors",
+      "description": "A static ARP/NDP entry (Interfaces \u2192 Neighbors).",
+      "model": "core/Interfaces/Neighbor.xml",
+      "node": "neighbor",
+      "base": "interfaces/neighbor_settings",
+      "key": "neighbor",
+      "suffix": "Item",
+      "reconfigure": "interfaces/neighbor_settings/reconfigure",
+      "name_field": "ipaddress",
+      "fields": {
+        "etheraddr": {
+          "attr": "mac_address"
+        },
+        "ipaddress": {
+          "attr": "ip_address"
+        },
+        "descr": {
+          "attr": "description"
+        },
+        "origin": {
+          "skip": true
+        }
+      },
+      "example": {
+        "etheraddr": "00:11:22:33:44:55",
+        "ipaddress": "192.168.1.50"
+      }
+    }
+  ]
+}
