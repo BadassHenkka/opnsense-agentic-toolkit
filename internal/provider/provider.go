@@ -138,7 +138,9 @@ func (p *opnsenseProvider) Resources(context.Context) []func() resource.Resource
 
 // Actions are imperative operations (Terraform 1.14+), such as sending a Wake on LAN packet.
 func (p *opnsenseProvider) Actions(context.Context) []func() action.Action {
-	return []func() action.Action{}
+	return []func() action.Action{
+		NewWolWakeAction,
+	}
 }
 
 func (p *opnsenseProvider) DataSources(context.Context) []func() datasource.DataSource {

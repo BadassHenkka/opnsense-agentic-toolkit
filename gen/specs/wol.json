@@ -1,0 +1,28 @@
+{
+  "area": "wol",
+  "title": "Services → Wake on LAN (plugin os-wol)",
+  "mcp": false,
+  "items": [
+    {
+      "resource": "wol_host",
+      "go_name": "WolHost",
+      "plural": "Hosts",
+      "description": "A saved Wake on LAN host (Services → Wake on LAN, plugin os-wol). Wake it with the opnsense_wol_wake action.",
+      "model": "plugins/net/wol/Wol/Wol.xml",
+      "node": "wolentry",
+      "base": "wol/wol",
+      "key": "host",
+      "suffix": "Host",
+      "name_field": "descr",
+      "zero_field": "mac",
+      "fields": {
+        "interface": {"description": "Assigned interface the host is on, e.g. `lan`. It needs a static IPv4 address: the plugin sends to the interface's broadcast address."},
+        "mac": {"go_name": "MAC", "required": true,
+                "description": "MAC address, lower case with colons, e.g. `00:11:22:33:44:55`.",
+                "validators": ["stringvalidator.RegexMatches(macAttrRe, \"must be a lower-case MAC address with colons, e.g. 00:11:22:33:44:55\")"]},
+        "descr": {"description": "Name shown in the UI and the dashboard widget; also used to import."}
+      },
+      "example": {"interface": "lan", "mac": "00:11:22:33:44:55", "descr": "nas"}
+    }
+  ]
+}

@@ -25,6 +25,7 @@ func generatedResources() []func() resource.Resource {
 		NewWireguardInstanceResource,
 		NewWireguardPeerResource,
 		NewWireguardGeneralResource,
+		NewWolHostResource,
 	}
 }
 

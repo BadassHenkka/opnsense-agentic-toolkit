@@ -115,6 +115,7 @@ type Server struct {
 	LockOutAfter string
 	lockedOut    bool
 	firmware     *firmwareState
+	wakes        []string
 	settings     map[string]*settingsGroup
 }
 

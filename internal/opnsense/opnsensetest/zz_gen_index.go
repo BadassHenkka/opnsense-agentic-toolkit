@@ -8,4 +8,5 @@ func registerGenerated(s *Server) {
 	registerGenRouting(s)
 	registerGenUnbound(s)
 	registerGenWireguard(s)
+	registerGenWol(s)
 }

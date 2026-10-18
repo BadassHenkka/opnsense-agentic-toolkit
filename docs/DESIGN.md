@@ -291,3 +291,24 @@ Source: opnsense/core `controllers/OPNsense/Core/Api/FirmwareController.php` and
   flavour and release type). Community repositories need one shell step on the firewall.
 - `update` installs minor updates only. Nothing in this project reboots; results carry
   `Reboot`, and the MCP note tells the agent to ask the user.
+
+## Eighth area: Wake on LAN (plugin os-wol 2.5)
+
+Source: opnsense/plugins `net/wol` (`Wol.xml`, `Api/WolController.php`, `actions_wol.conf`).
+
+- `wol/wol/{add,get,set,del,search}Host`, key `host` (model array `wolentry`: interface, mac,
+  descr). No reconfigure: hosts are plain config, so the Terraform `apply` hook is a no-op.
+- **`delHost` returns nothing** (the controller forgets `return`). `ItemController.Delete` now
+  treats an empty response as "verify with Get": `ErrNotFound` means success. The fake reproduces
+  it with `Collection.EmptyDelete`.
+- Wake is `POST wol/wol/set` with `{"uuid": ...}` (saved host) or `{"wake": {interface, mac}}`
+  (ad hoc). The answer is configd's output (`{"status":"OK"}`), `{"status":"error","error_msg":
+  "Incorrect IPv4 configuration on interface"}` when the interface has no static IPv4 address,
+  or `[]` when the ad-hoc input fails validation. PHP's empty array is `[]`, not `{}`, so the
+  client decodes loosely.
+- The MAC mask is `^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$`. MCP accepts any common notation and
+  normalises it; Terraform requires the lower-case colon form so state matches what is stored.
+- **First Terraform action.** Waking is imperative, so instead of a fake resource it is an
+  `action` (terraform-plugin-framework `action` package, Terraform 1.14+): `Schema`, `Configure`
+  (provider sets `ActionData`), `ValidateConfig` (host_id xor interface+mac) and `Invoke`, which
+  reports progress with `SendProgress`.

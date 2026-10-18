@@ -14,6 +14,7 @@ func registerAll(s *Server) {
 	registerRouting(s)
 	registerFilter(s)
 	registerFirmware(s)
+	registerWol(s)
 }
 
 func required(prefix string, r Record, fields ...string) map[string]string {

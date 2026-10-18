@@ -14,6 +14,8 @@ type generatedServices struct {
 	Unbound *UnboundService
 	// Wireguard manages VPN → WireGuard.
 	Wireguard *WireguardService
+	// Wol manages Services → Wake on LAN (plugin os-wol).
+	Wol *WolService
 }
 
 func (c *Client) initGenerated() {
@@ -22,4 +24,5 @@ func (c *Client) initGenerated() {
 	c.Routing = newRoutingService(c)
 	c.Unbound = newUnboundService(c)
 	c.Wireguard = newWireguardService(c)
+	c.Wol = newWolService(c)
 }
