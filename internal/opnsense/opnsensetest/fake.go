@@ -125,6 +125,9 @@ func (s *Server) Operations() []string {
 	return append([]string(nil), s.operations...)
 }
 
+// AcmeSettings returns a copy of the stored ACME settings (write form).
+func (s *Server) AcmeSettings() Record { return s.Settings("acmeclient/settings/get", "settings") }
+
 // New starts a fake server with every known collection. It is closed when the test ends.
 func New(t testing.TB) *Server {
 	s := &Server{

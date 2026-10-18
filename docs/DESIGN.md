@@ -137,3 +137,48 @@ for the same reason. `ValidateConfig` checks the per-type fields at plan time.
 
 Version note: `ttl`, `txtdata` and `addptr` exist only in recent OPNsense releases. On older
 ones OPNsense ignores them, and `add_ptr` will show a permanent diff.
+
+## Third area: ACME client plugin
+
+Source: opnsense/plugins `security/acme-client` 4.17 (`AcmeClient.xml`, `Api/*Controller.php`).
+
+- One model, five parts: `settings` (singleton) and the arrays `accounts.account`,
+  `validations.validation` (UI: Challenge Types), `actions.action` (UI: Automations) and
+  `certificates.certificate`. Terraform and MCP use the UI names.
+- Item actions are `add/get/update/del/search` with no suffix. `ItemController.Actions` maps
+  the canonical verbs to these names.
+- Settings are read with `settings/get` (the whole model) and written with
+  `settings/set` as `{"acmeclient":{"settings":{...}}}`. OPNsense merges, so fields we do not
+  model are left alone.
+- Challenge types have 273 fields (credentials for 123 DNS providers) and automations 78. Only
+  the common fields are modelled. Everything else goes through `Params`
+  (`marshalWithParams`/`unmarshalWithParams`). Valid names and defaults come at run time
+  from the blank template (`get` without a uuid), so no provider list is hard-coded. The
+  "relevant" params for display are those under the method/provider prefix plus anything that
+  differs from its default, because a few providers break the prefix convention (`dns_azure` →
+  `dns_azuredns_*`).
+- Status fields (`statusCode`, `lastUpdate`, `certRefId`) are maintained by the plugin. The
+  `ReadOnly` type decodes them and, with an `omitzero` tag and an `IsZero` that always reports
+  true, is never encoded. A read-modify-write therefore cannot clobber a status that changed in
+  the meantime. The fake returns HTTP 400 for writes to read-only fields, to prove it.
+- `certificates/sign` starts `lecert.php` through `daemon -f`, so issuing is asynchronous: the
+  result appears later in `statusCode` (100 pending, 200 OK, 250 revoked, 300 config error, 400
+  validation failed, 500 internal). `certificates/automation` always answers
+  `{"result":"failed"}`, so its result is ignored.
+
+Terraform choices:
+
+- `params` is a sensitive map with "managed keys" semantics: read refreshes only configured
+  keys, update clears keys removed since the prior state (via the optional `setPrior` hook in
+  `itemCRUD`), and `ModifyPlan` checks names against the template so typos fail at plan time.
+- Status attributes are computed with no plan modifier, because OPNsense changes them
+  independently. `UseStateForUnknown` would promise a value the next apply might contradict.
+- `opnsense_acme_settings` is a singleton resource; destroying it only disables the client.
+- Certificates are configuration only. Issuing is an imperative action, left to the web UI or
+  the MCP tool, not hidden inside a resource lifecycle.
+- `alt_names` must be lower case, because OPNsense lower-cases them and Terraform would
+  otherwise report an inconsistent result after apply.
+
+MCP choices: credential-looking params are write-only (`(set, hidden)` on read); `*_fields`
+tools let the agent discover provider fields instead of guessing; `issue` refuses while the
+client is disabled; `issue`, `revoke` and `register` are marked open-world.

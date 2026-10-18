@@ -3,6 +3,7 @@
 package opnsensetest
 
 func registerGenerated(s *Server) {
+	registerGenAcme(s)
 	registerGenFirewall(s)
 	registerGenUnbound(s)
 }

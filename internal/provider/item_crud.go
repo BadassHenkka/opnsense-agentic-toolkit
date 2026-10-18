@@ -12,6 +12,14 @@ import (
 )
 
 // itemModel is a Terraform model backed by an OPNsense item of type T.
+// Compile-time checks: the hand-written models satisfy the interfaces itemCRUD calls through
+// its type parameters (linters do not follow those calls).
+var (
+	_ itemModel[opnsense.AcmeAutomation]             = (*acmeAutomationModel)(nil)
+	_ itemModel[opnsense.AcmeChallengeType]          = (*acmeChallengeTypeModel)(nil)
+	_ interface{ setPrior(*acmeAutomationModel) }    = (*acmeAutomationModel)(nil)
+	_ interface{ setPrior(*acmeChallengeTypeModel) } = (*acmeChallengeTypeModel)(nil)
+)
 
 type itemModel[T any] interface {
 	// toAPI converts the planned values to the API model.

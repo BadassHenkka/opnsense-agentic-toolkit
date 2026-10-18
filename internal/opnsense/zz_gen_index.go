@@ -4,6 +4,8 @@ package opnsense
 
 // generatedServices holds every generated area; Client embeds it.
 type generatedServices struct {
+	// Acme manages Services → ACME Client (plugin os-acme-client).
+	Acme *AcmeService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
 	// Unbound manages Services → Unbound DNS.
@@ -11,6 +13,7 @@ type generatedServices struct {
 }
 
 func (c *Client) initGenerated() {
+	c.Acme = newAcmeService(c)
 	c.Firewall = newFirewallService(c)
 	c.Unbound = newUnboundService(c)
 }

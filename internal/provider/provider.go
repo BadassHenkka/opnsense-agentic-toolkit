@@ -128,7 +128,10 @@ func override(dst *string, v types.String) {
 }
 
 func (p *opnsenseProvider) Resources(context.Context) []func() resource.Resource {
-	return append([]func() resource.Resource{}, generatedResources()...) // zz_gen_*.go
+	return append([]func() resource.Resource{
+		NewAcmeChallengeTypeResource,
+		NewAcmeAutomationResource,
+	}, generatedResources()...) // zz_gen_*.go
 }
 
 // Actions are imperative operations (Terraform 1.14+), such as sending a Wake on LAN packet.

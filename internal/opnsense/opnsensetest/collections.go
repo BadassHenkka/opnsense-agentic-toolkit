@@ -9,6 +9,7 @@ func registerAll(s *Server) {
 	registerGenerated(s) // zz_gen_*.go; the functions below add hand-written behaviour
 	registerFirewallAlias(s)
 	registerUnbound(s)
+	registerAcme(s)
 }
 
 func required(prefix string, r Record, fields ...string) map[string]string {

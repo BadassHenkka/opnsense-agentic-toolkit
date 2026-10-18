@@ -9,6 +9,9 @@ import (
 // generatedResources lists every generated resource.
 func generatedResources() []func() resource.Resource {
 	return []func() resource.Resource{
+		NewAcmeAccountResource,
+		NewAcmeCertificateResource,
+		NewAcmeSettingsResource,
 		NewAliasResource,
 		NewHostOverrideResource,
 		NewHostAliasResource,
