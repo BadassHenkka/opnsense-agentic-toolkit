@@ -1,0 +1,244 @@
+{
+  "area": "trafficshaper",
+  "title": "Firewall \u2192 Shaper",
+  "service": "TrafficShaper",
+  "items": [
+    {
+      "resource": "trafficshaper_pipe",
+      "go_name": "TrafficShaperPipe",
+      "plural": "Pipes",
+      "description": "A traffic shaper pipe (Firewall \u2192 Shaper \u2192 Pipes): a bandwidth limit that queues and rules attach to.",
+      "model": "core/TrafficShaper/TrafficShaper.xml",
+      "node": "pipes.pipe",
+      "base": "trafficshaper/settings",
+      "key": "pipe",
+      "suffix": "Pipe",
+      "actions": {
+        "search": "searchPipes"
+      },
+      "reconfigure": "trafficshaper/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "number": {
+          "computed": true,
+          "tf_unstable": false,
+          "description": "Pipe number OPNsense assigns; rules refer to the item by id."
+        },
+        "origin": {
+          "skip": true
+        },
+        "bandwidthMetric": {
+          "attr": "bandwidth_metric",
+          "go_name": "BandwidthMetric",
+          "description": "`bit`, `Kbit`, `Mbit` or `Gbit`."
+        },
+        "bandwidth": {
+          "description": "Bandwidth in `bandwidth_metric` units."
+        },
+        "queue": {
+          "description": "Queue size in packets (2\u2013100); empty for the default."
+        },
+        "mask": {
+          "description": "Create one dynamic queue per `src-ip`/`dst-ip`; `none` shares the pipe."
+        },
+        "buckets": {
+          "description": "Hash buckets for dynamic queues."
+        },
+        "scheduler": {
+          "description": "`fifo`, `rr`, `qfq`, `fq_codel` or `fq_pie`; empty for the default."
+        },
+        "fqcodel_quantum": {
+          "description": "FQ-CoDel quantum in bytes."
+        },
+        "fqcodel_limit": {
+          "description": "FQ-CoDel packet limit."
+        },
+        "fqcodel_flows": {
+          "description": "FQ-CoDel flow count."
+        },
+        "delay": {
+          "description": "Added delay in ms (WAN emulation)."
+        },
+        "codel_enable": {
+          "description": "Enable CoDel active queue management."
+        },
+        "codel_target": {
+          "description": "CoDel target delay in ms."
+        },
+        "codel_interval": {
+          "description": "CoDel interval in ms."
+        },
+        "codel_ecn_enable": {
+          "description": "Mark with ECN instead of dropping."
+        },
+        "pie_enable": {
+          "description": "Enable PIE active queue management."
+        }
+      },
+      "example": {
+        "bandwidth": "100",
+        "bandwidthMetric": "Mbit",
+        "description": "download 100M"
+      },
+      "update": {
+        "bandwidth": "200"
+      }
+    },
+    {
+      "resource": "trafficshaper_queue",
+      "go_name": "TrafficShaperQueue",
+      "plural": "Queues",
+      "description": "A traffic shaper queue (Firewall \u2192 Shaper \u2192 Queues): a weighted share of a pipe.",
+      "model": "core/TrafficShaper/TrafficShaper.xml",
+      "node": "queues.queue",
+      "base": "trafficshaper/settings",
+      "key": "queue",
+      "suffix": "Queue",
+      "actions": {
+        "search": "searchQueues"
+      },
+      "reconfigure": "trafficshaper/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "number": {
+          "computed": true,
+          "tf_unstable": false,
+          "description": "Queue number OPNsense assigns; rules refer to the item by id."
+        },
+        "origin": {
+          "skip": true
+        },
+        "pipe": {
+          "type": "ref",
+          "description": "Pipe this queue belongs to (`opnsense_trafficshaper_pipe.x.id`)."
+        },
+        "weight": {
+          "description": "Share of the pipe's bandwidth, 1\u2013100."
+        },
+        "mask": {
+          "description": "Create one dynamic queue per `src-ip`/`dst-ip`; `none` shares the queue."
+        },
+        "buckets": {
+          "description": "Hash buckets for dynamic queues."
+        },
+        "codel_enable": {
+          "description": "Enable CoDel active queue management."
+        },
+        "codel_target": {
+          "description": "CoDel target delay in ms."
+        },
+        "codel_interval": {
+          "description": "CoDel interval in ms."
+        },
+        "codel_ecn_enable": {
+          "description": "Mark with ECN instead of dropping."
+        },
+        "pie_enable": {
+          "description": "Enable PIE active queue management."
+        }
+      },
+      "example": {
+        "pipe": "lan",
+        "weight": "50",
+        "description": "bulk"
+      },
+      "update": {
+        "weight": "60"
+      }
+    },
+    {
+      "resource": "trafficshaper_rule",
+      "go_name": "TrafficShaperRule",
+      "plural": "Rules",
+      "description": "A traffic shaper rule (Firewall \u2192 Shaper \u2192 Rules): send matching traffic through a pipe or queue.",
+      "model": "core/TrafficShaper/TrafficShaper.xml",
+      "node": "rules.rule",
+      "base": "trafficshaper/settings",
+      "key": "rule",
+      "suffix": "Rule",
+      "actions": {
+        "search": "searchRules"
+      },
+      "reconfigure": "trafficshaper/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "origin": {
+          "skip": true
+        },
+        "sequence": {
+          "description": "Order; lower runs first."
+        },
+        "interface": {
+          "type": "ref",
+          "description": "Interface the rule matches on, e.g. `wan`."
+        },
+        "interface2": {
+          "type": "ref",
+          "description": "Second interface for `ip4`/`ip6` forwarding rules; usually empty."
+        },
+        "proto": {
+          "attr": "protocol",
+          "go_name": "Protocol",
+          "description": "`ip`, `ip4`, `ip6`, `udp`, `tcp`, `tcp_ack`, `icmp`, ..."
+        },
+        "iplen": {
+          "attr": "ip_length",
+          "go_name": "IPLength",
+          "description": "Match packets of this size in bytes."
+        },
+        "source": {
+          "tf_type": "set",
+          "description": "Source networks or aliases; `any` for all.",
+          "attr": "source_networks",
+          "go_name": "SourceNetworks"
+        },
+        "source_not": {
+          "description": "Invert the source match."
+        },
+        "src_port": {
+          "attr": "source_port",
+          "go_name": "SourcePort",
+          "type": "string",
+          "description": "Source port, range, alias or `any`."
+        },
+        "destination": {
+          "tf_type": "set",
+          "description": "Destination networks or aliases; `any` for all.",
+          "attr": "destination_networks",
+          "go_name": "DestinationNetworks"
+        },
+        "destination_not": {
+          "description": "Invert the destination match."
+        },
+        "dst_port": {
+          "attr": "destination_port",
+          "go_name": "DestinationPort",
+          "type": "string",
+          "description": "Destination port, range, alias or `any`."
+        },
+        "dscp": {
+          "description": "Match these DSCP values (`be`, `ef`, `af11`, ...)."
+        },
+        "direction": {
+          "description": "`in`, `out`; empty for both."
+        },
+        "target": {
+          "type": "ref",
+          "description": "Pipe or queue the traffic goes through (`opnsense_trafficshaper_pipe.x.id` or `..._queue`)."
+        }
+      },
+      "example": {
+        "interface": "wan",
+        "proto": "ip",
+        "target": "lan",
+        "description": "shape wan"
+      },
+      "update": {
+        "description": "shape wan (updated)"
+      }
+    }
+  ]
+}

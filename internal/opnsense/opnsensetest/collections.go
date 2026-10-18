@@ -16,6 +16,7 @@ func registerAll(s *Server) {
 	registerDNat(s)
 	registerAssignments(s)
 	registerAuth(s)
+	registerTrafficShaper(s)
 	registerDnsmasq(s)
 	registerTrust(s)
 	registerIDS(s)
