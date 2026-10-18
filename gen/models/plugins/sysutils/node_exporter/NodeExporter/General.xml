@@ -1,0 +1,33 @@
+<model>
+    <mount>//OPNsense/NodeExporter</mount>
+    <description>node_exporter configuration</description>
+    <version>0.2.0</version>
+    <items>
+        <enabled type="BooleanField">
+            <Default>0</Default>
+            <Required>Y</Required>
+        </enabled>
+        <listenaddress type="NetworkField">
+            <Default>0.0.0.0</Default>
+            <Required>Y</Required>
+            <NetMaskAllowed>N</NetMaskAllowed>
+            <ValidationMessage>Please provide a valid IP address.</ValidationMessage>
+        </listenaddress>
+        <listenport type="PortField">
+            <Default>9100</Default>
+            <Required>Y</Required>
+            <ValidationMessage>Please provide a valid port number between 1 and 65535. Port 9100 is the default.</ValidationMessage>
+        </listenport>
+        <cpu type="BooleanField"/>
+        <exec type="BooleanField"/>
+        <filesystem type="BooleanField"/>
+        <loadavg type="BooleanField"/>
+        <meminfo type="BooleanField"/>
+        <netdev type="BooleanField"/>
+        <time type="BooleanField"/>
+        <devstat type="BooleanField"/>
+        <interrupts type="BooleanField"/>
+        <ntp type="BooleanField"/>
+        <zfs type="BooleanField"/>
+    </items>
+</model>

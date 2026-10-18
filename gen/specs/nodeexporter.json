@@ -1,0 +1,78 @@
+{
+  "area": "nodeexporter",
+  "title": "Services \u2192 Prometheus Exporter (plugin os-node_exporter)",
+  "service": "NodeExporter",
+  "settings": [
+    {
+      "resource": "node_exporter_settings",
+      "go_name": "NodeExporter",
+      "plural": "Settings",
+      "description": "The Prometheus node_exporter (Services \u2192 Node Exporter, plugin os-node_exporter). Prometheus scrapes http://<firewall>:<listen_port>/metrics; allow that port from the monitoring host in a firewall rule.",
+      "model": "plugins/sysutils/node_exporter/NodeExporter/General.xml",
+      "node": "",
+      "get": "nodeexporter/general/get",
+      "set": "nodeexporter/general/set",
+      "path": [
+        "general"
+      ],
+      "reconfigure": "nodeexporter/service/reconfigure",
+      "fields": {
+        "enabled": {
+          "description": "Run the exporter."
+        },
+        "listenaddress": {
+          "attr": "listen_address",
+          "go_name": "ListenAddress",
+          "description": "Address to listen on; `0.0.0.0` for all, or the IP of a management interface."
+        },
+        "listenport": {
+          "attr": "listen_port",
+          "go_name": "ListenPort",
+          "type": "int",
+          "description": "TCP port, default 9100."
+        },
+        "cpu": {
+          "description": "CPU collector."
+        },
+        "exec": {
+          "description": "Exec collector."
+        },
+        "filesystem": {
+          "description": "Filesystem collector."
+        },
+        "loadavg": {
+          "description": "Load average collector."
+        },
+        "meminfo": {
+          "description": "Memory collector."
+        },
+        "netdev": {
+          "description": "Network interface traffic collector."
+        },
+        "time": {
+          "description": "Time collector."
+        },
+        "devstat": {
+          "description": "Disk device statistics collector."
+        },
+        "interrupts": {
+          "description": "Interrupts collector."
+        },
+        "ntp": {
+          "description": "NTP collector."
+        },
+        "zfs": {
+          "description": "ZFS collector."
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "listenaddress": "192.168.1.1",
+        "listenport": "9100",
+        "cpu": "1",
+        "meminfo": "1",
+        "netdev": "1"
+      }
+    }
+  ]
+}

@@ -6,6 +6,7 @@ func registerGenerated(s *Server) {
 	registerGenAcme(s)
 	registerGenCaddy(s)
 	registerGenFirewall(s)
+	registerGenNodeExporter(s)
 	registerGenRouting(s)
 	registerGenSystem(s)
 	registerGenUnbound(s)

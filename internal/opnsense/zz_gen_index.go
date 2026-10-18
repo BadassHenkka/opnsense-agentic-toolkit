@@ -10,6 +10,8 @@ type generatedServices struct {
 	Caddy *CaddyService
 	// Firewall manages Firewall → Aliases, NAT → Port Forward and Settings → Categories.
 	Firewall *FirewallService
+	// NodeExporter manages Services → Prometheus Exporter (plugin os-node_exporter).
+	NodeExporter *NodeExporterService
 	// Routing manages System → Gateways and System → Routes.
 	Routing *RoutingService
 	// System manages System → Settings: cron, logging and tunables.
@@ -26,6 +28,7 @@ func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
 	c.Caddy = newCaddyService(c)
 	c.Firewall = newFirewallService(c)
+	c.NodeExporter = newNodeExporterService(c)
 	c.Routing = newRoutingService(c)
 	c.System = newSystemService(c)
 	c.Unbound = newUnboundService(c)

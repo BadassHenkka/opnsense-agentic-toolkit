@@ -31,6 +31,7 @@ Supported so far:
 | System → Gateways, Groups, System → Routes | `opnsense_gateway`, `opnsense_gateway_group`, `opnsense_route` | `routing` |
 | Firewall → Rules | `opnsense_firewall_rule` | `firewall_rule` |
 | System → Firmware (plugins, updates) | `opnsense_plugin` | `firmware` |
+| Services → Prometheus Exporter (plugin os-node_exporter) | `opnsense_node_exporter_settings` | `nodeexporter` (read-only) |
 | Services → Wake on LAN (plugin os-wol) | `opnsense_wol_host`, action `opnsense_wol_wake` | `wol` |
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
 | System → Cron, Logging, Tunables | `opnsense_cron_job`, `opnsense_syslog_destination`, `opnsense_syslog_settings`, `opnsense_tunable` | `system` (read-only) |
@@ -228,6 +229,12 @@ action "opnsense_wol_wake" "nas" {
 Run it with `terraform apply -invoke=action.opnsense_wol_wake.nas`. The plugin sends to the
 interface's broadcast address, which it computes from the interface's *static* IPv4 address,
 so waking on a DHCP-configured interface fails with "Incorrect IPv4 configuration on interface".
+
+### Prometheus
+
+`opnsense_node_exporter_settings` runs the plugin's node_exporter. Bind `listen_address` to the
+LAN address, add a pass rule for the scrape port (see `examples/terraform/main.tf`), then point
+Prometheus at `http://<firewall>:9100/metrics`.
 
 ### Caddy reverse proxy
 
