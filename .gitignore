@@ -4,3 +4,4 @@
 .terraform/
 .terraform.lock.hcl
 .env
+/_site/

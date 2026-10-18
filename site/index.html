@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPNsense Agentic Toolkit</title>
+<meta name="description" content="Let an AI agent work on an OPNsense firewall without giving up review and reproducibility: an MCP server for exploring, a Terraform provider for the end state.">
+<link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt">
+<style>
+:root{--bg:#fff;--fg:#1c2128;--muted:#59636e;--card:#f4f6f8;--line:#d8dee4;--accent:#0b6bcb}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--fg:#e6edf3;--muted:#9aa4af;--card:#171d24;--line:#2b333c;--accent:#58a6ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}
+main{max-width:52rem;margin:0 auto;padding:3rem 16px}
+h1{font-size:2rem;margin:0 0 .5rem}
+h2{margin-top:2.5rem;font-size:1.3rem}
+p.lead{font-size:1.15rem;color:var(--muted);margin-top:0}
+a{color:var(--accent)}
+.steps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));padding:0;list-style:none}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.steps b{display:block;margin-bottom:4px}
+pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:.9rem}
+code{font-family:ui-monospace,Menlo,monospace}
+ul.links{padding-left:1.2rem}
+footer{margin-top:3rem;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<main>
+<h1>OPNsense Agentic Toolkit</h1>
+<p class="lead">Let an AI agent work on an OPNsense firewall without giving up review and reproducibility.</p>
+
+<ol class="steps">
+<li><b>1. Explore (MCP)</b>The agent reads live state: rules, aliases, DNS, routes, WireGuard, backups. Run read-only and nothing can break.</li>
+<li><b>2. Verify (MCP, optional)</b>A short-lived trial change, staged and applied only on request, then undone.</li>
+<li><b>3. Implement (Terraform)</b>The end state is Terraform. You review the plan and apply it.</li>
+</ol>
+
+<p>One Go OPNsense API client serves both front ends: <code>mcp-opnsense</code>, a local stdio MCP server, and <code>terraform-provider-opnsense</code>, a Plugin Framework provider. Most resources are generated from OPNsense's own model XML.</p>
+
+<h2>Quick start</h2>
+<pre><code>make build
+export OPNSENSE_URL=https://opnsense.lan
+export OPNSENSE_API_KEY=...
+export OPNSENSE_API_SECRET=...
+./bin/mcp-opnsense --check
+
+claude mcp add opnsense --scope user \
+  -e OPNSENSE_URL -e OPNSENSE_API_KEY -e OPNSENSE_API_SECRET \
+  -- $PWD/bin/mcp-opnsense --read-only</code></pre>
+<p>Creating the API user and key is described in the <a href="https://github.com/SmuliS/opnsense-agentic-toolkit#quick-start">README</a>.</p>
+
+<h2>Documentation</h2>
+<ul class="links">
+<li><a href="https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/README.md">README</a>: setup, supported pages, resources and toolsets</li>
+<li><a href="https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/docs/DESIGN.md">Design</a>: decisions and the code generator</li>
+<li><a href="https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/gen/README.md">Generator spec format</a></li>
+<li><a href="https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/.claude/skills/opnsense-agentic-toolkit/SKILL.md">Claude Code skill</a></li>
+<li><a href="https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/docs/TODO.md">Missing OPNsense areas</a></li>
+</ul>
+
+<h2>For LLMs</h2>
+<ul class="links">
+<li><a href="llms.txt">llms.txt</a>: concise overview with links</li>
+<li><a href="llms-full.txt">llms-full.txt</a>: README, design, generator and skill in one file</li>
+</ul>
+
+<footer><a href="https://github.com/SmuliS/opnsense-agentic-toolkit">Source on GitHub</a></footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,48 @@
+# opnsense-agentic-toolkit
+
+> Let an AI agent work on an OPNsense firewall without giving up review and reproducibility. A Go toolkit with one shared OPNsense API client behind two front ends: a local MCP server (`mcp-opnsense`) for exploring and trial changes, and a Terraform provider (`terraform-provider-opnsense`) for the reviewed, reproducible end state.
+
+The workflow has three steps, each with a clear owner:
+
+1. Explore (MCP): the agent reads live state (rules, aliases, DNS, routes, WireGuard, backups, diffs). Run the server with `--read-only` and nothing can change.
+2. Verify (MCP, optional): the agent may make a short-lived trial change with the MCP write tools. Changes are staged and take effect only when the matching `*_apply` tool runs. The agent must undo them afterwards (check with `backup_diff_get`).
+3. Implement (Terraform): the end state is written as Terraform. A human reviews the plan and applies it. Terraform state is the source of truth.
+
+Notes for agents using this project:
+
+- Propose lasting changes as Terraform resources, not as lingering MCP changes.
+- Firewall rules created through MCP are disabled unless `enabled: true` is passed. `firewall_rule_apply` verifies the API still answers afterwards, because OPNsense has no rollback for rule changes.
+- Secrets (ACME credentials, API secrets) can be set but are never returned; `get` tools show `(set, hidden)`.
+- Configuration comes from `OPNSENSE_URL`, `OPNSENSE_API_KEY`, `OPNSENSE_API_SECRET`, and optionally `OPNSENSE_CA_FILE` (or `OPNSENSE_INSECURE` for throwaway tests only).
+- `mcp-opnsense --check` validates configuration, connection, version, privileges and plugins without changing anything.
+
+## Start here
+
+- [README](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/README.md): quick start, supported OPNsense pages, Terraform resources and MCP toolsets, firewall-rule and WireGuard guidance
+- [Claude Code skill](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/.claude/skills/opnsense-agentic-toolkit/SKILL.md): teaches Claude Code the explore, verify, implement workflow and onboarding
+- [Terraform example](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/examples/terraform/main.tf): a configuration using the resources
+- [MCP client config example](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/examples/mcp/claude_desktop_config.json)
+
+## Install and run
+
+- Build: `make build` produces `bin/mcp-opnsense` and `bin/terraform-provider-opnsense` (Go required).
+- Register with Claude Code: `claude mcp add opnsense --scope user -e OPNSENSE_URL=... -e OPNSENSE_API_KEY=... -e OPNSENSE_API_SECRET=... -- $PWD/bin/mcp-opnsense --read-only`
+- Terraform provider for development: `make install-tf`, then a `dev_overrides` entry for `registry.terraform.io/smulis/opnsense` in `~/.terraformrc`.
+- Existing objects import by name or UUID, for example `terraform import opnsense_firewall_alias.servers homelab_servers`.
+
+## Design and internals
+
+- [Design](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/docs/DESIGN.md): research, decisions, the generator, and each area in the order it was built
+- [Generator](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/gen/README.md): spec format; `cmd/opnsense-gen` turns specs and pinned OPNsense model XML into client, fake server, Terraform resources and read-only MCP tools (`make gen`, `make gen-check`, `make verify-upstream`)
+- [TODO](https://github.com/SmuliS/opnsense-agentic-toolkit/blob/main/docs/TODO.md): OPNsense areas not yet covered
+
+## Coverage (summary)
+
+Hand-written with MCP write tools: firewall aliases, Unbound host overrides and aliases, ACME client, WireGuard, gateways and static routes, firewall filter rules, firmware and plugins, Wake on LAN, Caddy, backups (read-only).
+Generated, read-only MCP tools plus Terraform resources: Unbound settings, Kea DHCP, Dnsmasq, FRR (BGP, OSPF, RIP, BFD, static), Postfix, Rspamd, Monit, IDS, NAT, interfaces (VLAN, bridge, LAGG, tunnels, virtual IPs), users and groups, trust (CA, certificates), traffic shaper, cron, syslog, tunables, dynamic DNS, captive portal, high availability.
+The full table is in the README.
+
+## Optional
+
+- [Full documentation in one file](https://smulis.github.io/opnsense-agentic-toolkit/llms-full.txt): README, design, generator and skill concatenated
+- [Source repository](https://github.com/SmuliS/opnsense-agentic-toolkit)
