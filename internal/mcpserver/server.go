@@ -41,6 +41,7 @@ func allTools(c *opnsense.Client) []tool {
 	tools = append(tools, firewallRuleTools(c)...)
 	tools = append(tools, firmwareTools(c)...)
 	tools = append(tools, wolTools(c)...)
+	tools = append(tools, authTools(c)...)
 	tools = append(tools, dnsmasqTools(c)...)
 	tools = append(tools, keaTools(c)...)
 	tools = append(tools, caddyTools(c)...)

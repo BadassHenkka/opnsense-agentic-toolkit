@@ -9,8 +9,10 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"captiveportal", "dnsmasq", "dyndns", "firewall", "interfaces", "kea", "nodeexporter", "system", "unbound"}})
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"auth", "captiveportal", "dnsmasq", "dyndns", "firewall", "interfaces", "kea", "nodeexporter", "system", "unbound"}})
 	for _, name := range []string{
+		"auth_group_list",
+		"auth_user_list",
 		"captive_portal_zone_list",
 		"dnsmasq_host_list",
 		"dnsmasq_domain_list",

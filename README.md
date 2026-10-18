@@ -38,6 +38,7 @@ Supported so far:
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
 | Services → Kea DHCP | `opnsense_kea_dhcp4_{settings,subnet,reservation,option,peer}`, `opnsense_kea_dhcp6_{settings,subnet,reservation,pd_pool,option,peer}`, `opnsense_kea_ctrl_agent_settings` | `kea` (read-only, plus `kea_lease4_list`, `kea_lease6_list`) |
 | Services → Dnsmasq DNS & DHCP | `opnsense_dnsmasq_settings`, `opnsense_dnsmasq_host`, `_domain`, `_tag`, `_range`, `_option`, `_boot` | `dnsmasq` (read-only, plus `dnsmasq_lease_list`) |
+| System → Access → Users, Groups | `opnsense_auth_user`, `opnsense_auth_group`, `opnsense_auth_api_key` | `auth` (read-only) |
 | Interfaces → Assignments, Other Types, Neighbors | `opnsense_interface`, `opnsense_vlan`, `opnsense_virtual_ip`, `opnsense_bridge`, `opnsense_lagg`, `opnsense_gif`, `opnsense_gre`, `opnsense_vxlan`, `opnsense_loopback`, `opnsense_neighbor` | `interfaces` (read-only) |
 | Interfaces → VLAN, Virtual IPs | `opnsense_vlan`, `opnsense_virtual_ip` | `interfaces` (read-only) |
 | Firewall → Categories | `opnsense_firewall_category` | `firewall` (read-only) |
@@ -190,6 +191,7 @@ terraform import opnsense_firewall_alias.servers homelab_servers
 terraform import opnsense_unbound_host_override.nas nas.home.lan/A   # name/TYPE if ambiguous
 terraform import opnsense_unbound_host_alias.truenas truenas.home.lan
 terraform import opnsense_interface.lan lan                          # identifier or description
+terraform import opnsense_auth_api_key.ci <key>                      # secret stays null
 terraform import opnsense_acme_certificate.fw fw.example.com            # ACME objects by name
 terraform import opnsense_acme_settings.this acmeclient
 terraform import opnsense_wireguard_instance.home home                # WireGuard by name

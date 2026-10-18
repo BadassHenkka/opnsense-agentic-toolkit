@@ -6,6 +6,8 @@ package opnsense
 type generatedServices struct {
 	// Acme manages Services → ACME Client (plugin os-acme-client).
 	Acme *AcmeService
+	// Auth manages System → Access: users, groups and API keys.
+	Auth *AuthService
 	// Caddy manages Services → Caddy Web Server (plugin os-caddy).
 	Caddy *CaddyService
 	// CaptivePortal manages Services → Captive Portal.
@@ -36,6 +38,7 @@ type generatedServices struct {
 
 func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
+	c.Auth = newAuthService(c)
 	c.Caddy = newCaddyService(c)
 	c.CaptivePortal = newCaptivePortalService(c)
 	c.Dnsmasq = newDnsmasqService(c)

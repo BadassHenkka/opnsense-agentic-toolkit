@@ -4,6 +4,7 @@ package opnsensetest
 
 func registerGenerated(s *Server) {
 	registerGenAcme(s)
+	registerGenAuth(s)
 	registerGenCaddy(s)
 	registerGenCaptivePortal(s)
 	registerGenDnsmasq(s)

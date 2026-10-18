@@ -12,6 +12,8 @@ func generatedResources() []func() resource.Resource {
 		NewAcmeAccountResource,
 		NewAcmeCertificateResource,
 		NewAcmeSettingsResource,
+		NewGroupResource,
+		NewUserResource,
 		NewCaddyDomainResource,
 		NewCaddySubdomainResource,
 		NewCaddyHandlerResource,
