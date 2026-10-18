@@ -56,6 +56,40 @@ Supported so far:
 | System → Cron, Logging, Tunables | `opnsense_cron_job`, `opnsense_syslog_destination`, `opnsense_syslog_settings`, `opnsense_tunable` | `system` (read-only) |
 | Services → Caddy Web Server (plugin os-caddy) | `opnsense_caddy_settings`, `opnsense_caddy_domain`, `opnsense_caddy_subdomain`, `opnsense_caddy_handler`, `opnsense_caddy_access_list`, `opnsense_caddy_basic_auth`, `opnsense_caddy_header`, `opnsense_caddy_layer4_route` | `caddy` |
 
+Every resource except `opnsense_firewall_rule`, `opnsense_plugin` and the ACME challenge types and automations is generated from OPNsense's model XML (see [gen/README.md](gen/README.md)) and exposes every field of the model. MCP tools marked read-only belong to generated areas; the others also have write tools.
+
+See [docs/DESIGN.md](docs/DESIGN.md) for the layout, the research behind it, and the roadmap, and [docs/TODO.md](docs/TODO.md) for every OPNsense area still missing.
+
+## Layout
+
+```
+cmd/
+  mcp-opnsense/                 MCP server binary (flags, env, stdio)
+  terraform-provider-opnsense/  Terraform provider binary
+internal/
+  opnsense/                     shared API client — one file per API controller
+    item_controller.go          generic add/get/set/del/search/reconfigure
+    firewall_alias.go           alias lookup by name (types generated)
+    unbound_overrides.go        Unbound lookups by name (types generated)
+    acme_client.go              ACME challenge types, automations, operations (rest generated)
+    wireguard.go                WireGuard status, local X25519 key handling (types generated)
+    routing.go                  gateway status and lookup (types generated)
+    firewall_filter.go          filter rules, ordering, interface list, apply with reachability check
+    firmware.go                 packages/plugins, update status, background pkg jobs
+    wol.go                      Wake on LAN magic packets (hosts generated)
+    caddy.go                    Caddy status, Caddyfile, scheme helpers (types generated)
+    settings_controller.go      generic get/set settings sections
+    zz_gen_*.go                 generated areas (do not edit)
+    opnsensetest/               in-memory fake OPNsense used by all tests (collections.go)
+  acceptance/                   tests against a real firewall (make acc)
+  mcpserver/                    MCP tools — one *_tools.go file per area, grouped in toolsets
+  provider/                     Terraform provider and resources
+    item_crud.go                generic Create/Read/Update/Delete + apply for item resources
+cmd/opnsense-gen/               code generator
+gen/specs/, gen/models/         generator input: specs and pinned OPNsense model XML
+examples/                       Terraform and MCP client config
+```
+
 ## Quick start
 
 Four steps, then one command tells you whether it worked.
@@ -350,6 +384,17 @@ One manual step remains: assign the `wgN` device as an interface (Interfaces →
 becomes e.g. `opt3`) and enable it. The gateway's `interface` is that assigned name. Recent
 OPNsense development versions add an assignment API, so a resource for this is on the roadmap.
 Then allow the traffic with `opnsense_firewall_rule` on the WireGuard interface.
+
+ACME challenge types and automations have a `params` map for their provider/type fields
+(`dns_cf_token`, `sftp_host`, ...). Terraform manages only the keys you set: other fields are
+left alone and do not show as drift, and removing a key clears it. Unknown field names fail at
+`terraform plan`. The map is sensitive, so pass secrets from variables.
+
+Terraform manages the certificate *configuration*. OPNsense issues and renews the certificate
+itself. To issue one immediately, use the web UI or the MCP tool `acme_certificate_issue`.
+
+Don't let both tools write the same object: changes made through MCP show up as drift on the
+next `terraform plan`. A simple rule is MCP read-only for anything Terraform manages.
 
 ## Claude Code skill
 

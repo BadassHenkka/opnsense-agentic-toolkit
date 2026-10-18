@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 
-.PHONY: all gen gen-check fetch-models verify-upstream acc tidy build test vet lint install-tf clean
+.PHONY: all tidy gen gen-check fetch-models verify-upstream acc build test vet lint install-tf clean
 
 all: gen-check vet test build
 
@@ -47,4 +47,3 @@ install-tf:
 
 clean:
 	rm -rf bin
-

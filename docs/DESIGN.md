@@ -91,6 +91,25 @@ already holds the facts: field types, defaults, option values, ranges, masks, un
 Pilot areas: VLANs, virtual IPs, firewall categories, cron jobs, syslog destinations and
 settings, tunables.
 
+**Migration of the hand-written areas.** Alias, Unbound, gateways/routes, WoL, Caddy, WireGuard
+and ACME settings/accounts/certificates moved onto specs. What made that possible without
+losing behaviour:
+
+- Names stay: specs set `attr` and `go_name`, so Terraform state (attribute names and types,
+  checked against the previous schemas) and the hand-written MCP tools keep working. Settings
+  resources keep their ids (`id`).
+- Spec options cover the hand-made mappings: `invert` (gateway `enabled` ↔ `disabled`),
+  `as_bool` (Caddy `tls` ↔ `DisableTls`), `values` (`upstream_scheme = "https"` ↔ `1`),
+  `tf_type`, `sep`, extra `validators` and `plan_modifiers`.
+- Behaviour a spec cannot express is hand-written *next to* the generated code, as methods on
+  the generated types: WireGuard key generation (`hooks` + `ModifyPlan`), Unbound import by
+  `name/TYPE` (`custom_import`), per-record-type validation (`ValidateConfig`). The fake keeps its
+  quirks the same way (`s.collection` + `alsoValidate`).
+- Every resource now exposes all model fields (91 new attributes). Fields the plugin manages
+  itself (ACME's cron and HAProxy references) are `computed`, so Terraform never overwrites
+  them; the first plan after upgrading may set new attributes to their defaults.
+- Hand-written non-test code went from about 13,000 to 9,800 lines; the generated code is about 5,200.
+
 ## First resource: firewall alias
 
 Chosen because it is a clean MVC controller (`/api/firewall/alias`), easy to test safely
@@ -338,3 +357,20 @@ Source: opnsense/plugins `www/caddy` (`Caddy.xml` 1.4.0, `Api/ReverseProxyContro
 - `caddy_expose` (MCP) reuses an exact domain, or a wildcard one level up (creating the subdomain),
   or creates the domain, then adds the handler. It refuses a second handler for the same
   domain/subdomain/path and rolls back what it created when a later step fails.
+
+## Roadmap
+
+1. ✅ Firewall alias — client, MCP tools, TF resource.
+2. ✅ Unbound host overrides and host aliases.
+3. ✅ ACME client plugin.
+4. ✅ WireGuard.
+5. ✅ Gateways and static routes.
+6. Interface assignment (wgN → optN), once the AssignmentController API is in a release.
+7. ✅ Firewall filter rules (with a reachability check instead of the removed savepoint API).
+7b. ✅ Plugins and minor firmware updates.
+7c. ✅ Wake on LAN (with the first Terraform action).
+7d. ✅ Caddy reverse proxy (basic auth, headers and layer4 still to do).
+7e. ✅ Code generator, with VLAN, virtual IPs, categories, cron, syslog and tunables.
+8. Kea DHCP reservations.
+9. Data sources (`opnsense_firewall_alias` lookup by name), `tfplugindocs`, goreleaser.
+10. Tool-schema snapshot tests and acceptance tests against a test OPNsense VM.
