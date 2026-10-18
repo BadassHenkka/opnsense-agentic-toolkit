@@ -19,6 +19,9 @@ func generatedResources() []func() resource.Resource {
 		NewUnboundForwardResource,
 		NewUnboundDoTResource,
 		NewUnboundBlocklistResource,
+		NewWireguardInstanceResource,
+		NewWireguardPeerResource,
+		NewWireguardGeneralResource,
 	}
 }
 

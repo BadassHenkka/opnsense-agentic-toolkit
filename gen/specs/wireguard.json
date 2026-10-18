@@ -1,0 +1,90 @@
+{
+  "area": "wireguard",
+  "title": "VPN → WireGuard",
+  "mcp": false,
+  "settings": [
+    {
+      "resource": "wireguard_settings",
+      "go_name": "WireguardGeneral",
+      "plural": "General",
+      "id": "wireguard",
+      "description": "Global WireGuard switch (VPN → WireGuard → Settings).",
+      "model": "core/Wireguard/General.xml",
+      "node": "",
+      "get": "wireguard/general/get",
+      "set": "wireguard/general/set",
+      "path": ["general"],
+      "reconfigure": "wireguard/service/reconfigure",
+      "disable": "enabled",
+      "fields": {
+        "enabled": {"default": "1"}
+      }
+    }
+  ],
+  "items": [
+    {
+      "resource": "wireguard_instance",
+      "go_name": "WireguardInstance",
+      "plural": "Instances",
+      "description": "A WireGuard instance (VPN → WireGuard → Instances): a local wgN interface. Peers attach themselves with opnsense_wireguard_peer.instance_ids.",
+      "model": "core/Wireguard/Server.xml",
+      "node": "servers.server",
+      "base": "wireguard/server",
+      "key": "server",
+      "suffix": "Server",
+      "reconfigure": "wireguard/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "hooks": ["to_api", "from_api"],
+      "fields": {
+        "privkey": {"attr": "private_key", "go_name": "PrivateKey", "sensitive": true, "required": false, "no_default": true,
+                    "description": "Private key. Omit to have the provider generate one (locally, X25519). It is stored in Terraform state, like every OPNsense secret managed by Terraform.",
+                    "validators": ["wireguardKey{}"], "plan_modifiers": ["stringplanmodifier.UseStateForUnknown()"]},
+        "pubkey": {"attr": "public_key", "go_name": "PublicKey", "tf_computed": true, "description": "Public key, derived from private_key. Give it to the peers."},
+        "port": {"attr": "listen_port", "go_name": "Port", "type": "int", "default": "51820", "description": "UDP listen port. Allow it on WAN with a firewall rule."},
+        "mtu": {"go_name": "MTU"},
+        "dns": {"go_name": "DNS", "tf_type": "set"},
+        "tunneladdress": {"attr": "tunnel_addresses", "go_name": "TunnelAddress", "tf_type": "set",
+                          "description": "Instance addresses in CIDR notation, e.g. `10.10.10.1/24`.",
+                          "validators": ["setvalidator.ValueStringsAre(cidr{})"]},
+        "disableroutes": {"attr": "disable_routes", "go_name": "DisableRoutes", "description": "Do not install routes for the peers' allowed IPs. Set it when routing to networks behind peers with opnsense_gateway and opnsense_route instead."},
+        "gateway": {"description": "Gateway IP, for use with disable_routes."},
+        "instance": {"attr": "instance_number", "go_name": "Number", "computed": true, "description": "The N in wgN, assigned by OPNsense."},
+        "interface": {"include": true, "computed": true, "description": "Device name, e.g. `wg0`. Use it to assign the interface and write firewall rules."},
+        "peers": {"computed": true, "tf": false, "description": "Peer UUIDs; change membership through the peers' instance_ids."},
+        "carp_depend_on": {"description": "Virtual IP (CARP) this instance follows: it only runs on the CARP master."}
+      },
+      "example": {"name": "roadwarrior", "privkey": "yAnz5TF+lXXJte14tji3zlMNq+hd2rYUIgJBgB3fBmk=", "tunneladdress": "10.10.10.1/24"},
+      "update": {"port": "51821"}
+    },
+    {
+      "resource": "wireguard_peer",
+      "go_name": "WireguardPeer",
+      "plural": "Peers",
+      "description": "A WireGuard peer (VPN → WireGuard → Peers): a remote device or site.",
+      "model": "core/Wireguard/Client.xml",
+      "node": "clients.client",
+      "base": "wireguard/client",
+      "key": "client",
+      "suffix": "Client",
+      "reconfigure": "wireguard/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "pubkey": {"attr": "public_key", "go_name": "PublicKey", "description": "The remote device's public key.", "validators": ["wireguardKey{}"]},
+        "psk": {"attr": "preshared_key", "go_name": "PresharedKey", "sensitive": true, "description": "Optional preshared key (`wg genpsk`), for post-quantum resistance.", "validators": ["wireguardKey{}"]},
+        "tunneladdress": {"attr": "tunnel_addresses", "go_name": "TunnelAddress", "tf_type": "set",
+                          "description": "The peer's allowed IPs in CIDR notation: `10.10.10.2/32` for a single device, or also whole networks behind it for site-to-site, e.g. `[\"10.20.0.2/32\", \"192.168.50.0/24\"]`.",
+                          "validators": ["setvalidator.SizeAtLeast(1)", "setvalidator.ValueStringsAre(cidr{})"]},
+        "serveraddress": {"attr": "endpoint_host", "go_name": "EndpointHost", "description": "Where the peer is reachable (site-to-site). Omit for road warriors."},
+        "serverport": {"attr": "endpoint_port", "go_name": "EndpointPort", "type": "int", "description": "Endpoint port."},
+        "keepalive": {"description": "Persistent keepalive in seconds, e.g. 25."},
+        "servers": {"attr": "instance_ids", "go_name": "Instances", "include": true,
+                    "description": "IDs of the opnsense_wireguard_instance resources this peer belongs to.",
+                    "validators": ["setvalidator.ValueStringsAre(stringvalidator.RegexMatches(uuidRe, \"must be an instance UUID\"))"]},
+        "privkey": {"attr": "private_key", "go_name": "PrivateKey", "sensitive": true, "description": "The peer's private key, if you want OPNsense to keep it for exporting the peer configuration."}
+      },
+      "example": {"name": "phone", "pubkey": "xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg=", "tunneladdress": "10.10.10.2/32"}
+    }
+  ]
+}

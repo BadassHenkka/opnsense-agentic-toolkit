@@ -6,4 +6,5 @@ func registerGenerated(s *Server) {
 	registerGenAcme(s)
 	registerGenFirewall(s)
 	registerGenUnbound(s)
+	registerGenWireguard(s)
 }

@@ -182,3 +182,37 @@ Terraform choices:
 MCP choices: credential-looking params are write-only (`(set, hidden)` on read); `*_fields`
 tools let the agent discover provider fields instead of guessing; `issue` refuses while the
 client is disabled; `issue`, `revoke` and `register` are marked open-world.
+
+## Fourth area: WireGuard
+
+Source: opnsense/core `models/OPNsense/Wireguard/{General,Server,Client}.xml`, the
+`FieldTypes/ClientField.php` back-reference and `Api/{Server,Client,General,Service}Controller.php`.
+
+- Three models: `general` (enabled), `server.servers.server` (instance), `client.clients.client`
+  (peer). Actions are `{add,get,set,del,search}Server` / `…Client`; reconfigure answers
+  `{"result":"ok"}`, so `Client.Reconfigure` accepts `status` or `result`.
+- **Membership lives on the instance** (`server.peers`). The peer's `servers` field is
+  volatile: `ClientField` computes it on load, and `setClientAction` rewrites every instance's
+  peer list from the posted `servers`. Posting a peer *without* `servers` detaches it from all
+  instances, and `delClient` removes it from all instances. Decision: the peer owns
+  membership. `WireguardPeer.Instances` is always sent, while `WireguardInstance.Peers` is a
+  `ReadOnlyList` (decoded, never encoded), so an instance update cannot clobber it. The fake
+  implements these semantics with `Field.Virtual` and `Collection.OnWrite`.
+- **OPNsense does not derive public keys.** The UI calls `server/keyPair` (and `client/psk`)
+  and stores both halves. We generate and derive locally with `crypto/ecdh` X25519 (standard
+  library, checked against the RFC 7748 test vector), so key material is never fetched over the
+  API, and the stored `pubkey` always matches `privkey`.
+- `searchClient` filters by `servers` as an *array*, so `SearchWith` filters became
+  `map[string]any`.
+- `service/show` is `wg show all dump` enriched with names and `peer-status` (online = handshake
+  within 300 s), which makes a useful read-only status tool.
+- `instance` (AutoNumber) and `interface` (volatile, `wgN`) are read-only.
+
+Terraform choices: `private_key` is Optional+Computed+Sensitive and generated in Create when
+omitted. `public_key` is computed and set in `ModifyPlan` from the planned private key, so a
+key rotation shows the new public key in the plan. Custom validators (`validators.go`) check
+CIDR notation and key format without echoing secrets.
+
+MCP choices: `wireguard_peer_create` without a public key generates the device keys and returns
+a wg-quick config once (the UI's "peer generator", minus storing the device private key on the
+firewall). Secrets are never returned by `get` tools.

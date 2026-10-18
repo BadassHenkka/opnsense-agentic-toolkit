@@ -10,6 +10,7 @@ func registerAll(s *Server) {
 	registerFirewallAlias(s)
 	registerUnbound(s)
 	registerAcme(s)
+	registerWireguard(s)
 }
 
 func required(prefix string, r Record, fields ...string) map[string]string {

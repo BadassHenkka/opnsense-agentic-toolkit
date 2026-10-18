@@ -6,6 +6,8 @@ import (
 	"net"
 
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+
+	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
 )
 
 // Custom validators. The framework's validator interfaces are small: a description and a
@@ -48,5 +50,24 @@ func (ipOrCIDR) ValidateString(_ context.Context, req validator.StringRequest, r
 	if _, _, err := net.ParseCIDR(v); err != nil {
 		resp.Diagnostics.AddAttributeError(req.Path, "Invalid IP address or network",
 			fmt.Sprintf("%q is neither an IP address nor a network in CIDR notation.", v))
+	}
+}
+
+// wireguardKey validates a base64 encoded 32-byte WireGuard key.
+type wireguardKey struct{}
+
+func (wireguardKey) Description(context.Context) string {
+	return "value must be a WireGuard key: 32 bytes, base64 encoded"
+}
+func (w wireguardKey) MarkdownDescription(ctx context.Context) string { return w.Description(ctx) }
+
+func (wireguardKey) ValidateString(_ context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() || req.ConfigValue.ValueString() == "" {
+		return
+	}
+	if _, err := opnsense.DecodeWireguardKey(req.ConfigValue.ValueString()); err != nil {
+		// Do not echo the value: it may be a private key.
+		resp.Diagnostics.AddAttributeError(req.Path, "Invalid WireGuard key",
+			"The value is not a WireGuard key (32 bytes, base64 encoded, like the output of `wg genkey`).")
 	}
 }

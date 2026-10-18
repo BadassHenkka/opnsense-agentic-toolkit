@@ -26,6 +26,7 @@ Supported so far:
 | Firewall → Aliases | `opnsense_firewall_alias` | `firewall_alias` |
 | Services → Unbound DNS → Overrides | `opnsense_unbound_host_override`, `opnsense_unbound_host_alias` | `unbound` |
 | Services → ACME Client (plugin os-acme-client) | `opnsense_acme_settings`, `opnsense_acme_account`, `opnsense_acme_challenge_type`, `opnsense_acme_automation`, `opnsense_acme_certificate` | `acme` |
+| VPN → WireGuard | `opnsense_wireguard_settings`, `opnsense_wireguard_instance`, `opnsense_wireguard_peer` | `wireguard` |
 
 ## Quick start
 
@@ -104,12 +105,18 @@ through Terraform. Use `--read-only` when you only want exploration.
 |---|---|
 | `firewall_alias` | `firewall_alias_{list,get,create,update,delete}`, `firewall_alias_apply` |
 | `unbound` | `unbound_host_override_{list,get,create,update,delete}`, `unbound_host_alias_{list,get,create,update,delete}`, `unbound_apply` |
+| `wireguard` | `wireguard_settings_{get,update}`; `wireguard_status` (live handshakes/traffic); `wireguard_{instance,peer}_{list,get,create,update,delete}`; `wireguard_apply` |
 | `acme` | `acme_settings_{get,update}`; `acme_{account,challenge_type,automation,certificate}_{list,get,create,update,delete}`; `acme_challenge_type_fields`, `acme_automation_fields` (discover provider fields); `acme_account_register`; `acme_certificate_{issue,revoke,run_automations}`; `acme_apply` |
 
 ACME credentials (DNS API tokens, EAB keys, automation passwords) can be set through MCP but
 are never returned: `get` tools show them as `(set, hidden)`. `acme_certificate_issue` and
 `acme_certificate_revoke` contact the CA; issuing runs in the background on the firewall,
 so the agent checks the status with `acme_certificate_get` afterwards.
+
+WireGuard keys are generated locally (X25519), not on the firewall. `wireguard_peer_create`
+without a `public_key` generates the device's key pair and returns a ready-to-import client
+config once: the device's private key is not stored on the firewall or anywhere else.
+Instance private keys and preshared keys are never returned by `get` tools.
 
 Updates are patches: only the fields given change. Host overrides can be addressed by name
 (`nas.home.lan`), plus `type` when a name has several records (e.g. A and AAAA).
@@ -155,7 +162,14 @@ terraform import opnsense_unbound_host_override.nas nas.home.lan/A   # name/TYPE
 terraform import opnsense_unbound_host_alias.truenas truenas.home.lan
 terraform import opnsense_acme_certificate.fw fw.example.com            # ACME objects by name
 terraform import opnsense_acme_settings.this acmeclient
+terraform import opnsense_wireguard_instance.home home                # WireGuard by name
 ```
+
+WireGuard: `opnsense_wireguard_instance` generates its private key when you omit
+`private_key` (it is then kept in Terraform state, which you should treat as secret) and
+shows the derived `public_key` in the plan. Peer membership is set only on the peer
+(`instance_ids`). OPNsense stores it on the instance, but the provider never writes it there,
+so two resources never fight over it.
 
 ## Adding a resource
 

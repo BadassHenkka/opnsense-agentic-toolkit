@@ -10,10 +10,13 @@ type generatedServices struct {
 	Firewall *FirewallService
 	// Unbound manages Services → Unbound DNS.
 	Unbound *UnboundService
+	// Wireguard manages VPN → WireGuard.
+	Wireguard *WireguardService
 }
 
 func (c *Client) initGenerated() {
 	c.Acme = newAcmeService(c)
 	c.Firewall = newFirewallService(c)
 	c.Unbound = newUnboundService(c)
+	c.Wireguard = newWireguardService(c)
 }
