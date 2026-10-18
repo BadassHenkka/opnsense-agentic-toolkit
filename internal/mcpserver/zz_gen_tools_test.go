@@ -9,7 +9,7 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"captiveportal", "dyndns", "firewall", "interfaces", "nodeexporter", "system", "unbound"}})
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"captiveportal", "dyndns", "firewall", "interfaces", "kea", "nodeexporter", "system", "unbound"}})
 	for _, name := range []string{
 		"captive_portal_zone_list",
 		"dyndns_account_list",
@@ -31,6 +31,18 @@ func TestGeneratedTools(t *testing.T) {
 		"vxlan_list",
 		"loopback_list",
 		"neighbor_list",
+		"kea_dhcp4_subnet_list",
+		"kea_dhcp4_reservation_list",
+		"kea_dhcp4_option_list",
+		"kea_dhcp4_peer_list",
+		"kea_dhcp6_subnet_list",
+		"kea_dhcp6_reservation_list",
+		"kea_dhcp6_pd_pool_list",
+		"kea_dhcp6_option_list",
+		"kea_dhcp6_peer_list",
+		"kea_dhcp4_settings_get",
+		"kea_dhcp6_settings_get",
+		"kea_ctrl_agent_settings_get",
 		"node_exporter_settings_get",
 		"cron_job_list",
 		"syslog_destination_list",

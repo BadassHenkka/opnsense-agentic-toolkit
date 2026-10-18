@@ -41,6 +41,7 @@ func allTools(c *opnsense.Client) []tool {
 	tools = append(tools, firewallRuleTools(c)...)
 	tools = append(tools, firmwareTools(c)...)
 	tools = append(tools, wolTools(c)...)
+	tools = append(tools, keaTools(c)...)
 	tools = append(tools, caddyTools(c)...)
 	tools = append(tools, backupTools(c)...)
 	tools = append(tools, generatedTools(c)...) // zz_gen_*.go, read-only

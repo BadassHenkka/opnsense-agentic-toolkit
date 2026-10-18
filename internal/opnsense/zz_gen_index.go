@@ -16,6 +16,8 @@ type generatedServices struct {
 	Firewall *FirewallService
 	// Interfaces manages Interfaces → Assignments, Other Types (VLAN) and Virtual IPs.
 	Interfaces *InterfacesService
+	// Kea manages Services → Kea DHCP.
+	Kea *KeaService
 	// NodeExporter manages Services → Prometheus Exporter (plugin os-node_exporter).
 	NodeExporter *NodeExporterService
 	// Routing manages System → Gateways and System → Routes.
@@ -37,6 +39,7 @@ func (c *Client) initGenerated() {
 	c.DynDNS = newDynDNSService(c)
 	c.Firewall = newFirewallService(c)
 	c.Interfaces = newInterfacesService(c)
+	c.Kea = newKeaService(c)
 	c.NodeExporter = newNodeExporterService(c)
 	c.Routing = newRoutingService(c)
 	c.System = newSystemService(c)

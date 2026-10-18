@@ -98,6 +98,8 @@ type Server struct {
 
 	mu          sync.Mutex
 	collections []*Collection
+	// KeaLeases4 and KeaLeases6 are the rows kea/leases4|6/search return.
+	KeaLeases4, KeaLeases6 []map[string]string
 
 	extra       map[string]func(s *Server, w http.ResponseWriter, r *http.Request, arg string)
 	reconfigure map[string]bool

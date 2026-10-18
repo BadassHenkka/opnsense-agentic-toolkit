@@ -9,6 +9,7 @@ func registerGenerated(s *Server) {
 	registerGenDynDNS(s)
 	registerGenFirewall(s)
 	registerGenInterfaces(s)
+	registerGenKea(s)
 	registerGenNodeExporter(s)
 	registerGenRouting(s)
 	registerGenSystem(s)

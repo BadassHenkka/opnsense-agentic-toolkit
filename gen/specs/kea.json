@@ -1,0 +1,783 @@
+{
+  "area": "kea",
+  "title": "Services \u2192 Kea DHCP",
+  "items": [
+    {
+      "resource": "kea_dhcp4_subnet",
+      "go_name": "KeaDhcp4Subnet",
+      "plural": "Dhcp4Subnets",
+      "description": "A Kea DHCPv4 subnet with its pools and options (Services \u2192 Kea DHCP \u2192 Kea DHCPv4 \u2192 Subnets).",
+      "node": "subnets.subnet4",
+      "key": "subnet4",
+      "suffix": "Subnet",
+      "name_field": "subnet",
+      "zero_field": "subnet",
+      "model": "core/Kea/KeaDhcpv4.xml",
+      "base": "kea/dhcpv4",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "subnet_id": {
+          "type": "int",
+          "description": "Numeric subnet id; assigned by OPNsense when unset.",
+          "computed": true
+        },
+        "subnet": {
+          "required": true,
+          "description": "CIDR, e.g. `192.168.1.0/24`."
+        },
+        "valid_lifetime": {
+          "type": "int"
+        },
+        "next_server": {
+          "description": "TFTP/boot server address."
+        },
+        "option_data_autocollect": {
+          "description": "Fill DNS servers and routers from the interface."
+        },
+        "option_data.domain_name_servers": {
+          "attr": "dns_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.domain_search": {
+          "attr": "domain_search",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.routers": {
+          "attr": "routers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.static_routes": {
+          "attr": "static_routes",
+          "type": "string"
+        },
+        "option_data.classless_static_route": {
+          "attr": "classless_static_route",
+          "type": "string"
+        },
+        "option_data.domain_name": {
+          "attr": "domain_name"
+        },
+        "option_data.ntp_servers": {
+          "attr": "ntp_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.time_servers": {
+          "attr": "time_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.tftp_server_name": {
+          "attr": "tftp_server_name"
+        },
+        "option_data.boot_file_name": {
+          "attr": "boot_file_name"
+        },
+        "option_data.v6_only_preferred": {
+          "attr": "v6_only_preferred",
+          "type": "int"
+        },
+        "option_data.v4_dnr": {
+          "attr": "v4_dnr"
+        },
+        "option": {
+          "attr": "option_ids",
+          "go_name": "OptionIDs",
+          "type": "refs",
+          "description": "`opnsense_kea_dhcp4_option` ids."
+        },
+        "match-client-id": {
+          "attr": "match_client_id"
+        },
+        "allocator": {
+          "description": "`iterative`, `random`, `flq` or empty for the default."
+        },
+        "pools": {
+          "type": "list",
+          "tf_type": "set",
+          "sep": "\n",
+          "description": "Address pools, `192.168.1.100 - 192.168.1.200` or CIDR."
+        },
+        "ping_check": {},
+        "ddns_forward_zone": {
+          "description": "Forward DNS zone to update."
+        },
+        "ddns_reverse_zone": {
+          "description": "Reverse DNS zone to update."
+        },
+        "ddns_qualifying_suffix": {
+          "description": "Suffix appended to host names for DDNS."
+        },
+        "ddns_dns_server": {
+          "description": "DNS server that receives the updates."
+        },
+        "ddns_dns_port": {
+          "type": "int"
+        },
+        "ddns_domain_key_name": {
+          "description": "TSIG key name."
+        },
+        "ddns_domain_key_secret": {
+          "type": "string",
+          "sensitive": true,
+          "description": "TSIG key secret (base64)."
+        },
+        "ddns_domain_key_algorithm": {
+          "description": "hmac-md5 ... hmac-sha512."
+        },
+        "ddns_override_no_update": {},
+        "ddns_override_client_update": {},
+        "ddns_update_on_renew": {},
+        "ddns_conflict_resolution_mode": {
+          "description": "Empty for check-with-dhcid."
+        }
+      },
+      "example": {
+        "subnet": "192.168.1.0/24",
+        "pools": "192.168.1.100 - 192.168.1.200"
+      }
+    },
+    {
+      "resource": "kea_dhcp4_reservation",
+      "go_name": "KeaDhcp4Reservation",
+      "plural": "Dhcp4Reservations",
+      "description": "A Kea DHCPv4 static lease (Services \u2192 Kea DHCP \u2192 Kea DHCPv4 \u2192 Reservations).",
+      "node": "reservations.reservation",
+      "key": "reservation",
+      "suffix": "Reservation",
+      "name_field": "hw_address",
+      "zero_field": "hw_address",
+      "model": "core/Kea/KeaDhcpv4.xml",
+      "base": "kea/dhcpv4",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "subnet": {
+          "type": "ref",
+          "description": "`opnsense_kea_dhcp4_subnet` id."
+        },
+        "ip_address": {},
+        "hw_address": {
+          "description": "Client MAC address."
+        },
+        "client_id": {
+          "description": "Optional client id, colon separated hex."
+        },
+        "hostname": {},
+        "next_server": {},
+        "option_data.domain_name_servers": {
+          "attr": "dns_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.domain_search": {
+          "attr": "domain_search",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.routers": {
+          "attr": "routers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.static_routes": {
+          "attr": "static_routes",
+          "type": "string"
+        },
+        "option_data.classless_static_route": {
+          "attr": "classless_static_route",
+          "type": "string"
+        },
+        "option_data.domain_name": {
+          "attr": "domain_name"
+        },
+        "option_data.ntp_servers": {
+          "attr": "ntp_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.time_servers": {
+          "attr": "time_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.tftp_server_name": {
+          "attr": "tftp_server_name"
+        },
+        "option_data.boot_file_name": {
+          "attr": "boot_file_name"
+        },
+        "option": {
+          "attr": "option_ids",
+          "go_name": "OptionIDs",
+          "type": "refs"
+        }
+      },
+      "example": {
+        "hw_address": "00:11:22:33:44:55",
+        "ip_address": "192.168.1.10",
+        "hostname": "nas"
+      }
+    },
+    {
+      "resource": "kea_dhcp4_option",
+      "go_name": "KeaDhcp4Option",
+      "plural": "Dhcp4Options",
+      "description": "A custom DHCP4 option that can be attached to subnets and reservations (Services \u2192 Kea DHCP \u2192 Kea DHCPv4 \u2192 Settings \u2192 Options).",
+      "node": "options.option",
+      "key": "option",
+      "suffix": "Option",
+      "name_field": "description",
+      "zero_field": "description",
+      "model": "core/Kea/KeaDhcpv4.xml",
+      "base": "kea/dhcpv4",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "code": {
+          "type": "string",
+          "description": "Option code (see the web UI list)."
+        },
+        "encoding": {
+          "description": "How data is encoded: hex, ipv4-address, ipv6-address, uint8, uint16, uint32, int32, boolean, string, fqdn."
+        },
+        "data": {
+          "type": "string",
+          "description": "Option value in the chosen encoding."
+        },
+        "force": {
+          "description": "Send the option even if the client did not ask for it."
+        },
+        "match_code": {
+          "type": "string",
+          "description": "Only for clients sending this option code."
+        },
+        "match_encoding": {},
+        "match_data": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "description": "ntp",
+        "code": "42",
+        "encoding": "ipv4-address",
+        "data": "192.168.1.1"
+      }
+    },
+    {
+      "resource": "kea_dhcp4_peer",
+      "go_name": "KeaDhcp4Peer",
+      "plural": "Dhcp4Peers",
+      "description": "A high availability peer for Kea DHCPv4.",
+      "node": "ha_peers.peer",
+      "key": "peer",
+      "suffix": "Peer",
+      "name_field": "name",
+      "zero_field": "name",
+      "model": "core/Kea/KeaDhcpv4.xml",
+      "base": "kea/dhcpv4",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "role": {
+          "description": "`primary` or `standby`."
+        },
+        "url": {
+          "description": "Control agent URL of the peer, e.g. `http://192.168.1.2:8000/`."
+        }
+      },
+      "example": {
+        "name": "fw2",
+        "role": "standby",
+        "url": "http://192.168.1.2:8000/"
+      }
+    },
+    {
+      "resource": "kea_dhcp6_subnet",
+      "go_name": "KeaDhcp6Subnet",
+      "plural": "Dhcp6Subnets",
+      "description": "A Kea DHCPv6 subnet (Services \u2192 Kea DHCP \u2192 Kea DHCPv6 \u2192 Subnets).",
+      "node": "subnets.subnet6",
+      "key": "subnet6",
+      "suffix": "Subnet",
+      "name_field": "subnet",
+      "zero_field": "subnet",
+      "model": "core/Kea/KeaDhcpv6.xml",
+      "base": "kea/dhcpv6",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "subnet_id": {
+          "type": "int",
+          "computed": true
+        },
+        "subnet": {
+          "required": true,
+          "description": "CIDR, e.g. `fd00:1::/64`."
+        },
+        "valid_lifetime": {
+          "type": "int"
+        },
+        "allocator": {},
+        "pd-allocator": {
+          "attr": "pd_allocator"
+        },
+        "option_data_autocollect": {},
+        "option_data.dns_servers": {
+          "attr": "dns_servers",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.domain_search": {
+          "attr": "domain_search",
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option_data.v6_dnr": {
+          "attr": "v6_dnr"
+        },
+        "option": {
+          "attr": "option_ids",
+          "go_name": "OptionIDs",
+          "type": "refs"
+        },
+        "pools": {
+          "type": "list",
+          "tf_type": "set",
+          "sep": "\n",
+          "description": "Address pools, `fd00:1::100 - fd00:1::200`."
+        },
+        "interface": {
+          "type": "ref"
+        },
+        "dynamic_prefix": {},
+        "ddns_forward_zone": {
+          "description": "Forward DNS zone to update."
+        },
+        "ddns_reverse_zone": {
+          "description": "Reverse DNS zone to update."
+        },
+        "ddns_qualifying_suffix": {
+          "description": "Suffix appended to host names for DDNS."
+        },
+        "ddns_dns_server": {
+          "description": "DNS server that receives the updates."
+        },
+        "ddns_dns_port": {
+          "type": "int"
+        },
+        "ddns_domain_key_name": {
+          "description": "TSIG key name."
+        },
+        "ddns_domain_key_secret": {
+          "type": "string",
+          "sensitive": true,
+          "description": "TSIG key secret (base64)."
+        },
+        "ddns_domain_key_algorithm": {
+          "description": "hmac-md5 ... hmac-sha512."
+        },
+        "ddns_override_no_update": {},
+        "ddns_override_client_update": {},
+        "ddns_update_on_renew": {},
+        "ddns_conflict_resolution_mode": {
+          "description": "Empty for check-with-dhcid."
+        }
+      },
+      "example": {
+        "subnet": "fd00:1::/64",
+        "pools": "fd00:1::100 - fd00:1::200"
+      }
+    },
+    {
+      "resource": "kea_dhcp6_reservation",
+      "go_name": "KeaDhcp6Reservation",
+      "plural": "Dhcp6Reservations",
+      "description": "A Kea DHCPv6 static lease (Services \u2192 Kea DHCP \u2192 Kea DHCPv6 \u2192 Reservations).",
+      "node": "reservations.reservation",
+      "key": "reservation",
+      "suffix": "Reservation",
+      "name_field": "duid",
+      "zero_field": "duid",
+      "model": "core/Kea/KeaDhcpv6.xml",
+      "base": "kea/dhcpv6",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "subnet": {
+          "type": "ref"
+        },
+        "ip_address": {},
+        "prefix": {},
+        "duid": {
+          "description": "Client DUID, colon separated hex."
+        },
+        "hw_address": {},
+        "hostname": {},
+        "domain_search": {
+          "type": "list",
+          "tf_type": "set"
+        },
+        "option": {
+          "attr": "option_ids",
+          "go_name": "OptionIDs",
+          "type": "refs"
+        }
+      },
+      "example": {
+        "duid": "00:01:00:01:aa:bb:cc:dd:00:11:22:33:44:55",
+        "ip_address": "fd00:1::10"
+      }
+    },
+    {
+      "resource": "kea_dhcp6_pd_pool",
+      "go_name": "KeaDhcp6PDPool",
+      "plural": "Dhcp6PDPools",
+      "description": "A Kea DHCPv6 prefix delegation pool.",
+      "node": "pd_pools.pd_pool",
+      "key": "pd_pool",
+      "suffix": "PdPool",
+      "name_field": "prefix",
+      "zero_field": "prefix",
+      "model": "core/Kea/KeaDhcpv6.xml",
+      "base": "kea/dhcpv6",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "subnet": {
+          "type": "ref"
+        },
+        "prefix": {},
+        "prefix_len": {
+          "type": "int"
+        },
+        "delegated_len": {
+          "type": "int"
+        }
+      },
+      "example": {
+        "prefix": "fd00:2::",
+        "prefix_len": "48",
+        "delegated_len": "64"
+      }
+    },
+    {
+      "resource": "kea_dhcp6_option",
+      "go_name": "KeaDhcp6Option",
+      "plural": "Dhcp6Options",
+      "description": "A custom DHCP6 option that can be attached to subnets and reservations (Services \u2192 Kea DHCP \u2192 Kea DHCPv6 \u2192 Settings \u2192 Options).",
+      "node": "options.option",
+      "key": "option",
+      "suffix": "Option",
+      "name_field": "description",
+      "zero_field": "description",
+      "model": "core/Kea/KeaDhcpv6.xml",
+      "base": "kea/dhcpv6",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "code": {
+          "type": "string",
+          "description": "Option code (see the web UI list)."
+        },
+        "encoding": {
+          "description": "How data is encoded: hex, ipv4-address, ipv6-address, uint8, uint16, uint32, int32, boolean, string, fqdn."
+        },
+        "data": {
+          "type": "string",
+          "description": "Option value in the chosen encoding."
+        },
+        "force": {
+          "description": "Send the option even if the client did not ask for it."
+        },
+        "match_code": {
+          "type": "string",
+          "description": "Only for clients sending this option code."
+        },
+        "match_encoding": {},
+        "match_data": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "description": "dns",
+        "code": "23",
+        "encoding": "ipv6-address",
+        "data": "fd00:1::1"
+      }
+    },
+    {
+      "resource": "kea_dhcp6_peer",
+      "go_name": "KeaDhcp6Peer",
+      "plural": "Dhcp6Peers",
+      "description": "A high availability peer for Kea DHCPv6.",
+      "node": "ha_peers.peer",
+      "key": "peer",
+      "suffix": "Peer",
+      "name_field": "name",
+      "zero_field": "name",
+      "model": "core/Kea/KeaDhcpv6.xml",
+      "base": "kea/dhcpv6",
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "role": {
+          "description": "`primary` or `standby`."
+        },
+        "url": {
+          "description": "Control agent URL of the peer, e.g. `http://192.168.1.2:8000/`."
+        }
+      },
+      "example": {
+        "name": "fw2",
+        "role": "standby",
+        "url": "http://192.168.1.2:8000/"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "kea_dhcp4_settings",
+      "go_name": "KeaDhcp4General",
+      "plural": "Dhcp4General",
+      "description": "Kea DHCPv4 general settings (Services \u2192 Kea DHCP \u2192 Kea DHCPv4 \u2192 Settings). Do not run this next to Dnsmasq DHCP on the same interface.",
+      "model": "core/Kea/KeaDhcpv4.xml",
+      "node": "",
+      "get": "kea/dhcpv4/get",
+      "set": "kea/dhcpv4/set",
+      "path": [
+        "dhcpv4"
+      ],
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "general.enabled": {
+          "attr": "enabled",
+          "description": "Run the Kea DHCP server."
+        },
+        "general.manual_config": {
+          "attr": "manual_config",
+          "description": "Do not generate the config; use a hand-written kea config."
+        },
+        "general.interfaces": {
+          "attr": "interfaces",
+          "type": "refs",
+          "description": "Interfaces to serve."
+        },
+        "general.service_sockets_max_retries": {
+          "attr": "service_sockets_max_retries",
+          "type": "int"
+        },
+        "general.service_sockets_retry_wait_time": {
+          "attr": "service_sockets_retry_wait_time",
+          "type": "int"
+        },
+        "general.valid_lifetime": {
+          "attr": "valid_lifetime",
+          "type": "int",
+          "description": "Default lease time in seconds."
+        },
+        "general.decline_probation_period": {
+          "attr": "decline_probation_period",
+          "type": "int"
+        },
+        "general.fwrules": {
+          "attr": "firewall_rules",
+          "description": "Create the firewall rules that allow DHCP."
+        },
+        "general.dhcp_socket_type": {
+          "attr": "dhcp_socket_type",
+          "description": "`raw` or `udp`."
+        },
+        "general.compatibility": {
+          "attr": "compatibility",
+          "type": "refs"
+        },
+        "lexpire.hold_reclaimed_time": {
+          "attr": "lexpire_hold_reclaimed_time",
+          "type": "int"
+        },
+        "lexpire.reclaim_timer_wait_time": {
+          "attr": "lexpire_reclaim_timer_wait_time",
+          "type": "int"
+        },
+        "lexpire.flush_reclaimed_timer_wait_time": {
+          "attr": "lexpire_flush_reclaimed_timer_wait_time",
+          "type": "int"
+        },
+        "lexpire.max_reclaim_time": {
+          "attr": "lexpire_max_reclaim_time",
+          "type": "int"
+        },
+        "lexpire.max_reclaim_leases": {
+          "attr": "lexpire_max_reclaim_leases",
+          "type": "int"
+        },
+        "lexpire.unwarned_reclaim_cycles": {
+          "attr": "lexpire_unwarned_reclaim_cycles",
+          "type": "int"
+        },
+        "ha.enabled": {
+          "attr": "ha_enabled",
+          "description": "Enable high availability with the peers."
+        },
+        "ha.this_server_name": {
+          "attr": "ha_this_server_name",
+          "description": "Name of this node; must match a peer."
+        },
+        "ha.max_unacked_clients": {
+          "attr": "ha_max_unacked_clients",
+          "type": "int"
+        },
+        "subnets.subnet4": {
+          "skip": true
+        },
+        "reservations.reservation": {
+          "skip": true
+        },
+        "options.option": {
+          "skip": true
+        },
+        "ha_peers.peer": {
+          "skip": true
+        }
+      },
+      "example": {
+        "general.enabled": "1",
+        "general.interfaces": "lan"
+      }
+    },
+    {
+      "resource": "kea_dhcp6_settings",
+      "go_name": "KeaDhcp6General",
+      "plural": "Dhcp6General",
+      "description": "Kea DHCPv6 general settings (Services \u2192 Kea DHCP \u2192 Kea DHCPv6 \u2192 Settings).",
+      "model": "core/Kea/KeaDhcpv6.xml",
+      "node": "",
+      "get": "kea/dhcpv6/get",
+      "set": "kea/dhcpv6/set",
+      "path": [
+        "dhcpv6"
+      ],
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "general.enabled": {
+          "attr": "enabled",
+          "description": "Run the Kea DHCP server."
+        },
+        "general.manual_config": {
+          "attr": "manual_config",
+          "description": "Do not generate the config; use a hand-written kea config."
+        },
+        "general.interfaces": {
+          "attr": "interfaces",
+          "type": "refs",
+          "description": "Interfaces to serve."
+        },
+        "general.service_sockets_max_retries": {
+          "attr": "service_sockets_max_retries",
+          "type": "int"
+        },
+        "general.service_sockets_retry_wait_time": {
+          "attr": "service_sockets_retry_wait_time",
+          "type": "int"
+        },
+        "general.valid_lifetime": {
+          "attr": "valid_lifetime",
+          "type": "int",
+          "description": "Default lease time in seconds."
+        },
+        "general.decline_probation_period": {
+          "attr": "decline_probation_period",
+          "type": "int"
+        },
+        "general.fwrules": {
+          "attr": "firewall_rules",
+          "description": "Create the firewall rules that allow DHCP."
+        },
+        "general.mac_sources": {
+          "attr": "mac_sources",
+          "type": "refs"
+        },
+        "lexpire.hold_reclaimed_time": {
+          "attr": "lexpire_hold_reclaimed_time",
+          "type": "int"
+        },
+        "lexpire.reclaim_timer_wait_time": {
+          "attr": "lexpire_reclaim_timer_wait_time",
+          "type": "int"
+        },
+        "lexpire.flush_reclaimed_timer_wait_time": {
+          "attr": "lexpire_flush_reclaimed_timer_wait_time",
+          "type": "int"
+        },
+        "lexpire.max_reclaim_time": {
+          "attr": "lexpire_max_reclaim_time",
+          "type": "int"
+        },
+        "lexpire.max_reclaim_leases": {
+          "attr": "lexpire_max_reclaim_leases",
+          "type": "int"
+        },
+        "lexpire.unwarned_reclaim_cycles": {
+          "attr": "lexpire_unwarned_reclaim_cycles",
+          "type": "int"
+        },
+        "ha.enabled": {
+          "attr": "ha_enabled",
+          "description": "Enable high availability with the peers."
+        },
+        "ha.this_server_name": {
+          "attr": "ha_this_server_name",
+          "description": "Name of this node; must match a peer."
+        },
+        "ha.max_unacked_clients": {
+          "attr": "ha_max_unacked_clients",
+          "type": "int"
+        },
+        "subnets.subnet6": {
+          "skip": true
+        },
+        "reservations.reservation": {
+          "skip": true
+        },
+        "options.option": {
+          "skip": true
+        },
+        "ha_peers.peer": {
+          "skip": true
+        },
+        "pd_pools.pd_pool": {
+          "skip": true
+        }
+      },
+      "example": {
+        "general.enabled": "1",
+        "general.interfaces": "lan"
+      }
+    },
+    {
+      "resource": "kea_ctrl_agent_settings",
+      "go_name": "KeaCtrlAgent",
+      "plural": "CtrlAgent",
+      "description": "Kea control agent (HA peers talk to it).",
+      "model": "core/Kea/KeaCtrlAgent.xml",
+      "node": "general",
+      "get": "kea/ctrl_agent/get",
+      "set": "kea/ctrl_agent/set",
+      "path": [
+        "ctrlagent",
+        "general"
+      ],
+      "reconfigure": "kea/service/reconfigure",
+      "fields": {
+        "enabled": {},
+        "http_host": {
+          "description": "Listen address."
+        },
+        "http_port": {
+          "type": "int"
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "http_host": "127.0.0.1",
+        "http_port": "8000"
+      }
+    }
+  ]
+}
