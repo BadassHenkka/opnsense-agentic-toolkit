@@ -118,7 +118,7 @@ func registerGenCaddy(s *Server) {
 		c := s.add(&Collection{Base: "caddy/reverse_proxy", Suffix: "BasicAuth", Key: "basicauth",
 			Fields: map[string]Field{
 				"basicauthuser": {Required: true, Mask: "^([0-9a-zA-Z]{2,72})$"},
-				"basicauthpass": {Required: true},
+				"basicauthpass": {Sensitive: true, Required: true},
 				"description":   {},
 			},
 		})
@@ -186,7 +186,7 @@ func registerGenCaddy(s *Server) {
 		"TlsEmail":                       {},
 		"TlsAutoHttps":                   {Kind: Option, Choices: static("off", "disable_redirects", "disable_certs", "ignore_loaded_certs")},
 		"TlsDnsProvider":                 {Kind: Option, Choices: static("cloudflare")},
-		"TlsDnsApiKey":                   {},
+		"TlsDnsApiKey":                   {Sensitive: true},
 		"TlsDnsPropagationTimeout":       {},
 		"TlsDnsPropagationTimeoutPeriod": {HasRange: true, Min: 1, Max: 9007199254740992},
 		"TlsDnsPropagationDelay":         {HasRange: true, Min: 1, Max: 9007199254740992},

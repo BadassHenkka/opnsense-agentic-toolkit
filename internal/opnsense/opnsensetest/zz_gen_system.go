@@ -77,7 +77,7 @@ func registerGenSystem(s *Server) {
 		"synchronizetoip": {},
 		"verifypeer":      {Required: true, Default: "0"},
 		"username":        {},
-		"password":        {},
+		"password":        {Sensitive: true},
 		"syncitems":       {Kind: List, Sep: ","},
 	}, nil)
 	s.reconfigure["core/hasync/reconfigure"] = true

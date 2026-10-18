@@ -20,7 +20,7 @@ type AcmeAccount struct {
 
 func (v *AcmeAccount) IsZero() bool { return v.Name == "" }
 
-// AcmeAccountRow is one row of a acme_account search; values are display text.
+// AcmeAccountRow is one row of a acme_account search; values are display text. Sensitive fields are left out.
 type AcmeAccountRow struct {
 	UUID             Text `json:"uuid"`
 	Enabled          Text `json:"enabled"`
@@ -30,7 +30,6 @@ type AcmeAccountRow struct {
 	CA               Text `json:"ca"`
 	CustomCA         Text `json:"custom_ca"`
 	EABKID           Text `json:"eab_kid"`
-	EABHMAC          Text `json:"eab_hmac"`
 	StatusCode       Text `json:"statusCode"`
 	StatusLastUpdate Text `json:"statusLastUpdate"`
 }
@@ -64,7 +63,7 @@ type AcmeCertificate struct {
 
 func (v *AcmeCertificate) IsZero() bool { return v.Name == "" }
 
-// AcmeCertificateRow is one row of a acme_certificate search; values are display text.
+// AcmeCertificateRow is one row of a acme_certificate search; values are display text. Sensitive fields are left out.
 type AcmeCertificateRow struct {
 	UUID             Text `json:"uuid"`
 	Enabled          Text `json:"enabled"`

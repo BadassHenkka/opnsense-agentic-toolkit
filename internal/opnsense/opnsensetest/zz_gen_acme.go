@@ -14,7 +14,7 @@ func registerGenAcme(s *Server) {
 				"ca":               {Kind: Option, Choices: static("buypass", "buypass_test", "google", "google_test", "letsencrypt", "letsencrypt_test", "sslcom", "zerossl", "custom"), Required: true, Default: "letsencrypt"},
 				"custom_ca":        {Mask: "^https?:\\/\\/.*[^\\/]$"},
 				"eab_kid":          {},
-				"eab_hmac":         {},
+				"eab_hmac":         {Sensitive: true},
 				"statusCode":       {ReadOnly: true, Default: "100", HasRange: true, Min: 100, Max: 1000},
 				"statusLastUpdate": {ReadOnly: true},
 			},

@@ -28,14 +28,13 @@ type WireguardInstance struct {
 
 func (v *WireguardInstance) IsZero() bool { return v.Name == "" }
 
-// WireguardInstanceRow is one row of a wireguard_instance search; values are display text.
+// WireguardInstanceRow is one row of a wireguard_instance search; values are display text. Sensitive fields are left out.
 type WireguardInstanceRow struct {
 	UUID          Text `json:"uuid"`
 	Enabled       Text `json:"enabled"`
 	Name          Text `json:"name"`
 	Number        Text `json:"instance"`
 	PublicKey     Text `json:"pubkey"`
-	PrivateKey    Text `json:"privkey"`
 	Port          Text `json:"port"`
 	MTU           Text `json:"mtu"`
 	DNS           Text `json:"dns"`
@@ -71,19 +70,17 @@ type WireguardPeer struct {
 
 func (v *WireguardPeer) IsZero() bool { return v.Name == "" }
 
-// WireguardPeerRow is one row of a wireguard_peer search; values are display text.
+// WireguardPeerRow is one row of a wireguard_peer search; values are display text. Sensitive fields are left out.
 type WireguardPeerRow struct {
 	UUID          Text `json:"uuid"`
 	Enabled       Text `json:"enabled"`
 	Name          Text `json:"name"`
 	PublicKey     Text `json:"pubkey"`
-	PresharedKey  Text `json:"psk"`
 	TunnelAddress Text `json:"tunneladdress"`
 	EndpointHost  Text `json:"serveraddress"`
 	EndpointPort  Text `json:"serverport"`
 	Keepalive     Text `json:"keepalive"`
 	Instances     Text `json:"servers"`
-	PrivateKey    Text `json:"privkey"`
 }
 
 func (r WireguardPeerRow) RowRef() (string, string) { return string(r.UUID), string(r.Name) }

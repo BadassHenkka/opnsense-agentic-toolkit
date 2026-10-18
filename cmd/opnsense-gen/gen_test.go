@@ -242,3 +242,36 @@ func TestPluralize(t *testing.T) {
 		}
 	}
 }
+
+// TestRowsHaveNoSecrets: MCP list tools hand search rows to the model as they are, and OPNsense
+// returns secret columns in them, so a generated Row must never carry a sensitive field.
+func TestRowsHaveNoSecrets(t *testing.T) {
+	root := filepath.Join("..", "..")
+	areas, err := loadSpecs(filepath.Join(root, "gen", "specs"), filepath.Join(root, "gen", "models"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sensitive := 0
+	for _, a := range areas {
+		src := emitClient(a)
+		for _, o := range a.Items {
+			start := strings.Index(src, "type "+o.Go+"Row struct {")
+			if start < 0 {
+				t.Fatalf("%s: no Row struct", o.Go)
+			}
+			row := src[start : start+strings.Index(src[start:], "\n}")]
+			for _, f := range o.Fields {
+				if !f.Sensitive || f.Container != "" {
+					continue
+				}
+				sensitive++
+				if strings.Contains(row, "json:"+`"`+f.XML+`"`) {
+					t.Errorf("%sRow has the sensitive field %q", o.Go, f.XML)
+				}
+			}
+		}
+	}
+	if sensitive < 10 {
+		t.Fatalf("only %d sensitive fields found; the check is not exercising the specs", sensitive)
+	}
+}

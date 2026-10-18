@@ -30,6 +30,9 @@ func fakeField(f *Field) string {
 		// Dynamic lists: render the stored value(s) as the selected options.
 		parts = append(parts, "Kind: List", fmt.Sprintf("Sep: %q", f.Sep))
 	}
+	if f.Sensitive {
+		parts = append(parts, "Sensitive: true")
+	}
 	if f.APIRequired && !f.Computed {
 		parts = append(parts, "Required: true")
 	}

@@ -20,7 +20,7 @@ type DnsmasqHost struct {
 	Aliases     CSVList `json:"aliases"`
 }
 
-// DnsmasqHostRow is one row of a dnsmasq_host search; values are display text.
+// DnsmasqHostRow is one row of a dnsmasq_host search; values are display text. Sensitive fields are left out.
 type DnsmasqHostRow struct {
 	UUID        Text `json:"uuid"`
 	Host        Text `json:"host"`
@@ -54,7 +54,7 @@ type DnsmasqDomain struct {
 
 func (v *DnsmasqDomain) IsZero() bool { return v.Domain == "" }
 
-// DnsmasqDomainRow is one row of a dnsmasq_domain search; values are display text.
+// DnsmasqDomainRow is one row of a dnsmasq_domain search; values are display text. Sensitive fields are left out.
 type DnsmasqDomainRow struct {
 	UUID        Text `json:"uuid"`
 	Sequence    Text `json:"sequence"`
@@ -76,7 +76,7 @@ type DnsmasqTag struct {
 
 func (v *DnsmasqTag) IsZero() bool { return v.Tag == "" }
 
-// DnsmasqTagRow is one row of a dnsmasq_tag search; values are display text.
+// DnsmasqTagRow is one row of a dnsmasq_tag search; values are display text. Sensitive fields are left out.
 type DnsmasqTagRow struct {
 	UUID Text `json:"uuid"`
 	Tag  Text `json:"tag"`
@@ -107,7 +107,7 @@ type DnsmasqRange struct {
 	Description      string  `json:"description"`
 }
 
-// DnsmasqRangeRow is one row of a dnsmasq_range search; values are display text.
+// DnsmasqRangeRow is one row of a dnsmasq_range search; values are display text. Sensitive fields are left out.
 type DnsmasqRangeRow struct {
 	UUID             Text `json:"uuid"`
 	Interface        Text `json:"interface"`
@@ -146,7 +146,7 @@ type DnsmasqOption struct {
 	Description string  `json:"description"`
 }
 
-// DnsmasqOptionRow is one row of a dnsmasq_option search; values are display text.
+// DnsmasqOptionRow is one row of a dnsmasq_option search; values are display text. Sensitive fields are left out.
 type DnsmasqOptionRow struct {
 	UUID        Text `json:"uuid"`
 	Type        Text `json:"type"`
@@ -173,7 +173,7 @@ type DnsmasqBoot struct {
 	Description string  `json:"description"`
 }
 
-// DnsmasqBootRow is one row of a dnsmasq_boot search; values are display text.
+// DnsmasqBootRow is one row of a dnsmasq_boot search; values are display text. Sensitive fields are left out.
 type DnsmasqBootRow struct {
 	UUID        Text `json:"uuid"`
 	Interface   Text `json:"interface"`

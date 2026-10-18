@@ -49,7 +49,7 @@ type KeaDhcp4SubnetOptionData struct {
 
 func (v *KeaDhcp4Subnet) IsZero() bool { return v.Subnet == "" }
 
-// KeaDhcp4SubnetRow is one row of a kea_dhcp4_subnet search; values are display text.
+// KeaDhcp4SubnetRow is one row of a kea_dhcp4_subnet search; values are display text. Sensitive fields are left out.
 type KeaDhcp4SubnetRow struct {
 	UUID                       Text `json:"uuid"`
 	SubnetID                   Text `json:"subnet_id"`
@@ -68,7 +68,6 @@ type KeaDhcp4SubnetRow struct {
 	DdnsDNSServer              Text `json:"ddns_dns_server"`
 	DdnsDNSPort                Text `json:"ddns_dns_port"`
 	DdnsDomainKeyName          Text `json:"ddns_domain_key_name"`
-	DdnsDomainKeySecret        Text `json:"ddns_domain_key_secret"`
 	DdnsDomainKeyAlgorithm     Text `json:"ddns_domain_key_algorithm"`
 	DdnsOverrideNoUpdate       Text `json:"ddns_override_no_update"`
 	DdnsOverrideClientUpdate   Text `json:"ddns_override_client_update"`
@@ -109,7 +108,7 @@ type KeaDhcp4ReservationOptionData struct {
 
 func (v *KeaDhcp4Reservation) IsZero() bool { return v.HwAddress == "" }
 
-// KeaDhcp4ReservationRow is one row of a kea_dhcp4_reservation search; values are display text.
+// KeaDhcp4ReservationRow is one row of a kea_dhcp4_reservation search; values are display text. Sensitive fields are left out.
 type KeaDhcp4ReservationRow struct {
 	UUID        Text `json:"uuid"`
 	Subnet      Text `json:"subnet"`
@@ -139,7 +138,7 @@ type KeaDhcp4Option struct {
 
 func (v *KeaDhcp4Option) IsZero() bool { return v.Description == "" }
 
-// KeaDhcp4OptionRow is one row of a kea_dhcp4_option search; values are display text.
+// KeaDhcp4OptionRow is one row of a kea_dhcp4_option search; values are display text. Sensitive fields are left out.
 type KeaDhcp4OptionRow struct {
 	UUID          Text `json:"uuid"`
 	Code          Text `json:"code"`
@@ -164,7 +163,7 @@ type KeaDhcp4Peer struct {
 
 func (v *KeaDhcp4Peer) IsZero() bool { return v.Name == "" }
 
-// KeaDhcp4PeerRow is one row of a kea_dhcp4_peer search; values are display text.
+// KeaDhcp4PeerRow is one row of a kea_dhcp4_peer search; values are display text. Sensitive fields are left out.
 type KeaDhcp4PeerRow struct {
 	UUID Text `json:"uuid"`
 	Name Text `json:"name"`
@@ -212,7 +211,7 @@ type KeaDhcp6SubnetOptionData struct {
 
 func (v *KeaDhcp6Subnet) IsZero() bool { return v.Subnet == "" }
 
-// KeaDhcp6SubnetRow is one row of a kea_dhcp6_subnet search; values are display text.
+// KeaDhcp6SubnetRow is one row of a kea_dhcp6_subnet search; values are display text. Sensitive fields are left out.
 type KeaDhcp6SubnetRow struct {
 	UUID                       Text `json:"uuid"`
 	SubnetID                   Text `json:"subnet_id"`
@@ -231,7 +230,6 @@ type KeaDhcp6SubnetRow struct {
 	DdnsDNSServer              Text `json:"ddns_dns_server"`
 	DdnsDNSPort                Text `json:"ddns_dns_port"`
 	DdnsDomainKeyName          Text `json:"ddns_domain_key_name"`
-	DdnsDomainKeySecret        Text `json:"ddns_domain_key_secret"`
 	DdnsDomainKeyAlgorithm     Text `json:"ddns_domain_key_algorithm"`
 	DdnsOverrideNoUpdate       Text `json:"ddns_override_no_update"`
 	DdnsOverrideClientUpdate   Text `json:"ddns_override_client_update"`
@@ -258,7 +256,7 @@ type KeaDhcp6Reservation struct {
 
 func (v *KeaDhcp6Reservation) IsZero() bool { return v.Duid == "" }
 
-// KeaDhcp6ReservationRow is one row of a kea_dhcp6_reservation search; values are display text.
+// KeaDhcp6ReservationRow is one row of a kea_dhcp6_reservation search; values are display text. Sensitive fields are left out.
 type KeaDhcp6ReservationRow struct {
 	UUID         Text `json:"uuid"`
 	Subnet       Text `json:"subnet"`
@@ -286,7 +284,7 @@ type KeaDhcp6PDPool struct {
 
 func (v *KeaDhcp6PDPool) IsZero() bool { return v.Prefix == "" }
 
-// KeaDhcp6PDPoolRow is one row of a kea_dhcp6_pd_pool search; values are display text.
+// KeaDhcp6PDPoolRow is one row of a kea_dhcp6_pd_pool search; values are display text. Sensitive fields are left out.
 type KeaDhcp6PDPoolRow struct {
 	UUID         Text `json:"uuid"`
 	Subnet       Text `json:"subnet"`
@@ -313,7 +311,7 @@ type KeaDhcp6Option struct {
 
 func (v *KeaDhcp6Option) IsZero() bool { return v.Description == "" }
 
-// KeaDhcp6OptionRow is one row of a kea_dhcp6_option search; values are display text.
+// KeaDhcp6OptionRow is one row of a kea_dhcp6_option search; values are display text. Sensitive fields are left out.
 type KeaDhcp6OptionRow struct {
 	UUID          Text `json:"uuid"`
 	Code          Text `json:"code"`
@@ -338,7 +336,7 @@ type KeaDhcp6Peer struct {
 
 func (v *KeaDhcp6Peer) IsZero() bool { return v.Name == "" }
 
-// KeaDhcp6PeerRow is one row of a kea_dhcp6_peer search; values are display text.
+// KeaDhcp6PeerRow is one row of a kea_dhcp6_peer search; values are display text. Sensitive fields are left out.
 type KeaDhcp6PeerRow struct {
 	UUID Text `json:"uuid"`
 	Name Text `json:"name"`

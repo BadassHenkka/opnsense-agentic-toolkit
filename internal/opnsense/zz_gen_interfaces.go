@@ -65,7 +65,7 @@ type NetworkInterface struct {
 
 func (v *NetworkInterface) IsZero() bool { return v.Device == "" }
 
-// NetworkInterfaceRow is one row of a interface search; values are display text.
+// NetworkInterfaceRow is one row of a interface search; values are display text. Sensitive fields are left out.
 type NetworkInterfaceRow struct {
 	UUID                          Text `json:"uuid"`
 	Description                   Text `json:"descr"`
@@ -140,7 +140,7 @@ type VLAN struct {
 
 func (v *VLAN) IsZero() bool { return v.Parent == "" }
 
-// VLANRow is one row of a vlan search; values are display text.
+// VLANRow is one row of a vlan search; values are display text. Sensitive fields are left out.
 type VLANRow struct {
 	UUID        Text `json:"uuid"`
 	Parent      Text `json:"if"`
@@ -176,7 +176,7 @@ type VirtualIP struct {
 
 func (v *VirtualIP) IsZero() bool { return v.Interface == "" }
 
-// VirtualIPRow is one row of a virtual_ip search; values are display text.
+// VirtualIPRow is one row of a virtual_ip search; values are display text. Sensitive fields are left out.
 type VirtualIPRow struct {
 	UUID        Text `json:"uuid"`
 	Interface   Text `json:"interface"`
@@ -186,7 +186,6 @@ type VirtualIPRow struct {
 	Gateway     Text `json:"gateway"`
 	Noexpand    Text `json:"noexpand"`
 	Nobind      Text `json:"nobind"`
-	Password    Text `json:"password"`
 	VHID        Text `json:"vhid"`
 	Advbase     Text `json:"advbase"`
 	Advskew     Text `json:"advskew"`
@@ -222,7 +221,7 @@ type Bridge struct {
 	Description string   `json:"descr"`
 }
 
-// BridgeRow is one row of a bridge search; values are display text.
+// BridgeRow is one row of a bridge search; values are display text. Sensitive fields are left out.
 type BridgeRow struct {
 	UUID        Text `json:"uuid"`
 	Device      Text `json:"bridgeif"`
@@ -263,7 +262,7 @@ type Lagg struct {
 	Description     string   `json:"descr"`
 }
 
-// LaggRow is one row of a lagg search; values are display text.
+// LaggRow is one row of a lagg search; values are display text. Sensitive fields are left out.
 type LaggRow struct {
 	UUID            Text `json:"uuid"`
 	Device          Text `json:"laggif"`
@@ -295,7 +294,7 @@ type Gif struct {
 	Noclamp             Bool     `json:"noclamp"`
 }
 
-// GifRow is one row of a gif search; values are display text.
+// GifRow is one row of a gif search; values are display text. Sensitive fields are left out.
 type GifRow struct {
 	UUID                Text `json:"uuid"`
 	Device              Text `json:"gifif"`
@@ -323,7 +322,7 @@ type Gre struct {
 	Description         string   `json:"descr"`
 }
 
-// GreRow is one row of a gre search; values are display text.
+// GreRow is one row of a gre search; values are display text. Sensitive fields are left out.
 type GreRow struct {
 	UUID                Text `json:"uuid"`
 	Device              Text `json:"greif"`
@@ -351,7 +350,7 @@ type VxLan struct {
 
 func (v *VxLan) IsZero() bool { return v.LocalAddress == "" }
 
-// VxLanRow is one row of a vxlan search; values are display text.
+// VxLanRow is one row of a vxlan search; values are display text. Sensitive fields are left out.
 type VxLanRow struct {
 	UUID           Text `json:"uuid"`
 	DeviceID       Text `json:"deviceId"`
@@ -375,7 +374,7 @@ type Loopback struct {
 
 func (v *Loopback) IsZero() bool { return v.Description == "" }
 
-// LoopbackRow is one row of a loopback search; values are display text.
+// LoopbackRow is one row of a loopback search; values are display text. Sensitive fields are left out.
 type LoopbackRow struct {
 	UUID        Text `json:"uuid"`
 	DeviceID    Text `json:"deviceId"`
@@ -395,7 +394,7 @@ type Neighbor struct {
 
 func (v *Neighbor) IsZero() bool { return v.MACAddress == "" }
 
-// NeighborRow is one row of a neighbor search; values are display text.
+// NeighborRow is one row of a neighbor search; values are display text. Sensitive fields are left out.
 type NeighborRow struct {
 	UUID        Text `json:"uuid"`
 	MACAddress  Text `json:"etheraddr"`

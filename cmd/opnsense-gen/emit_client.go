@@ -95,11 +95,13 @@ func emitClient(a *Area) string {
 			b.p("func (v *%s) IsZero() bool { return v.%s == \"\" }", o.Go, zf.GoPath())
 			b.p("")
 		}
-		b.p("// %sRow is one row of a %s search; values are display text.", o.Go, o.Resource)
+		// Search rows are handed to MCP clients as they are, and OPNsense does return secret
+		// columns (WireGuard private keys, DynDNS passwords), so a row never carries one.
+		b.p("// %sRow is one row of a %s search; values are display text. Sensitive fields are left out.", o.Go, o.Resource)
 		b.p("type %sRow struct {", o.Go)
 		b.p("\tUUID Text `json:\"uuid\"`")
 		for _, f := range o.Fields {
-			if f.Container == "" {
+			if f.Container == "" && !f.Sensitive {
 				b.p("\t%s Text `json:%q`", f.Go, f.XML)
 			}
 		}

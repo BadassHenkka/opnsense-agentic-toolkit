@@ -87,60 +87,60 @@ func genNATPortForwardViewOf(id string, v *opnsense.NATPortForward) genNATPortFo
 }
 
 type genNATOutboundView struct {
-	UUID                string   `json:"uuid"`
-	Enabled             bool     `json:"enabled"`
-	NoNAT               bool     `json:"no_nat"`
-	NoSync              bool     `json:"no_sync"`
-	Sequence            *int64   `json:"sequence,omitempty"`
-	Interface           string   `json:"interface,omitempty"`
-	IPProtocol          string   `json:"ip_protocol,omitempty"`
-	Protocol            string   `json:"protocol,omitempty"`
-	SourceNet           string   `json:"source_net,omitempty"`
-	SourceNot           bool     `json:"source_not"`
-	SourcePort          string   `json:"source_port,omitempty"`
-	DestinationNet      string   `json:"destination_net,omitempty"`
-	DestinationNot      bool     `json:"destination_not"`
-	DestinationPort     string   `json:"destination_port,omitempty"`
-	Target              string   `json:"target,omitempty"`
-	TargetPort          string   `json:"target_port,omitempty"`
-	PoolOptions         string   `json:"pool_options,omitempty"`
-	PoolSourceHashKey   string   `json:"pool_source_hash_key,omitempty"`
-	StaticNATPort       bool     `json:"static_nat_port"`
-	Log                 bool     `json:"log"`
-	CategoryIDs         []string `json:"category_ids,omitempty"`
-	Tag                 string   `json:"tag,omitempty"`
-	Tagged              string   `json:"tagged,omitempty"`
-	EndpointIndependent bool     `json:"endpoint_independent"`
-	Description         string   `json:"description,omitempty"`
+	UUID                 string   `json:"uuid"`
+	Enabled              bool     `json:"enabled"`
+	NoNAT                bool     `json:"no_nat"`
+	NoSync               bool     `json:"no_sync"`
+	Sequence             *int64   `json:"sequence,omitempty"`
+	Interface            string   `json:"interface,omitempty"`
+	IPProtocol           string   `json:"ip_protocol,omitempty"`
+	Protocol             string   `json:"protocol,omitempty"`
+	SourceNet            string   `json:"source_net,omitempty"`
+	SourceNot            bool     `json:"source_not"`
+	SourcePort           string   `json:"source_port,omitempty"`
+	DestinationNet       string   `json:"destination_net,omitempty"`
+	DestinationNot       bool     `json:"destination_not"`
+	DestinationPort      string   `json:"destination_port,omitempty"`
+	Target               string   `json:"target,omitempty"`
+	TargetPort           string   `json:"target_port,omitempty"`
+	PoolOptions          string   `json:"pool_options,omitempty"`
+	PoolSourceHashKeySet bool     `json:"pool_source_hash_key_set" jsonschema:"whether a value is set; the value is never returned"`
+	StaticNATPort        bool     `json:"static_nat_port"`
+	Log                  bool     `json:"log"`
+	CategoryIDs          []string `json:"category_ids,omitempty"`
+	Tag                  string   `json:"tag,omitempty"`
+	Tagged               string   `json:"tagged,omitempty"`
+	EndpointIndependent  bool     `json:"endpoint_independent"`
+	Description          string   `json:"description,omitempty"`
 }
 
 func genNATOutboundViewOf(id string, v *opnsense.NATOutbound) genNATOutboundView {
 	return genNATOutboundView{
-		UUID:                id,
-		Enabled:             bool(v.Enabled),
-		NoNAT:               bool(v.NoNAT),
-		NoSync:              bool(v.NoSync),
-		Sequence:            intPtr(v.Sequence),
-		Interface:           string(v.Interface),
-		IPProtocol:          string(v.IPProtocol),
-		Protocol:            string(v.Protocol),
-		SourceNet:           v.SourceNet,
-		SourceNot:           bool(v.SourceNot),
-		SourcePort:          v.SourcePort,
-		DestinationNet:      v.DestinationNet,
-		DestinationNot:      bool(v.DestinationNot),
-		DestinationPort:     v.DestinationPort,
-		Target:              v.Target,
-		TargetPort:          v.TargetPort,
-		PoolOptions:         string(v.PoolOptions),
-		PoolSourceHashKey:   v.PoolSourceHashKey,
-		StaticNATPort:       bool(v.StaticNATPort),
-		Log:                 bool(v.Log),
-		CategoryIDs:         nonNil([]string(v.Categories)),
-		Tag:                 v.Tag,
-		Tagged:              v.Tagged,
-		EndpointIndependent: bool(v.EndpointIndependent),
-		Description:         v.Description,
+		UUID:                 id,
+		Enabled:              bool(v.Enabled),
+		NoNAT:                bool(v.NoNAT),
+		NoSync:               bool(v.NoSync),
+		Sequence:             intPtr(v.Sequence),
+		Interface:            string(v.Interface),
+		IPProtocol:           string(v.IPProtocol),
+		Protocol:             string(v.Protocol),
+		SourceNet:            v.SourceNet,
+		SourceNot:            bool(v.SourceNot),
+		SourcePort:           v.SourcePort,
+		DestinationNet:       v.DestinationNet,
+		DestinationNot:       bool(v.DestinationNot),
+		DestinationPort:      v.DestinationPort,
+		Target:               v.Target,
+		TargetPort:           v.TargetPort,
+		PoolOptions:          string(v.PoolOptions),
+		PoolSourceHashKeySet: v.PoolSourceHashKey != "",
+		StaticNATPort:        bool(v.StaticNATPort),
+		Log:                  bool(v.Log),
+		CategoryIDs:          nonNil([]string(v.Categories)),
+		Tag:                  v.Tag,
+		Tagged:               v.Tagged,
+		EndpointIndependent:  bool(v.EndpointIndependent),
+		Description:          v.Description,
 	}
 }
 

@@ -471,7 +471,7 @@ func (r *genNATOutboundResource) Schema(_ context.Context, _ resource.SchemaRequ
 			"target":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Translate to this address or alias; empty uses the interface address. OPNsense field `target`."},
 			"target_port":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Translate to this port. OPNsense field `target_port`."},
 			"pool_options":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "One of `round-robin`, `round-robin sticky-address`, `random`, `random sticky-address`, `source-hash`, `bitmask`. OPNsense field `poolopts`.", Validators: []validator.String{stringvalidator.OneOf("", "round-robin", "round-robin sticky-address", "random", "random sticky-address", "source-hash", "bitmask")}},
-			"pool_source_hash_key": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `poolopts_sourcehashkey`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^0x[0-9a-fA-F]{32}$"), "must match the OPNsense model mask")}},
+			"pool_source_hash_key": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Sensitive: true, Description: "Write-only for MCP: never returned. OPNsense field `poolopts_sourcehashkey`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^0x[0-9a-fA-F]{32}$"), "must match the OPNsense model mask")}},
 			"static_nat_port":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Keep the source port. OPNsense field `staticnatport`."},
 			"log":                  schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Log matching packets. OPNsense field `log`."},
 			"category_ids":         schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "opnsense_firewall_category ids. OPNsense field `categories`."},
@@ -534,7 +534,9 @@ func (m *genNATOutboundModel) fromAPI(ctx context.Context, id string, v *opnsens
 	m.Target = types.StringValue(v.Target)
 	m.TargetPort = types.StringValue(v.TargetPort)
 	m.PoolOptions = types.StringValue(string(v.PoolOptions))
-	m.PoolSourceHashKey = types.StringValue(v.PoolSourceHashKey)
+	if v.PoolSourceHashKey != "" || m.PoolSourceHashKey.IsUnknown() || m.PoolSourceHashKey.IsNull() {
+		m.PoolSourceHashKey = types.StringValue(v.PoolSourceHashKey)
+	}
 	m.StaticNATPort = types.BoolValue(bool(v.StaticNATPort))
 	m.Log = types.BoolValue(bool(v.Log))
 	m.CategoryIDs, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Categories)))

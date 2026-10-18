@@ -25,7 +25,7 @@ type Alias struct {
 
 func (v *Alias) IsZero() bool { return v.Name == "" }
 
-// AliasRow is one row of a firewall_alias search; values are display text.
+// AliasRow is one row of a firewall_alias search; values are display text. Sensitive fields are left out.
 type AliasRow struct {
 	UUID           Text `json:"uuid"`
 	Enabled        Text `json:"enabled"`
@@ -37,7 +37,6 @@ type AliasRow struct {
 	Counters       Text `json:"counters"`
 	UpdateFreq     Text `json:"updatefreq"`
 	Content        Text `json:"content"`
-	Password       Text `json:"password"`
 	Username       Text `json:"username"`
 	Authtype       Text `json:"authtype"`
 	Expire         Text `json:"expire"`
@@ -57,7 +56,7 @@ type FirewallCategory struct {
 
 func (v *FirewallCategory) IsZero() bool { return v.Name == "" }
 
-// FirewallCategoryRow is one row of a firewall_category search; values are display text.
+// FirewallCategoryRow is one row of a firewall_category search; values are display text. Sensitive fields are left out.
 type FirewallCategoryRow struct {
 	UUID  Text `json:"uuid"`
 	Name  Text `json:"name"`
@@ -107,7 +106,7 @@ type NATPortForwardDestination struct {
 	Not     Bool   `json:"not"`
 }
 
-// NATPortForwardRow is one row of a firewall_nat_port_forward search; values are display text.
+// NATPortForwardRow is one row of a firewall_nat_port_forward search; values are display text. Sensitive fields are left out.
 type NATPortForwardRow struct {
 	UUID             Text `json:"uuid"`
 	Sequence         Text `json:"sequence"`
@@ -162,7 +161,7 @@ type NATOutbound struct {
 	Description         string  `json:"description"`
 }
 
-// NATOutboundRow is one row of a firewall_nat_outbound search; values are display text.
+// NATOutboundRow is one row of a firewall_nat_outbound search; values are display text. Sensitive fields are left out.
 type NATOutboundRow struct {
 	UUID                Text `json:"uuid"`
 	Enabled             Text `json:"enabled"`
@@ -181,7 +180,6 @@ type NATOutboundRow struct {
 	Target              Text `json:"target"`
 	TargetPort          Text `json:"target_port"`
 	PoolOptions         Text `json:"poolopts"`
-	PoolSourceHashKey   Text `json:"poolopts_sourcehashkey"`
 	StaticNATPort       Text `json:"staticnatport"`
 	Log                 Text `json:"log"`
 	Categories          Text `json:"categories"`
@@ -212,7 +210,7 @@ type NATOneToOne struct {
 	Description    string  `json:"description"`
 }
 
-// NATOneToOneRow is one row of a firewall_nat_one_to_one search; values are display text.
+// NATOneToOneRow is one row of a firewall_nat_one_to_one search; values are display text. Sensitive fields are left out.
 type NATOneToOneRow struct {
 	UUID           Text `json:"uuid"`
 	Enabled        Text `json:"enabled"`
@@ -247,7 +245,7 @@ type NATNPT struct {
 	Description    string  `json:"description"`
 }
 
-// NATNPTRow is one row of a firewall_nat_npt search; values are display text.
+// NATNPTRow is one row of a firewall_nat_npt search; values are display text. Sensitive fields are left out.
 type NATNPTRow struct {
 	UUID           Text `json:"uuid"`
 	Enabled        Text `json:"enabled"`
@@ -275,7 +273,7 @@ type InterfaceGroup struct {
 
 func (v *InterfaceGroup) IsZero() bool { return v.Name == "" }
 
-// InterfaceGroupRow is one row of a firewall_interface_group search; values are display text.
+// InterfaceGroupRow is one row of a firewall_interface_group search; values are display text. Sensitive fields are left out.
 type InterfaceGroupRow struct {
 	UUID        Text `json:"uuid"`
 	Name        Text `json:"ifname"`

@@ -16,7 +16,7 @@ type IDSPolicy struct {
 
 func (v *IDSPolicy) IsZero() bool { return v.Description == "" }
 
-// IDSPolicyRow is one row of a ids_policy search; values are display text.
+// IDSPolicyRow is one row of a ids_policy search; values are display text. Sensitive fields are left out.
 type IDSPolicyRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -44,7 +44,7 @@ type IDSUserRule struct {
 
 func (v *IDSUserRule) IsZero() bool { return v.Description == "" }
 
-// IDSUserRuleRow is one row of a ids_user_rule search; values are display text.
+// IDSUserRuleRow is one row of a ids_user_rule search; values are display text. Sensitive fields are left out.
 type IDSUserRuleRow struct {
 	UUID               Text `json:"uuid"`
 	Enabled            Text `json:"enabled"`

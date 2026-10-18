@@ -16,7 +16,7 @@ type Group struct {
 
 func (v *Group) IsZero() bool { return v.Name == "" }
 
-// GroupRow is one row of a auth_group search; values are display text.
+// GroupRow is one row of a auth_group search; values are display text. Sensitive fields are left out.
 type GroupRow struct {
 	UUID           Text `json:"uuid"`
 	Gid            Text `json:"gid"`
@@ -54,7 +54,7 @@ type User struct {
 
 func (v *User) IsZero() bool { return v.Name == "" }
 
-// UserRow is one row of a auth_user search; values are display text.
+// UserRow is one row of a auth_user search; values are display text. Sensitive fields are left out.
 type UserRow struct {
 	UUID           Text `json:"uuid"`
 	Uid            Text `json:"uid"`
@@ -64,7 +64,6 @@ type UserRow struct {
 	Expires        Text `json:"expires"`
 	AuthorizedKeys Text `json:"authorizedkeys"`
 	Shell          Text `json:"shell"`
-	Password       Text `json:"password"`
 	PwdChangedAt   Text `json:"pwd_changed_at"`
 	LandingPage    Text `json:"landing_page"`
 	Comment        Text `json:"comment"`

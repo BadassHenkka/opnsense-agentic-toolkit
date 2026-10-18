@@ -33,7 +33,7 @@ func registerGenAuth(s *Server) {
 				"expires":           {},
 				"authorizedkeys":    {},
 				"shell":             {},
-				"password":          {},
+				"password":          {Sensitive: true},
 				"pwd_changed_at":    {ReadOnly: true},
 				"landing_page":      {Mask: "^\\/[a-zA-Z0-9_\\-\\.~\\/?=&#+,@!;]*$"},
 				"comment":           {},

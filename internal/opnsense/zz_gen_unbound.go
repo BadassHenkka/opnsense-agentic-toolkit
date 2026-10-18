@@ -21,7 +21,7 @@ type HostOverride struct {
 
 func (v *HostOverride) IsZero() bool { return v.Domain == "" }
 
-// HostOverrideRow is one row of a unbound_host_override search; values are display text.
+// HostOverrideRow is one row of a unbound_host_override search; values are display text. Sensitive fields are left out.
 type HostOverrideRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -51,7 +51,7 @@ type HostAlias struct {
 
 func (v *HostAlias) IsZero() bool { return v.Host == "" }
 
-// HostAliasRow is one row of a unbound_host_alias search; values are display text.
+// HostAliasRow is one row of a unbound_host_alias search; values are display text. Sensitive fields are left out.
 type HostAliasRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -75,7 +75,7 @@ type UnboundACL struct {
 
 func (v *UnboundACL) IsZero() bool { return v.Name == "" }
 
-// UnboundACLRow is one row of a unbound_acl search; values are display text.
+// UnboundACLRow is one row of a unbound_acl search; values are display text. Sensitive fields are left out.
 type UnboundACLRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -103,7 +103,7 @@ type UnboundForward struct {
 
 func (v *UnboundForward) IsZero() bool { return v.Server == "" }
 
-// UnboundForwardRow is one row of a unbound_forward search; values are display text.
+// UnboundForwardRow is one row of a unbound_forward search; values are display text. Sensitive fields are left out.
 type UnboundForwardRow struct {
 	UUID               Text `json:"uuid"`
 	Enabled            Text `json:"enabled"`
@@ -135,7 +135,7 @@ type UnboundDoT struct {
 
 func (v *UnboundDoT) IsZero() bool { return v.Server == "" }
 
-// UnboundDoTRow is one row of a unbound_dot search; values are display text.
+// UnboundDoTRow is one row of a unbound_dot search; values are display text. Sensitive fields are left out.
 type UnboundDoTRow struct {
 	UUID               Text `json:"uuid"`
 	Enabled            Text `json:"enabled"`
@@ -169,7 +169,7 @@ type UnboundBlocklist struct {
 
 func (v *UnboundBlocklist) IsZero() bool { return v.Description == "" }
 
-// UnboundBlocklistRow is one row of a unbound_blocklist search; values are display text.
+// UnboundBlocklistRow is one row of a unbound_blocklist search; values are display text. Sensitive fields are left out.
 type UnboundBlocklistRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`

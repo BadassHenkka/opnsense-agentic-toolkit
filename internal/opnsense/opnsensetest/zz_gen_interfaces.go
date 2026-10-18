@@ -99,7 +99,7 @@ func registerGenInterfaces(s *Server) {
 				"gateway":     {},
 				"noexpand":    {Required: true, Default: "0"},
 				"nobind":      {Required: true, Default: "0"},
-				"password":    {},
+				"password":    {Sensitive: true},
 				"vhid":        {HasRange: true, Min: 1, Max: 255},
 				"advbase":     {Required: true, Default: "1", HasRange: true, Min: 1, Max: 254},
 				"advskew":     {Required: true, Default: "0", HasRange: true, Min: 0, Max: 254},

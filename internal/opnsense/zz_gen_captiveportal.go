@@ -27,7 +27,7 @@ type CaptivePortalZone struct {
 
 func (v *CaptivePortalZone) IsZero() bool { return v.Description == "" }
 
-// CaptivePortalZoneRow is one row of a captive_portal_zone search; values are display text.
+// CaptivePortalZoneRow is one row of a captive_portal_zone search; values are display text. Sensitive fields are left out.
 type CaptivePortalZoneRow struct {
 	UUID                 Text `json:"uuid"`
 	Enabled              Text `json:"enabled"`

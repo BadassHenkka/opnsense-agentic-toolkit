@@ -24,7 +24,7 @@ type CaddyDomain struct {
 
 func (v *CaddyDomain) IsZero() bool { return v.Domain == "" }
 
-// CaddyDomainRow is one row of a caddy_domain search; values are display text.
+// CaddyDomainRow is one row of a caddy_domain search; values are display text. Sensitive fields are left out.
 type CaddyDomainRow struct {
 	UUID                       Text `json:"uuid"`
 	Enabled                    Text `json:"enabled"`
@@ -63,7 +63,7 @@ type CaddySubdomain struct {
 
 func (v *CaddySubdomain) IsZero() bool { return v.Subdomain == "" }
 
-// CaddySubdomainRow is one row of a caddy_subdomain search; values are display text.
+// CaddySubdomainRow is one row of a caddy_subdomain search; values are display text. Sensitive fields are left out.
 type CaddySubdomainRow struct {
 	UUID                Text `json:"uuid"`
 	Enabled             Text `json:"enabled"`
@@ -124,7 +124,7 @@ type CaddyHandler struct {
 	HealthFollowRedirects              Bool    `json:"health_follow_redirects"`
 }
 
-// CaddyHandlerRow is one row of a caddy_handler search; values are display text.
+// CaddyHandlerRow is one row of a caddy_handler search; values are display text. Sensitive fields are left out.
 type CaddyHandlerRow struct {
 	UUID                               Text `json:"uuid"`
 	Enabled                            Text `json:"enabled"`
@@ -184,7 +184,7 @@ type CaddyAccessList struct {
 
 func (v *CaddyAccessList) IsZero() bool { return v.Name == "" }
 
-// CaddyAccessListRow is one row of a caddy_access_list search; values are display text.
+// CaddyAccessListRow is one row of a caddy_access_list search; values are display text. Sensitive fields are left out.
 type CaddyAccessListRow struct {
 	UUID            Text `json:"uuid"`
 	Name            Text `json:"accesslistName"`
@@ -208,11 +208,10 @@ type CaddyBasicAuth struct {
 
 func (v *CaddyBasicAuth) IsZero() bool { return v.Username == "" }
 
-// CaddyBasicAuthRow is one row of a caddy_basic_auth search; values are display text.
+// CaddyBasicAuthRow is one row of a caddy_basic_auth search; values are display text. Sensitive fields are left out.
 type CaddyBasicAuthRow struct {
 	UUID        Text `json:"uuid"`
 	Username    Text `json:"basicauthuser"`
-	Password    Text `json:"basicauthpass"`
 	Description Text `json:"description"`
 }
 
@@ -230,7 +229,7 @@ type CaddyHeader struct {
 
 func (v *CaddyHeader) IsZero() bool { return v.Name == "" }
 
-// CaddyHeaderRow is one row of a caddy_header search; values are display text.
+// CaddyHeaderRow is one row of a caddy_header search; values are display text. Sensitive fields are left out.
 type CaddyHeaderRow struct {
 	UUID        Text `json:"uuid"`
 	Direction   Text `json:"HeaderUpDown"`
@@ -274,7 +273,7 @@ type CaddyLayer4 struct {
 
 func (v *CaddyLayer4) IsZero() bool { return v.Description == "" }
 
-// CaddyLayer4Row is one row of a caddy_layer4_route search; values are display text.
+// CaddyLayer4Row is one row of a caddy_layer4_route search; values are display text. Sensitive fields are left out.
 type CaddyLayer4Row struct {
 	UUID                                  Text `json:"uuid"`
 	Enabled                               Text `json:"enabled"`

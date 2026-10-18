@@ -16,7 +16,7 @@ type MonitAlert struct {
 
 func (v *MonitAlert) IsZero() bool { return v.Description == "" }
 
-// MonitAlertRow is one row of a monit_alert search; values are display text.
+// MonitAlertRow is one row of a monit_alert search; values are display text. Sensitive fields are left out.
 type MonitAlertRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -42,7 +42,7 @@ type MonitTest struct {
 
 func (v *MonitTest) IsZero() bool { return v.Name == "" }
 
-// MonitTestRow is one row of a monit_test search; values are display text.
+// MonitTestRow is one row of a monit_test search; values are display text. Sensitive fields are left out.
 type MonitTestRow struct {
 	UUID      Text `json:"uuid"`
 	Name      Text `json:"name"`
@@ -77,7 +77,7 @@ type MonitCheck struct {
 
 func (v *MonitCheck) IsZero() bool { return v.Name == "" }
 
-// MonitCheckRow is one row of a monit_service search; values are display text.
+// MonitCheckRow is one row of a monit_service search; values are display text. Sensitive fields are left out.
 type MonitCheckRow struct {
 	UUID         Text `json:"uuid"`
 	Enabled      Text `json:"enabled"`

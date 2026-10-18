@@ -20,7 +20,7 @@ type CronJob struct {
 
 func (v *CronJob) IsZero() bool { return v.Command == "" }
 
-// CronJobRow is one row of a cron_job search; values are display text.
+// CronJobRow is one row of a cron_job search; values are display text. Sensitive fields are left out.
 type CronJobRow struct {
 	UUID        Text `json:"uuid"`
 	Origin      Text `json:"origin"`
@@ -55,7 +55,7 @@ type SyslogDestination struct {
 
 func (v *SyslogDestination) IsZero() bool { return v.Transport == "" }
 
-// SyslogDestinationRow is one row of a syslog_destination search; values are display text.
+// SyslogDestinationRow is one row of a syslog_destination search; values are display text. Sensitive fields are left out.
 type SyslogDestinationRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -81,7 +81,7 @@ type Tunable struct {
 	Description string `json:"descr"`
 }
 
-// TunableRow is one row of a tunable search; values are display text.
+// TunableRow is one row of a tunable search; values are display text. Sensitive fields are left out.
 type TunableRow struct {
 	UUID        Text `json:"uuid"`
 	Tunable     Text `json:"tunable"`

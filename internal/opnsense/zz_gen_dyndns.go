@@ -27,7 +27,7 @@ type DynDNSAccount struct {
 
 func (v *DynDNSAccount) IsZero() bool { return v.Description == "" }
 
-// DynDNSAccountRow is one row of a dyndns_account search; values are display text.
+// DynDNSAccountRow is one row of a dyndns_account search; values are display text. Sensitive fields are left out.
 type DynDNSAccountRow struct {
 	UUID           Text `json:"uuid"`
 	Enabled        Text `json:"enabled"`
@@ -35,7 +35,6 @@ type DynDNSAccountRow struct {
 	Protocol       Text `json:"protocol"`
 	Server         Text `json:"server"`
 	Username       Text `json:"username"`
-	Password       Text `json:"password"`
 	ResourceID     Text `json:"resourceId"`
 	Hostnames      Text `json:"hostnames"`
 	Wildcard       Text `json:"wildcard"`

@@ -43,7 +43,7 @@ type FrrBgpNeighbor struct {
 
 func (v *FrrBgpNeighbor) IsZero() bool { return v.Address == "" }
 
-// FrrBgpNeighborRow is one row of a frr_bgp_neighbor search; values are display text.
+// FrrBgpNeighborRow is one row of a frr_bgp_neighbor search; values are display text. Sensitive fields are left out.
 type FrrBgpNeighborRow struct {
 	UUID                       Text `json:"uuid"`
 	Enabled                    Text `json:"enabled"`
@@ -53,7 +53,6 @@ type FrrBgpNeighborRow struct {
 	RemoteAsMode               Text `json:"remote_as_mode"`
 	RemoteAs                   Text `json:"remoteas"`
 	LocalAs                    Text `json:"localas"`
-	Password                   Text `json:"password"`
 	Weight                     Text `json:"weight"`
 	LocalIP                    Text `json:"localip"`
 	UpdateSource               Text `json:"updatesource"`
@@ -104,7 +103,7 @@ type FrrBgpPeerGroup struct {
 
 func (v *FrrBgpPeerGroup) IsZero() bool { return v.Name == "" }
 
-// FrrBgpPeerGroupRow is one row of a frr_bgp_peer_group search; values are display text.
+// FrrBgpPeerGroupRow is one row of a frr_bgp_peer_group search; values are display text. Sensitive fields are left out.
 type FrrBgpPeerGroupRow struct {
 	UUID             Text `json:"uuid"`
 	Enabled          Text `json:"enabled"`
@@ -136,7 +135,7 @@ type FrrBgpAspath struct {
 
 func (v *FrrBgpAspath) IsZero() bool { return v.Description == "" }
 
-// FrrBgpAspathRow is one row of a frr_bgp_aspath search; values are display text.
+// FrrBgpAspathRow is one row of a frr_bgp_aspath search; values are display text. Sensitive fields are left out.
 type FrrBgpAspathRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -161,7 +160,7 @@ type FrrBgpCommunityList struct {
 
 func (v *FrrBgpCommunityList) IsZero() bool { return v.Description == "" }
 
-// FrrBgpCommunityListRow is one row of a frr_bgp_community_list search; values are display text.
+// FrrBgpCommunityListRow is one row of a frr_bgp_community_list search; values are display text. Sensitive fields are left out.
 type FrrBgpCommunityListRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -190,7 +189,7 @@ type FrrBgpPrefixList struct {
 
 func (v *FrrBgpPrefixList) IsZero() bool { return v.Name == "" }
 
-// FrrBgpPrefixListRow is one row of a frr_bgp_prefix_list search; values are display text.
+// FrrBgpPrefixListRow is one row of a frr_bgp_prefix_list search; values are display text. Sensitive fields are left out.
 type FrrBgpPrefixListRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -220,7 +219,7 @@ type FrrBgpRouteMap struct {
 
 func (v *FrrBgpRouteMap) IsZero() bool { return v.Name == "" }
 
-// FrrBgpRouteMapRow is one row of a frr_bgp_route_map search; values are display text.
+// FrrBgpRouteMapRow is one row of a frr_bgp_route_map search; values are display text. Sensitive fields are left out.
 type FrrBgpRouteMapRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -247,7 +246,7 @@ type FrrBgpRedistribution struct {
 
 func (v *FrrBgpRedistribution) IsZero() bool { return v.Description == "" }
 
-// FrrBgpRedistributionRow is one row of a frr_bgp_redistribution search; values are display text.
+// FrrBgpRedistributionRow is one row of a frr_bgp_redistribution search; values are display text. Sensitive fields are left out.
 type FrrBgpRedistributionRow struct {
 	UUID         Text `json:"uuid"`
 	Enabled      Text `json:"enabled"`
@@ -273,7 +272,7 @@ type FrrOspfArea struct {
 
 func (v *FrrOspfArea) IsZero() bool { return v.AreaID == "" }
 
-// FrrOspfAreaRow is one row of a frr_ospf_area search; values are display text.
+// FrrOspfAreaRow is one row of a frr_ospf_area search; values are display text. Sensitive fields are left out.
 type FrrOspfAreaRow struct {
 	UUID          Text `json:"uuid"`
 	Enabled       Text `json:"enabled"`
@@ -297,7 +296,7 @@ type FrrOspfNetwork struct {
 
 func (v *FrrOspfNetwork) IsZero() bool { return v.Network == "" }
 
-// FrrOspfNetworkRow is one row of a frr_ospf_network search; values are display text.
+// FrrOspfNetworkRow is one row of a frr_ospf_network search; values are display text. Sensitive fields are left out.
 type FrrOspfNetworkRow struct {
 	UUID    Text `json:"uuid"`
 	Enabled Text `json:"enabled"`
@@ -320,7 +319,7 @@ type FrrOspfNeighbor struct {
 
 func (v *FrrOspfNeighbor) IsZero() bool { return v.Address == "" }
 
-// FrrOspfNeighborRow is one row of a frr_ospf_neighbor search; values are display text.
+// FrrOspfNeighborRow is one row of a frr_ospf_neighbor search; values are display text. Sensitive fields are left out.
 type FrrOspfNeighborRow struct {
 	UUID         Text `json:"uuid"`
 	Enabled      Text `json:"enabled"`
@@ -357,14 +356,13 @@ type FrrOspfInterface struct {
 
 func (v *FrrOspfInterface) IsZero() bool { return v.Interface == "" }
 
-// FrrOspfInterfaceRow is one row of a frr_ospf_interface search; values are display text.
+// FrrOspfInterfaceRow is one row of a frr_ospf_interface search; values are display text. Sensitive fields are left out.
 type FrrOspfInterfaceRow struct {
 	UUID               Text `json:"uuid"`
 	Enabled            Text `json:"enabled"`
 	Interface          Text `json:"interfacename"`
 	Passive            Text `json:"passive"`
 	AuthType           Text `json:"authtype"`
-	AuthKey            Text `json:"authkey"`
 	AuthKeyID          Text `json:"authkey_id"`
 	Area               Text `json:"area"`
 	Cost               Text `json:"cost"`
@@ -394,7 +392,7 @@ type FrrOspfPrefixList struct {
 
 func (v *FrrOspfPrefixList) IsZero() bool { return v.Name == "" }
 
-// FrrOspfPrefixListRow is one row of a frr_ospf_prefix_list search; values are display text.
+// FrrOspfPrefixListRow is one row of a frr_ospf_prefix_list search; values are display text. Sensitive fields are left out.
 type FrrOspfPrefixListRow struct {
 	UUID     Text `json:"uuid"`
 	Enabled  Text `json:"enabled"`
@@ -419,7 +417,7 @@ type FrrOspfRouteMap struct {
 
 func (v *FrrOspfRouteMap) IsZero() bool { return v.Name == "" }
 
-// FrrOspfRouteMapRow is one row of a frr_ospf_route_map search; values are display text.
+// FrrOspfRouteMapRow is one row of a frr_ospf_route_map search; values are display text. Sensitive fields are left out.
 type FrrOspfRouteMapRow struct {
 	UUID     Text `json:"uuid"`
 	Enabled  Text `json:"enabled"`
@@ -443,7 +441,7 @@ type FrrOspfRedistribution struct {
 
 func (v *FrrOspfRedistribution) IsZero() bool { return v.Description == "" }
 
-// FrrOspfRedistributionRow is one row of a frr_ospf_redistribution search; values are display text.
+// FrrOspfRedistributionRow is one row of a frr_ospf_redistribution search; values are display text. Sensitive fields are left out.
 type FrrOspfRedistributionRow struct {
 	UUID         Text `json:"uuid"`
 	Enabled      Text `json:"enabled"`
@@ -469,7 +467,7 @@ type FrrOspf6Area struct {
 
 func (v *FrrOspf6Area) IsZero() bool { return v.AreaID == "" }
 
-// FrrOspf6AreaRow is one row of a frr_ospf6_area search; values are display text.
+// FrrOspf6AreaRow is one row of a frr_ospf6_area search; values are display text. Sensitive fields are left out.
 type FrrOspf6AreaRow struct {
 	UUID          Text `json:"uuid"`
 	Enabled       Text `json:"enabled"`
@@ -503,7 +501,7 @@ type FrrOspf6Interface struct {
 
 func (v *FrrOspf6Interface) IsZero() bool { return v.Interface == "" }
 
-// FrrOspf6InterfaceRow is one row of a frr_ospf6_interface search; values are display text.
+// FrrOspf6InterfaceRow is one row of a frr_ospf6_interface search; values are display text. Sensitive fields are left out.
 type FrrOspf6InterfaceRow struct {
 	UUID               Text `json:"uuid"`
 	Enabled            Text `json:"enabled"`
@@ -536,7 +534,7 @@ type FrrOspf6PrefixList struct {
 
 func (v *FrrOspf6PrefixList) IsZero() bool { return v.Name == "" }
 
-// FrrOspf6PrefixListRow is one row of a frr_ospf6_prefix_list search; values are display text.
+// FrrOspf6PrefixListRow is one row of a frr_ospf6_prefix_list search; values are display text. Sensitive fields are left out.
 type FrrOspf6PrefixListRow struct {
 	UUID     Text `json:"uuid"`
 	Enabled  Text `json:"enabled"`
@@ -561,7 +559,7 @@ type FrrOspf6RouteMap struct {
 
 func (v *FrrOspf6RouteMap) IsZero() bool { return v.Name == "" }
 
-// FrrOspf6RouteMapRow is one row of a frr_ospf6_route_map search; values are display text.
+// FrrOspf6RouteMapRow is one row of a frr_ospf6_route_map search; values are display text. Sensitive fields are left out.
 type FrrOspf6RouteMapRow struct {
 	UUID     Text `json:"uuid"`
 	Enabled  Text `json:"enabled"`
@@ -585,7 +583,7 @@ type FrrOspf6Redistribution struct {
 
 func (v *FrrOspf6Redistribution) IsZero() bool { return v.Description == "" }
 
-// FrrOspf6RedistributionRow is one row of a frr_ospf6_redistribution search; values are display text.
+// FrrOspf6RedistributionRow is one row of a frr_ospf6_redistribution search; values are display text. Sensitive fields are left out.
 type FrrOspf6RedistributionRow struct {
 	UUID         Text `json:"uuid"`
 	Enabled      Text `json:"enabled"`
@@ -614,7 +612,7 @@ type FrrBfdNeighbor struct {
 
 func (v *FrrBfdNeighbor) IsZero() bool { return v.Address == "" }
 
-// FrrBfdNeighborRow is one row of a frr_bfd_neighbor search; values are display text.
+// FrrBfdNeighborRow is one row of a frr_bfd_neighbor search; values are display text. Sensitive fields are left out.
 type FrrBfdNeighborRow struct {
 	UUID             Text `json:"uuid"`
 	Enabled          Text `json:"enabled"`
@@ -642,7 +640,7 @@ type FrrStaticRoute struct {
 
 func (v *FrrStaticRoute) IsZero() bool { return v.Network == "" }
 
-// FrrStaticRouteRow is one row of a frr_static_route search; values are display text.
+// FrrStaticRouteRow is one row of a frr_static_route search; values are display text. Sensitive fields are left out.
 type FrrStaticRouteRow struct {
 	UUID      Text `json:"uuid"`
 	Enabled   Text `json:"enabled"`

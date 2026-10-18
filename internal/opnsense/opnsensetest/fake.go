@@ -60,6 +60,9 @@ type Field struct {
 	// ReadOnly fields are maintained by OPNsense (status, timestamps). A client that sends
 	// one gets HTTP 400, so tests catch writes that would clobber them.
 	ReadOnly bool
+	// Sensitive fields hold credentials. SeedSecrets fills them so tests can check that
+	// no front end shows them.
+	Sensitive bool
 }
 
 // Collection is one OPNsense model array served under Base with the <action><Suffix> pattern.

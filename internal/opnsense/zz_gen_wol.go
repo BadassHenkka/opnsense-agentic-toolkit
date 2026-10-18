@@ -12,7 +12,7 @@ type WolHost struct {
 
 func (v *WolHost) IsZero() bool { return v.MAC == "" }
 
-// WolHostRow is one row of a wol_host search; values are display text.
+// WolHostRow is one row of a wol_host search; values are display text. Sensitive fields are left out.
 type WolHostRow struct {
 	UUID        Text `json:"uuid"`
 	Interface   Text `json:"interface"`

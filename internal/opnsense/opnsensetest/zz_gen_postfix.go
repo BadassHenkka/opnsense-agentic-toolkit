@@ -119,7 +119,7 @@ func registerGenPostfix(s *Server) {
 		"relayhost":                       {Mask: "^([0-9a-zA-Z.:\\-\\[\\]]){1,64}$"},
 		"smtpauth_enabled":                {Required: true, Default: "0"},
 		"smtpauth_user":                   {},
-		"smtpauth_password":               {},
+		"smtpauth_password":               {Sensitive: true},
 		"enforce_recipient_check":         {Required: true, Default: "0"},
 		"extensive_helo_restrictions":     {Required: true, Default: "0"},
 		"extensive_sender_restrictions":   {Required: true, Default: "0"},

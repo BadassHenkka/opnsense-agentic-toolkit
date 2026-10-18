@@ -29,7 +29,7 @@ type TrustCA struct {
 
 func (v *TrustCA) IsZero() bool { return v.Refid == "" }
 
-// TrustCARow is one row of a trust_ca search; values are display text.
+// TrustCARow is one row of a trust_ca search; values are display text. Sensitive fields are left out.
 type TrustCARow struct {
 	UUID               Text `json:"uuid"`
 	Refid              Text `json:"refid"`
@@ -48,7 +48,6 @@ type TrustCARow struct {
 	CommonName         Text `json:"commonname"`
 	OcspURI            Text `json:"ocsp_uri"`
 	Certificate        Text `json:"crt_payload"`
-	PrivateKey         Text `json:"prv_payload"`
 	ValidFrom          Text `json:"valid_from"`
 	ValidTo            Text `json:"valid_to"`
 }
@@ -88,7 +87,7 @@ type TrustCert struct {
 
 func (v *TrustCert) IsZero() bool { return v.Refid == "" }
 
-// TrustCertRow is one row of a trust_cert search; values are display text.
+// TrustCertRow is one row of a trust_cert search; values are display text. Sensitive fields are left out.
 type TrustCertRow struct {
 	UUID               Text `json:"uuid"`
 	Refid              Text `json:"refid"`
@@ -113,7 +112,6 @@ type TrustCertRow struct {
 	AltNamesEmail      Text `json:"altnames_email"`
 	Certificate        Text `json:"crt_payload"`
 	CSR                Text `json:"csr_payload"`
-	PrivateKey         Text `json:"prv_payload"`
 	ValidFrom          Text `json:"valid_from"`
 	ValidTo            Text `json:"valid_to"`
 }

@@ -217,7 +217,7 @@ still answers. If it doesn't, the tool says so instead of reporting success.
 WireGuard keys are generated locally (X25519), not on the firewall. `wireguard_peer_create`
 without a `public_key` generates the device's key pair and returns a ready-to-import client
 config once: the device's private key is not stored on the firewall or anywhere else.
-Instance private keys and preshared keys are never returned by `get` tools.
+Instance private keys and preshared keys are never returned by `get` or `list` tools.
 
 Updates are patches: only the fields given change. Host overrides can be addressed by name
 (`nas.home.lan`), plus `type` when a name has several records (e.g. A and AAAA).
@@ -236,6 +236,14 @@ The MCP client does not inherit your shell's `export`s, so the credentials go in
 client's `env` block). That stores them in the client's config file in plain text and in your
 shell history; for tighter handling point `command` at a small wrapper script that reads them
 from your password manager and then runs `exec bin/mcp-opnsense --read-only`.
+
+### Secrets
+
+No MCP tool returns a credential, whether from a `list` or a `get`: private keys, preshared
+keys, passwords, tokens and API secrets are left out of search results and shown as
+`(set, hidden)` or `<name>_set` elsewhere. That includes `backup_diff_get` (credential elements
+in config.xml diffs) and `caddy_caddyfile_get`. Public keys stay visible. A test seeds a marker
+into every sensitive field of the fake firewall and fails if any tool returns one.
 
 ## Terraform provider
 

@@ -12,7 +12,7 @@ type PostfixDomain struct {
 
 func (v *PostfixDomain) IsZero() bool { return v.Domain == "" }
 
-// PostfixDomainRow is one row of a postfix_domain search; values are display text.
+// PostfixDomainRow is one row of a postfix_domain search; values are display text. Sensitive fields are left out.
 type PostfixDomainRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -32,7 +32,7 @@ type PostfixRecipient struct {
 
 func (v *PostfixRecipient) IsZero() bool { return v.Address == "" }
 
-// PostfixRecipientRow is one row of a postfix_recipient search; values are display text.
+// PostfixRecipientRow is one row of a postfix_recipient search; values are display text. Sensitive fields are left out.
 type PostfixRecipientRow struct {
 	UUID    Text `json:"uuid"`
 	Enabled Text `json:"enabled"`
@@ -52,7 +52,7 @@ type PostfixSender struct {
 
 func (v *PostfixSender) IsZero() bool { return v.Address == "" }
 
-// PostfixSenderRow is one row of a postfix_sender search; values are display text.
+// PostfixSenderRow is one row of a postfix_sender search; values are display text. Sensitive fields are left out.
 type PostfixSenderRow struct {
 	UUID    Text `json:"uuid"`
 	Enabled Text `json:"enabled"`
@@ -72,7 +72,7 @@ type PostfixHeaderCheck struct {
 
 func (v *PostfixHeaderCheck) IsZero() bool { return v.Expression == "" }
 
-// PostfixHeaderCheckRow is one row of a postfix_header_check search; values are display text.
+// PostfixHeaderCheckRow is one row of a postfix_header_check search; values are display text. Sensitive fields are left out.
 type PostfixHeaderCheckRow struct {
 	UUID       Text `json:"uuid"`
 	Enabled    Text `json:"enabled"`
@@ -92,7 +92,7 @@ type PostfixRecipientBcc struct {
 
 func (v *PostfixRecipientBcc) IsZero() bool { return v.FromAddress == "" }
 
-// PostfixRecipientBccRow is one row of a postfix_recipient_bcc search; values are display text.
+// PostfixRecipientBccRow is one row of a postfix_recipient_bcc search; values are display text. Sensitive fields are left out.
 type PostfixRecipientBccRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -114,7 +114,7 @@ type PostfixSenderBcc struct {
 
 func (v *PostfixSenderBcc) IsZero() bool { return v.FromAddress == "" }
 
-// PostfixSenderBccRow is one row of a postfix_sender_bcc search; values are display text.
+// PostfixSenderBccRow is one row of a postfix_sender_bcc search; values are display text. Sensitive fields are left out.
 type PostfixSenderBccRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`
@@ -134,7 +134,7 @@ type PostfixAddress struct {
 
 func (v *PostfixAddress) IsZero() bool { return v.FromAddress == "" }
 
-// PostfixAddressRow is one row of a postfix_address search; values are display text.
+// PostfixAddressRow is one row of a postfix_address search; values are display text. Sensitive fields are left out.
 type PostfixAddressRow struct {
 	UUID        Text `json:"uuid"`
 	Enabled     Text `json:"enabled"`

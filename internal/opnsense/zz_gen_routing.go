@@ -34,7 +34,7 @@ type Gateway struct {
 
 func (v *Gateway) IsZero() bool { return v.Name == "" }
 
-// GatewayRow is one row of a gateway search; values are display text.
+// GatewayRow is one row of a gateway search; values are display text. Sensitive fields are left out.
 type GatewayRow struct {
 	UUID                      Text `json:"uuid"`
 	Disabled                  Text `json:"disabled"`
@@ -77,7 +77,7 @@ type Route struct {
 
 func (v *Route) IsZero() bool { return v.Network == "" }
 
-// RouteRow is one row of a route search; values are display text.
+// RouteRow is one row of a route search; values are display text. Sensitive fields are left out.
 type RouteRow struct {
 	UUID        Text `json:"uuid"`
 	Network     Text `json:"network"`
@@ -104,7 +104,7 @@ type GatewayGroup struct {
 
 func (v *GatewayGroup) IsZero() bool { return v.Name == "" }
 
-// GatewayGroupRow is one row of a gateway_group search; values are display text.
+// GatewayGroupRow is one row of a gateway_group search; values are display text. Sensitive fields are left out.
 type GatewayGroupRow struct {
 	UUID        Text `json:"uuid"`
 	Name        Text `json:"name"`

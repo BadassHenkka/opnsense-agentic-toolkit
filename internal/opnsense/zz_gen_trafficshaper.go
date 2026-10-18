@@ -28,7 +28,7 @@ type TrafficShaperPipe struct {
 
 func (v *TrafficShaperPipe) IsZero() bool { return v.Description == "" }
 
-// TrafficShaperPipeRow is one row of a trafficshaper_pipe search; values are display text.
+// TrafficShaperPipeRow is one row of a trafficshaper_pipe search; values are display text. Sensitive fields are left out.
 type TrafficShaperPipeRow struct {
 	UUID            Text `json:"uuid"`
 	Number          Text `json:"number"`
@@ -73,7 +73,7 @@ type TrafficShaperQueue struct {
 
 func (v *TrafficShaperQueue) IsZero() bool { return v.Description == "" }
 
-// TrafficShaperQueueRow is one row of a trafficshaper_queue search; values are display text.
+// TrafficShaperQueueRow is one row of a trafficshaper_queue search; values are display text. Sensitive fields are left out.
 type TrafficShaperQueueRow struct {
 	UUID           Text `json:"uuid"`
 	Number         Text `json:"number"`
@@ -118,7 +118,7 @@ type TrafficShaperRule struct {
 
 func (v *TrafficShaperRule) IsZero() bool { return v.Description == "" }
 
-// TrafficShaperRuleRow is one row of a trafficshaper_rule search; values are display text.
+// TrafficShaperRuleRow is one row of a trafficshaper_rule search; values are display text. Sensitive fields are left out.
 type TrafficShaperRuleRow struct {
 	UUID                Text `json:"uuid"`
 	Enabled             Text `json:"enabled"`

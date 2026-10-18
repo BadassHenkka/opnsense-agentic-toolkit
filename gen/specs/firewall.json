@@ -308,6 +308,7 @@
           "go_name": "PoolOptions"
         },
         "poolopts_sourcehashkey": {
+          "sensitive": true,
           "attr": "pool_source_hash_key",
           "go_name": "PoolSourceHashKey"
         },
