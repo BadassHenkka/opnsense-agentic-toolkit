@@ -19,6 +19,8 @@ once:
 - **`mcp-opnsense`**: local MCP server (stdio) for steps 1 and 2.
 - **`terraform-provider-opnsense`**: Terraform provider (Plugin Framework, protocol 6) for step 3.
 
+The [`opnsense-iac` skill](.claude/skills/opnsense-iac/SKILL.md) teaches Claude Code this workflow.
+
 Supported so far:
 
 | OPNsense page | Terraform resources | MCP toolset |
@@ -348,6 +350,10 @@ One manual step remains: assign the `wgN` device as an interface (Interfaces →
 becomes e.g. `opt3`) and enable it. The gateway's `interface` is that assigned name. Recent
 OPNsense development versions add an assignment API, so a resource for this is on the roadmap.
 Then allow the traffic with `opnsense_firewall_rule` on the WireGuard interface.
+
+## Claude Code skill
+
+`.claude/skills/opnsense-iac/SKILL.md` teaches Claude Code the workflow this project is built for: explore with MCP, try ideas as short-lived MCP changes that are undone again, implement only through Terraform (plan, summary, your yes, apply), then check the result with MCP.
 
 ## Adding a resource
 
