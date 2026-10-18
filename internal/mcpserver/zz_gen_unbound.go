@@ -120,6 +120,158 @@ func genUnboundBlocklistViewOf(id string, v *opnsense.UnboundBlocklist) genUnbou
 	}
 }
 
+type genUnboundGeneralView struct {
+	Enabled                 bool     `json:"enabled"`
+	Port                    *int64   `json:"port,omitempty"`
+	Stats                   bool     `json:"stats"`
+	ListenInterfaces        []string `json:"listen_interfaces,omitempty"`
+	Dnssec                  bool     `json:"dnssec"`
+	Dns64                   bool     `json:"dns64"`
+	Dns64Prefix             string   `json:"dns64_prefix,omitempty"`
+	NoARecords              bool     `json:"no_a_records"`
+	RegisterDhcpLeases      bool     `json:"register_dhcp_leases"`
+	DhcpDomain              string   `json:"dhcp_domain,omitempty"`
+	RegisterDhcpStatic      bool     `json:"register_dhcp_static"`
+	NoRegisterIPv6LinkLocal bool     `json:"no_register_ipv6_link_local"`
+	NoRegisterSystemRecords bool     `json:"no_register_system_records"`
+	TXTSupport              bool     `json:"txt_support"`
+	FlushCacheOnReload      bool     `json:"flush_cache_on_reload"`
+	Safesearch              bool     `json:"safesearch"`
+	LocalZoneType           string   `json:"local_zone_type,omitempty"`
+	OutgoingInterfaces      []string `json:"outgoing_interfaces,omitempty"`
+	EnableWpad              bool     `json:"enable_wpad"`
+}
+
+func genUnboundGeneralViewOf(v *opnsense.UnboundGeneral) genUnboundGeneralView {
+	return genUnboundGeneralView{
+		Enabled:                 bool(v.Enabled),
+		Port:                    intPtr(v.Port),
+		Stats:                   bool(v.Stats),
+		ListenInterfaces:        nonNil([]string(v.ListenInterfaces)),
+		Dnssec:                  bool(v.Dnssec),
+		Dns64:                   bool(v.Dns64),
+		Dns64Prefix:             v.Dns64Prefix,
+		NoARecords:              bool(v.NoARecords),
+		RegisterDhcpLeases:      bool(v.RegisterDhcpLeases),
+		DhcpDomain:              v.DhcpDomain,
+		RegisterDhcpStatic:      bool(v.RegisterDhcpStatic),
+		NoRegisterIPv6LinkLocal: bool(v.NoRegisterIPv6LinkLocal),
+		NoRegisterSystemRecords: bool(v.NoRegisterSystemRecords),
+		TXTSupport:              bool(v.TXTSupport),
+		FlushCacheOnReload:      bool(v.FlushCacheOnReload),
+		Safesearch:              bool(v.Safesearch),
+		LocalZoneType:           string(v.LocalZoneType),
+		OutgoingInterfaces:      nonNil([]string(v.OutgoingInterfaces)),
+		EnableWpad:              bool(v.EnableWpad),
+	}
+}
+
+type genUnboundAdvancedView struct {
+	Hideidentity              bool     `json:"hideidentity"`
+	Hideversion               bool     `json:"hideversion"`
+	Prefetch                  bool     `json:"prefetch"`
+	Prefetchkey               bool     `json:"prefetchkey"`
+	Dnssecstripped            bool     `json:"dnssecstripped"`
+	Belownxdomain             bool     `json:"belownxdomain"`
+	Aggressivensec            bool     `json:"aggressivensec"`
+	Serveexpired              bool     `json:"serveexpired"`
+	Serveexpiredreplyttl      string   `json:"serveexpiredreplyttl,omitempty"`
+	Serveexpiredttl           string   `json:"serveexpiredttl,omitempty"`
+	Serveexpiredttlreset      bool     `json:"serveexpiredttlreset"`
+	Serveexpiredclienttimeout string   `json:"serveexpiredclienttimeout,omitempty"`
+	Qnameminstrict            bool     `json:"qnameminstrict"`
+	Extendedstatistics        bool     `json:"extendedstatistics"`
+	Logqueries                bool     `json:"logqueries"`
+	Logreplies                bool     `json:"logreplies"`
+	Logtagqueryreply          bool     `json:"logtagqueryreply"`
+	Logservfail               bool     `json:"logservfail"`
+	Loglocalactions           bool     `json:"loglocalactions"`
+	Logverbosity              string   `json:"logverbosity,omitempty"`
+	Valloglevel               string   `json:"valloglevel,omitempty"`
+	Privatedomain             []string `json:"privatedomain,omitempty"`
+	Privateaddress            []string `json:"privateaddress,omitempty"`
+	Insecuredomain            []string `json:"insecuredomain,omitempty"`
+	Msgcachesize              string   `json:"msgcachesize,omitempty"`
+	Rrsetcachesize            string   `json:"rrsetcachesize,omitempty"`
+	Outgoingnumtcp            string   `json:"outgoingnumtcp,omitempty"`
+	Incomingnumtcp            string   `json:"incomingnumtcp,omitempty"`
+	Numqueriesperthread       string   `json:"numqueriesperthread,omitempty"`
+	Outgoingrange             string   `json:"outgoingrange,omitempty"`
+	Jostletimeout             string   `json:"jostletimeout,omitempty"`
+	Discardtimeout            string   `json:"discardtimeout,omitempty"`
+	Cachemaxttl               string   `json:"cachemaxttl,omitempty"`
+	Cachemaxnegativettl       string   `json:"cachemaxnegativettl,omitempty"`
+	Cacheminttl               string   `json:"cacheminttl,omitempty"`
+	Infrahostttl              string   `json:"infrahostttl,omitempty"`
+	Infrakeepprobing          bool     `json:"infrakeepprobing"`
+	Infracachenumhosts        string   `json:"infracachenumhosts,omitempty"`
+	Unwantedreplythreshold    string   `json:"unwantedreplythreshold,omitempty"`
+}
+
+func genUnboundAdvancedViewOf(v *opnsense.UnboundAdvanced) genUnboundAdvancedView {
+	return genUnboundAdvancedView{
+		Hideidentity:              bool(v.Hideidentity),
+		Hideversion:               bool(v.Hideversion),
+		Prefetch:                  bool(v.Prefetch),
+		Prefetchkey:               bool(v.Prefetchkey),
+		Dnssecstripped:            bool(v.Dnssecstripped),
+		Belownxdomain:             bool(v.Belownxdomain),
+		Aggressivensec:            bool(v.Aggressivensec),
+		Serveexpired:              bool(v.Serveexpired),
+		Serveexpiredreplyttl:      v.Serveexpiredreplyttl,
+		Serveexpiredttl:           v.Serveexpiredttl,
+		Serveexpiredttlreset:      bool(v.Serveexpiredttlreset),
+		Serveexpiredclienttimeout: v.Serveexpiredclienttimeout,
+		Qnameminstrict:            bool(v.Qnameminstrict),
+		Extendedstatistics:        bool(v.Extendedstatistics),
+		Logqueries:                bool(v.Logqueries),
+		Logreplies:                bool(v.Logreplies),
+		Logtagqueryreply:          bool(v.Logtagqueryreply),
+		Logservfail:               bool(v.Logservfail),
+		Loglocalactions:           bool(v.Loglocalactions),
+		Logverbosity:              string(v.Logverbosity),
+		Valloglevel:               string(v.Valloglevel),
+		Privatedomain:             nonNil([]string(v.Privatedomain)),
+		Privateaddress:            nonNil([]string(v.Privateaddress)),
+		Insecuredomain:            nonNil([]string(v.Insecuredomain)),
+		Msgcachesize:              v.Msgcachesize,
+		Rrsetcachesize:            v.Rrsetcachesize,
+		Outgoingnumtcp:            v.Outgoingnumtcp,
+		Incomingnumtcp:            v.Incomingnumtcp,
+		Numqueriesperthread:       v.Numqueriesperthread,
+		Outgoingrange:             v.Outgoingrange,
+		Jostletimeout:             v.Jostletimeout,
+		Discardtimeout:            v.Discardtimeout,
+		Cachemaxttl:               v.Cachemaxttl,
+		Cachemaxnegativettl:       v.Cachemaxnegativettl,
+		Cacheminttl:               v.Cacheminttl,
+		Infrahostttl:              v.Infrahostttl,
+		Infrakeepprobing:          bool(v.Infrakeepprobing),
+		Infracachenumhosts:        v.Infracachenumhosts,
+		Unwantedreplythreshold:    v.Unwantedreplythreshold,
+	}
+}
+
+type genUnboundACLSettingsView struct {
+	DefaultAction string `json:"default_action,omitempty"`
+}
+
+func genUnboundACLSettingsViewOf(v *opnsense.UnboundACLSettings) genUnboundACLSettingsView {
+	return genUnboundACLSettingsView{
+		DefaultAction: string(v.DefaultAction),
+	}
+}
+
+type genUnboundForwardingView struct {
+	Enabled bool `json:"enabled"`
+}
+
+func genUnboundForwardingViewOf(v *opnsense.UnboundForwarding) genUnboundForwardingView {
+	return genUnboundForwardingView{
+		Enabled: bool(v.Enabled),
+	}
+}
+
 func genUnboundTools(c *opnsense.Client) []tool {
 	svc := c.Unbound
 	return []tool{
@@ -189,6 +341,54 @@ func genUnboundTools(c *opnsense.Client) []tool {
 					return nil, genUnboundBlocklistView{}, notFoundAs(err, "unbound blocklist", id)
 				}
 				return nil, genUnboundBlocklistViewOf(id, v), nil
+			})
+		}},
+		{toolset: genUnboundToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "unbound_settings_get",
+				Description: "Get the unbound settings. Unbound general settings (Services → Unbound DNS → General). Destroying the resource leaves Unbound as it is. Read-only: change them with Terraform (opnsense_unbound_settings).",
+				Annotations: &mcp.ToolAnnotations{Title: "Get unbound settings", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, genUnboundGeneralView, error) {
+				v, err := svc.General.Get(ctx)
+				if err != nil {
+					return nil, genUnboundGeneralView{}, err
+				}
+				return nil, genUnboundGeneralViewOf(v), nil
+			})
+		}},
+		{toolset: genUnboundToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "unbound_advanced_get",
+				Description: "Get the unbound advanced. Unbound advanced settings (Services → Unbound DNS → Advanced): caching, privacy, logging and tuning. Read-only: change them with Terraform (opnsense_unbound_advanced).",
+				Annotations: &mcp.ToolAnnotations{Title: "Get unbound advanced", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, genUnboundAdvancedView, error) {
+				v, err := svc.Advanced.Get(ctx)
+				if err != nil {
+					return nil, genUnboundAdvancedView{}, err
+				}
+				return nil, genUnboundAdvancedViewOf(v), nil
+			})
+		}},
+		{toolset: genUnboundToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "unbound_acl_settings_get",
+				Description: "Get the unbound acl settings. The Unbound access list default (Services → Unbound DNS → Access Lists): what happens to clients no opnsense_unbound_acl matches. Read-only: change them with Terraform (opnsense_unbound_acl_settings).",
+				Annotations: &mcp.ToolAnnotations{Title: "Get unbound acl settings", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, genUnboundACLSettingsView, error) {
+				v, err := svc.ACLSettings.Get(ctx)
+				if err != nil {
+					return nil, genUnboundACLSettingsView{}, err
+				}
+				return nil, genUnboundACLSettingsViewOf(v), nil
+			})
+		}},
+		{toolset: genUnboundToolset, readOnly: true, register: func(s *mcp.Server) {
+			mcp.AddTool(s, &mcp.Tool{Name: "unbound_forwarding_get",
+				Description: "Get the unbound forwarding. Unbound query forwarding switch (Services → Unbound DNS → Query Forwarding): forward all queries to the system nameservers instead of resolving recursively. Read-only: change them with Terraform (opnsense_unbound_forwarding).",
+				Annotations: &mcp.ToolAnnotations{Title: "Get unbound forwarding", ReadOnlyHint: true},
+			}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, genUnboundForwardingView, error) {
+				v, err := svc.Forwarding.Get(ctx)
+				if err != nil {
+					return nil, genUnboundForwardingView{}, err
+				}
+				return nil, genUnboundForwardingViewOf(v), nil
 			})
 		}},
 	}

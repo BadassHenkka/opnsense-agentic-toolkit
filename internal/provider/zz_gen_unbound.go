@@ -634,3 +634,518 @@ func (r *genUnboundBlocklistResource) Delete(ctx context.Context, req resource.D
 func (r *genUnboundBlocklistResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	importByName(ctx, req, resp, r.client.Unbound.Blocklists, "unbound blocklist")
 }
+
+var _ resource.ResourceWithImportState = (*genUnboundGeneralResource)(nil)
+
+// NewUnboundGeneralResource returns the opnsense_unbound_settings resource.
+func NewUnboundGeneralResource() resource.Resource { return &genUnboundGeneralResource{} }
+
+type genUnboundGeneralResource struct{ baseResource }
+
+type genUnboundGeneralModel struct {
+	ID                      types.String `tfsdk:"id"`
+	Enabled                 types.Bool   `tfsdk:"enabled"`
+	Port                    types.Int64  `tfsdk:"port"`
+	Stats                   types.Bool   `tfsdk:"stats"`
+	ListenInterfaces        types.Set    `tfsdk:"listen_interfaces"`
+	Dnssec                  types.Bool   `tfsdk:"dnssec"`
+	Dns64                   types.Bool   `tfsdk:"dns64"`
+	Dns64Prefix             types.String `tfsdk:"dns64_prefix"`
+	NoARecords              types.Bool   `tfsdk:"no_a_records"`
+	RegisterDhcpLeases      types.Bool   `tfsdk:"register_dhcp_leases"`
+	DhcpDomain              types.String `tfsdk:"dhcp_domain"`
+	RegisterDhcpStatic      types.Bool   `tfsdk:"register_dhcp_static"`
+	NoRegisterIPv6LinkLocal types.Bool   `tfsdk:"no_register_ipv6_link_local"`
+	NoRegisterSystemRecords types.Bool   `tfsdk:"no_register_system_records"`
+	TXTSupport              types.Bool   `tfsdk:"txt_support"`
+	FlushCacheOnReload      types.Bool   `tfsdk:"flush_cache_on_reload"`
+	Safesearch              types.Bool   `tfsdk:"safesearch"`
+	LocalZoneType           types.String `tfsdk:"local_zone_type"`
+	OutgoingInterfaces      types.Set    `tfsdk:"outgoing_interfaces"`
+	EnableWpad              types.Bool   `tfsdk:"enable_wpad"`
+}
+
+func (r *genUnboundGeneralResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_unbound_settings"
+}
+
+func (r *genUnboundGeneralResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "Unbound general settings (Services → Unbound DNS → General). Destroying the resource leaves Unbound as it is. Only one per firewall. Destroying it only removes it from Terraform state. Generated from core/Unbound/Unbound.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":                          schema.StringAttribute{Computed: true, Description: "Always `unbound_settings`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+			"enabled":                     schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `enabled`."},
+			"port":                        schema.Int64Attribute{Optional: true, Computed: true, Default: int64default.StaticInt64(53), Description: "Listen port. OPNsense field `port`."},
+			"stats":                       schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `stats`."},
+			"listen_interfaces":           schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "Interfaces to listen on; empty for all. OPNsense field `active_interface`."},
+			"dnssec":                      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `dnssec`."},
+			"dns64":                       schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `dns64`."},
+			"dns64_prefix":                schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `dns64prefix`."},
+			"no_a_records":                schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `noarecords`."},
+			"register_dhcp_leases":        schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Register DHCP leases (ISC DHCP) in DNS. OPNsense field `regdhcp`."},
+			"dhcp_domain":                 schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Domain for registered DHCP leases. OPNsense field `regdhcpdomain`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("(?i)^(?:(?:[a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*(?:[a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$"), "must match the OPNsense model mask")}},
+			"register_dhcp_static":        schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Register static DHCP mappings in DNS. OPNsense field `regdhcpstatic`."},
+			"no_register_ipv6_link_local": schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `noreglladdr6`."},
+			"no_register_system_records":  schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `noregrecords`."},
+			"txt_support":                 schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `txtsupport`."},
+			"flush_cache_on_reload":       schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `cacheflush`."},
+			"safesearch":                  schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `safesearch`."},
+			"local_zone_type":             schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("transparent"), Description: "One of `transparent`, `always_nxdomain`, `always_refuse`, `always_transparent`, `deny`, `inform`, `inform_deny`, `nodefault`, `refuse`, `static`, `typetransparent`. OPNsense field `local_zone_type`.", Validators: []validator.String{stringvalidator.OneOf("transparent", "always_nxdomain", "always_refuse", "always_transparent", "deny", "inform", "inform_deny", "nodefault", "refuse", "static", "typetransparent")}},
+			"outgoing_interfaces":         schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "Interfaces for queries to upstreams; empty for all. OPNsense field `outgoing_interface`."},
+			"enable_wpad":                 schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `enable_wpad`."},
+		},
+	}
+}
+
+func (m *genUnboundGeneralModel) toAPI(ctx context.Context) (opnsense.UnboundGeneral, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.UnboundGeneral
+	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
+	v.Port = apiInt(m.Port)
+	v.Stats = opnsense.Bool(m.Stats.ValueBool())
+	diags.Append(m.ListenInterfaces.ElementsAs(ctx, (*[]string)(&v.ListenInterfaces), false)...)
+	v.Dnssec = opnsense.Bool(m.Dnssec.ValueBool())
+	v.Dns64 = opnsense.Bool(m.Dns64.ValueBool())
+	v.Dns64Prefix = m.Dns64Prefix.ValueString()
+	v.NoARecords = opnsense.Bool(m.NoARecords.ValueBool())
+	v.RegisterDhcpLeases = opnsense.Bool(m.RegisterDhcpLeases.ValueBool())
+	v.DhcpDomain = m.DhcpDomain.ValueString()
+	v.RegisterDhcpStatic = opnsense.Bool(m.RegisterDhcpStatic.ValueBool())
+	v.NoRegisterIPv6LinkLocal = opnsense.Bool(m.NoRegisterIPv6LinkLocal.ValueBool())
+	v.NoRegisterSystemRecords = opnsense.Bool(m.NoRegisterSystemRecords.ValueBool())
+	v.TXTSupport = opnsense.Bool(m.TXTSupport.ValueBool())
+	v.FlushCacheOnReload = opnsense.Bool(m.FlushCacheOnReload.ValueBool())
+	v.Safesearch = opnsense.Bool(m.Safesearch.ValueBool())
+	v.LocalZoneType = opnsense.Option(m.LocalZoneType.ValueString())
+	diags.Append(m.OutgoingInterfaces.ElementsAs(ctx, (*[]string)(&v.OutgoingInterfaces), false)...)
+	v.EnableWpad = opnsense.Bool(m.EnableWpad.ValueBool())
+	_ = ctx
+	return v, diags
+}
+
+func (m *genUnboundGeneralModel) fromAPI(ctx context.Context, v *opnsense.UnboundGeneral) diag.Diagnostics {
+	m.ID = types.StringValue("unbound_settings")
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Enabled = types.BoolValue(bool(v.Enabled))
+	m.Port = int64Value(v.Port)
+	m.Stats = types.BoolValue(bool(v.Stats))
+	m.ListenInterfaces, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.ListenInterfaces)))
+	diags.Append(d...)
+	m.Dnssec = types.BoolValue(bool(v.Dnssec))
+	m.Dns64 = types.BoolValue(bool(v.Dns64))
+	m.Dns64Prefix = types.StringValue(v.Dns64Prefix)
+	m.NoARecords = types.BoolValue(bool(v.NoARecords))
+	m.RegisterDhcpLeases = types.BoolValue(bool(v.RegisterDhcpLeases))
+	m.DhcpDomain = types.StringValue(v.DhcpDomain)
+	m.RegisterDhcpStatic = types.BoolValue(bool(v.RegisterDhcpStatic))
+	m.NoRegisterIPv6LinkLocal = types.BoolValue(bool(v.NoRegisterIPv6LinkLocal))
+	m.NoRegisterSystemRecords = types.BoolValue(bool(v.NoRegisterSystemRecords))
+	m.TXTSupport = types.BoolValue(bool(v.TXTSupport))
+	m.FlushCacheOnReload = types.BoolValue(bool(v.FlushCacheOnReload))
+	m.Safesearch = types.BoolValue(bool(v.Safesearch))
+	m.LocalZoneType = types.StringValue(string(v.LocalZoneType))
+	m.OutgoingInterfaces, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.OutgoingInterfaces)))
+	diags.Append(d...)
+	m.EnableWpad = types.BoolValue(bool(v.EnableWpad))
+	_ = ctx
+	return diags
+}
+
+var genUnboundGeneralCRUD = settingsCRUD[opnsense.UnboundGeneral, genUnboundGeneralModel, *genUnboundGeneralModel]{
+	what: "unbound settings",
+	id:   "unbound_settings",
+	ctl: func(c *opnsense.Client) *opnsense.SettingsController[opnsense.UnboundGeneral] {
+		return c.Unbound.General
+	},
+}
+
+func (r *genUnboundGeneralResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genUnboundGeneralCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundGeneralResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genUnboundGeneralCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundGeneralResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genUnboundGeneralCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundGeneralResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genUnboundGeneralCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts any id; there is only one unbound settings.
+func (r *genUnboundGeneralResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	genUnboundGeneralCRUD.importState(ctx, resp)
+}
+
+var _ resource.ResourceWithImportState = (*genUnboundAdvancedResource)(nil)
+
+// NewUnboundAdvancedResource returns the opnsense_unbound_advanced resource.
+func NewUnboundAdvancedResource() resource.Resource { return &genUnboundAdvancedResource{} }
+
+type genUnboundAdvancedResource struct{ baseResource }
+
+type genUnboundAdvancedModel struct {
+	ID                        types.String `tfsdk:"id"`
+	Hideidentity              types.Bool   `tfsdk:"hideidentity"`
+	Hideversion               types.Bool   `tfsdk:"hideversion"`
+	Prefetch                  types.Bool   `tfsdk:"prefetch"`
+	Prefetchkey               types.Bool   `tfsdk:"prefetchkey"`
+	Dnssecstripped            types.Bool   `tfsdk:"dnssecstripped"`
+	Belownxdomain             types.Bool   `tfsdk:"belownxdomain"`
+	Aggressivensec            types.Bool   `tfsdk:"aggressivensec"`
+	Serveexpired              types.Bool   `tfsdk:"serveexpired"`
+	Serveexpiredreplyttl      types.String `tfsdk:"serveexpiredreplyttl"`
+	Serveexpiredttl           types.String `tfsdk:"serveexpiredttl"`
+	Serveexpiredttlreset      types.Bool   `tfsdk:"serveexpiredttlreset"`
+	Serveexpiredclienttimeout types.String `tfsdk:"serveexpiredclienttimeout"`
+	Qnameminstrict            types.Bool   `tfsdk:"qnameminstrict"`
+	Extendedstatistics        types.Bool   `tfsdk:"extendedstatistics"`
+	Logqueries                types.Bool   `tfsdk:"logqueries"`
+	Logreplies                types.Bool   `tfsdk:"logreplies"`
+	Logtagqueryreply          types.Bool   `tfsdk:"logtagqueryreply"`
+	Logservfail               types.Bool   `tfsdk:"logservfail"`
+	Loglocalactions           types.Bool   `tfsdk:"loglocalactions"`
+	Logverbosity              types.String `tfsdk:"logverbosity"`
+	Valloglevel               types.String `tfsdk:"valloglevel"`
+	Privatedomain             types.Set    `tfsdk:"privatedomain"`
+	Privateaddress            types.Set    `tfsdk:"privateaddress"`
+	Insecuredomain            types.Set    `tfsdk:"insecuredomain"`
+	Msgcachesize              types.String `tfsdk:"msgcachesize"`
+	Rrsetcachesize            types.String `tfsdk:"rrsetcachesize"`
+	Outgoingnumtcp            types.String `tfsdk:"outgoingnumtcp"`
+	Incomingnumtcp            types.String `tfsdk:"incomingnumtcp"`
+	Numqueriesperthread       types.String `tfsdk:"numqueriesperthread"`
+	Outgoingrange             types.String `tfsdk:"outgoingrange"`
+	Jostletimeout             types.String `tfsdk:"jostletimeout"`
+	Discardtimeout            types.String `tfsdk:"discardtimeout"`
+	Cachemaxttl               types.String `tfsdk:"cachemaxttl"`
+	Cachemaxnegativettl       types.String `tfsdk:"cachemaxnegativettl"`
+	Cacheminttl               types.String `tfsdk:"cacheminttl"`
+	Infrahostttl              types.String `tfsdk:"infrahostttl"`
+	Infrakeepprobing          types.Bool   `tfsdk:"infrakeepprobing"`
+	Infracachenumhosts        types.String `tfsdk:"infracachenumhosts"`
+	Unwantedreplythreshold    types.String `tfsdk:"unwantedreplythreshold"`
+}
+
+func (r *genUnboundAdvancedResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_unbound_advanced"
+}
+
+func (r *genUnboundAdvancedResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "Unbound advanced settings (Services → Unbound DNS → Advanced): caching, privacy, logging and tuning. Only one per firewall. Destroying it only removes it from Terraform state. Generated from core/Unbound/Unbound.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":                        schema.StringAttribute{Computed: true, Description: "Always `unbound_advanced`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+			"hideidentity":              schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `hideidentity`."},
+			"hideversion":               schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `hideversion`."},
+			"prefetch":                  schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `prefetch`."},
+			"prefetchkey":               schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `prefetchkey`."},
+			"dnssecstripped":            schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `dnssecstripped`."},
+			"belownxdomain":             schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `belownxdomain`."},
+			"aggressivensec":            schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `aggressivensec`."},
+			"serveexpired":              schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `serveexpired`."},
+			"serveexpiredreplyttl":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `serveexpiredreplyttl`."},
+			"serveexpiredttl":           schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `serveexpiredttl`."},
+			"serveexpiredttlreset":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `serveexpiredttlreset`."},
+			"serveexpiredclienttimeout": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `serveexpiredclienttimeout`."},
+			"qnameminstrict":            schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `qnameminstrict`."},
+			"extendedstatistics":        schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `extendedstatistics`."},
+			"logqueries":                schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `logqueries`."},
+			"logreplies":                schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `logreplies`."},
+			"logtagqueryreply":          schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `logtagqueryreply`."},
+			"logservfail":               schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `logservfail`."},
+			"loglocalactions":           schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `loglocalactions`."},
+			"logverbosity":              schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("1"), Description: "One of `0`, `1`, `2`, `3`, `4`, `5`. OPNsense field `logverbosity`.", Validators: []validator.String{stringvalidator.OneOf("0", "1", "2", "3", "4", "5")}},
+			"valloglevel":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("0"), Description: "One of `0`, `1`, `2`. OPNsense field `valloglevel`.", Validators: []validator.String{stringvalidator.OneOf("0", "1", "2")}},
+			"privatedomain":             schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "OPNsense field `privatedomain`."},
+			"privateaddress":            schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{types.StringValue("0.0.0.0/8"), types.StringValue("10.0.0.0/8"), types.StringValue("100.64.0.0/10"), types.StringValue("169.254.0.0/16"), types.StringValue("172.16.0.0/12"), types.StringValue("192.0.2.0/24"), types.StringValue("192.168.0.0/16"), types.StringValue("198.18.0.0/15"), types.StringValue("198.51.100.0/24"), types.StringValue("203.0.113.0/24"), types.StringValue("233.252.0.0/24"), types.StringValue("::1/128"), types.StringValue("2001:db8::/32"), types.StringValue("fc00::/8"), types.StringValue("fd00::/8"), types.StringValue("fe80::/10")})), Description: "OPNsense field `privateaddress`."},
+			"insecuredomain":            schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "OPNsense field `insecuredomain`."},
+			"msgcachesize":              schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `msgcachesize`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("(?i)[0-9]+[kmg]?"), "must match the OPNsense model mask")}},
+			"rrsetcachesize":            schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `rrsetcachesize`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("(?i)[0-9]+[kmg]?"), "must match the OPNsense model mask")}},
+			"outgoingnumtcp":            schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `outgoingnumtcp`."},
+			"incomingnumtcp":            schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `incomingnumtcp`."},
+			"numqueriesperthread":       schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `numqueriesperthread`."},
+			"outgoingrange":             schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `outgoingrange`."},
+			"jostletimeout":             schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `jostletimeout`."},
+			"discardtimeout":            schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `discardtimeout`."},
+			"cachemaxttl":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `cachemaxttl`."},
+			"cachemaxnegativettl":       schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `cachemaxnegativettl`."},
+			"cacheminttl":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `cacheminttl`."},
+			"infrahostttl":              schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `infrahostttl`."},
+			"infrakeepprobing":          schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `infrakeepprobing`."},
+			"infracachenumhosts":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `infracachenumhosts`."},
+			"unwantedreplythreshold":    schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `unwantedreplythreshold`."},
+		},
+	}
+}
+
+func (m *genUnboundAdvancedModel) toAPI(ctx context.Context) (opnsense.UnboundAdvanced, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.UnboundAdvanced
+	v.Hideidentity = opnsense.Bool(m.Hideidentity.ValueBool())
+	v.Hideversion = opnsense.Bool(m.Hideversion.ValueBool())
+	v.Prefetch = opnsense.Bool(m.Prefetch.ValueBool())
+	v.Prefetchkey = opnsense.Bool(m.Prefetchkey.ValueBool())
+	v.Dnssecstripped = opnsense.Bool(m.Dnssecstripped.ValueBool())
+	v.Belownxdomain = opnsense.Bool(m.Belownxdomain.ValueBool())
+	v.Aggressivensec = opnsense.Bool(m.Aggressivensec.ValueBool())
+	v.Serveexpired = opnsense.Bool(m.Serveexpired.ValueBool())
+	v.Serveexpiredreplyttl = m.Serveexpiredreplyttl.ValueString()
+	v.Serveexpiredttl = m.Serveexpiredttl.ValueString()
+	v.Serveexpiredttlreset = opnsense.Bool(m.Serveexpiredttlreset.ValueBool())
+	v.Serveexpiredclienttimeout = m.Serveexpiredclienttimeout.ValueString()
+	v.Qnameminstrict = opnsense.Bool(m.Qnameminstrict.ValueBool())
+	v.Extendedstatistics = opnsense.Bool(m.Extendedstatistics.ValueBool())
+	v.Logqueries = opnsense.Bool(m.Logqueries.ValueBool())
+	v.Logreplies = opnsense.Bool(m.Logreplies.ValueBool())
+	v.Logtagqueryreply = opnsense.Bool(m.Logtagqueryreply.ValueBool())
+	v.Logservfail = opnsense.Bool(m.Logservfail.ValueBool())
+	v.Loglocalactions = opnsense.Bool(m.Loglocalactions.ValueBool())
+	v.Logverbosity = opnsense.Option(m.Logverbosity.ValueString())
+	v.Valloglevel = opnsense.Option(m.Valloglevel.ValueString())
+	diags.Append(m.Privatedomain.ElementsAs(ctx, (*[]string)(&v.Privatedomain), false)...)
+	diags.Append(m.Privateaddress.ElementsAs(ctx, (*[]string)(&v.Privateaddress), false)...)
+	diags.Append(m.Insecuredomain.ElementsAs(ctx, (*[]string)(&v.Insecuredomain), false)...)
+	v.Msgcachesize = m.Msgcachesize.ValueString()
+	v.Rrsetcachesize = m.Rrsetcachesize.ValueString()
+	v.Outgoingnumtcp = m.Outgoingnumtcp.ValueString()
+	v.Incomingnumtcp = m.Incomingnumtcp.ValueString()
+	v.Numqueriesperthread = m.Numqueriesperthread.ValueString()
+	v.Outgoingrange = m.Outgoingrange.ValueString()
+	v.Jostletimeout = m.Jostletimeout.ValueString()
+	v.Discardtimeout = m.Discardtimeout.ValueString()
+	v.Cachemaxttl = m.Cachemaxttl.ValueString()
+	v.Cachemaxnegativettl = m.Cachemaxnegativettl.ValueString()
+	v.Cacheminttl = m.Cacheminttl.ValueString()
+	v.Infrahostttl = m.Infrahostttl.ValueString()
+	v.Infrakeepprobing = opnsense.Bool(m.Infrakeepprobing.ValueBool())
+	v.Infracachenumhosts = m.Infracachenumhosts.ValueString()
+	v.Unwantedreplythreshold = m.Unwantedreplythreshold.ValueString()
+	_ = ctx
+	return v, diags
+}
+
+func (m *genUnboundAdvancedModel) fromAPI(ctx context.Context, v *opnsense.UnboundAdvanced) diag.Diagnostics {
+	m.ID = types.StringValue("unbound_advanced")
+	var diags diag.Diagnostics
+	var d diag.Diagnostics
+	m.Hideidentity = types.BoolValue(bool(v.Hideidentity))
+	m.Hideversion = types.BoolValue(bool(v.Hideversion))
+	m.Prefetch = types.BoolValue(bool(v.Prefetch))
+	m.Prefetchkey = types.BoolValue(bool(v.Prefetchkey))
+	m.Dnssecstripped = types.BoolValue(bool(v.Dnssecstripped))
+	m.Belownxdomain = types.BoolValue(bool(v.Belownxdomain))
+	m.Aggressivensec = types.BoolValue(bool(v.Aggressivensec))
+	m.Serveexpired = types.BoolValue(bool(v.Serveexpired))
+	m.Serveexpiredreplyttl = types.StringValue(v.Serveexpiredreplyttl)
+	m.Serveexpiredttl = types.StringValue(v.Serveexpiredttl)
+	m.Serveexpiredttlreset = types.BoolValue(bool(v.Serveexpiredttlreset))
+	m.Serveexpiredclienttimeout = types.StringValue(v.Serveexpiredclienttimeout)
+	m.Qnameminstrict = types.BoolValue(bool(v.Qnameminstrict))
+	m.Extendedstatistics = types.BoolValue(bool(v.Extendedstatistics))
+	m.Logqueries = types.BoolValue(bool(v.Logqueries))
+	m.Logreplies = types.BoolValue(bool(v.Logreplies))
+	m.Logtagqueryreply = types.BoolValue(bool(v.Logtagqueryreply))
+	m.Logservfail = types.BoolValue(bool(v.Logservfail))
+	m.Loglocalactions = types.BoolValue(bool(v.Loglocalactions))
+	m.Logverbosity = types.StringValue(string(v.Logverbosity))
+	m.Valloglevel = types.StringValue(string(v.Valloglevel))
+	m.Privatedomain, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Privatedomain)))
+	diags.Append(d...)
+	m.Privateaddress, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Privateaddress)))
+	diags.Append(d...)
+	m.Insecuredomain, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Insecuredomain)))
+	diags.Append(d...)
+	m.Msgcachesize = types.StringValue(v.Msgcachesize)
+	m.Rrsetcachesize = types.StringValue(v.Rrsetcachesize)
+	m.Outgoingnumtcp = types.StringValue(v.Outgoingnumtcp)
+	m.Incomingnumtcp = types.StringValue(v.Incomingnumtcp)
+	m.Numqueriesperthread = types.StringValue(v.Numqueriesperthread)
+	m.Outgoingrange = types.StringValue(v.Outgoingrange)
+	m.Jostletimeout = types.StringValue(v.Jostletimeout)
+	m.Discardtimeout = types.StringValue(v.Discardtimeout)
+	m.Cachemaxttl = types.StringValue(v.Cachemaxttl)
+	m.Cachemaxnegativettl = types.StringValue(v.Cachemaxnegativettl)
+	m.Cacheminttl = types.StringValue(v.Cacheminttl)
+	m.Infrahostttl = types.StringValue(v.Infrahostttl)
+	m.Infrakeepprobing = types.BoolValue(bool(v.Infrakeepprobing))
+	m.Infracachenumhosts = types.StringValue(v.Infracachenumhosts)
+	m.Unwantedreplythreshold = types.StringValue(v.Unwantedreplythreshold)
+	_ = ctx
+	return diags
+}
+
+var genUnboundAdvancedCRUD = settingsCRUD[opnsense.UnboundAdvanced, genUnboundAdvancedModel, *genUnboundAdvancedModel]{
+	what: "unbound advanced",
+	id:   "unbound_advanced",
+	ctl: func(c *opnsense.Client) *opnsense.SettingsController[opnsense.UnboundAdvanced] {
+		return c.Unbound.Advanced
+	},
+}
+
+func (r *genUnboundAdvancedResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genUnboundAdvancedCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundAdvancedResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genUnboundAdvancedCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundAdvancedResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genUnboundAdvancedCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundAdvancedResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genUnboundAdvancedCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts any id; there is only one unbound advanced.
+func (r *genUnboundAdvancedResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	genUnboundAdvancedCRUD.importState(ctx, resp)
+}
+
+var _ resource.ResourceWithImportState = (*genUnboundACLSettingsResource)(nil)
+
+// NewUnboundACLSettingsResource returns the opnsense_unbound_acl_settings resource.
+func NewUnboundACLSettingsResource() resource.Resource { return &genUnboundACLSettingsResource{} }
+
+type genUnboundACLSettingsResource struct{ baseResource }
+
+type genUnboundACLSettingsModel struct {
+	ID            types.String `tfsdk:"id"`
+	DefaultAction types.String `tfsdk:"default_action"`
+}
+
+func (r *genUnboundACLSettingsResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_unbound_acl_settings"
+}
+
+func (r *genUnboundACLSettingsResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "The Unbound access list default (Services → Unbound DNS → Access Lists): what happens to clients no opnsense_unbound_acl matches. Only one per firewall. Destroying it only removes it from Terraform state. Generated from core/Unbound/Unbound.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":             schema.StringAttribute{Computed: true, Description: "Always `unbound_acl_settings`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+			"default_action": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("allow"), Description: "One of `allow`, `deny`, `refuse`. OPNsense field `default_action`.", Validators: []validator.String{stringvalidator.OneOf("allow", "deny", "refuse")}},
+		},
+	}
+}
+
+func (m *genUnboundACLSettingsModel) toAPI(ctx context.Context) (opnsense.UnboundACLSettings, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.UnboundACLSettings
+	v.DefaultAction = opnsense.Option(m.DefaultAction.ValueString())
+	_ = ctx
+	return v, diags
+}
+
+func (m *genUnboundACLSettingsModel) fromAPI(ctx context.Context, v *opnsense.UnboundACLSettings) diag.Diagnostics {
+	m.ID = types.StringValue("unbound_acl_settings")
+	var diags diag.Diagnostics
+	m.DefaultAction = types.StringValue(string(v.DefaultAction))
+	_ = ctx
+	return diags
+}
+
+var genUnboundACLSettingsCRUD = settingsCRUD[opnsense.UnboundACLSettings, genUnboundACLSettingsModel, *genUnboundACLSettingsModel]{
+	what: "unbound acl settings",
+	id:   "unbound_acl_settings",
+	ctl: func(c *opnsense.Client) *opnsense.SettingsController[opnsense.UnboundACLSettings] {
+		return c.Unbound.ACLSettings
+	},
+}
+
+func (r *genUnboundACLSettingsResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genUnboundACLSettingsCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundACLSettingsResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genUnboundACLSettingsCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundACLSettingsResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genUnboundACLSettingsCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundACLSettingsResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genUnboundACLSettingsCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts any id; there is only one unbound acl settings.
+func (r *genUnboundACLSettingsResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	genUnboundACLSettingsCRUD.importState(ctx, resp)
+}
+
+var _ resource.ResourceWithImportState = (*genUnboundForwardingResource)(nil)
+
+// NewUnboundForwardingResource returns the opnsense_unbound_forwarding resource.
+func NewUnboundForwardingResource() resource.Resource { return &genUnboundForwardingResource{} }
+
+type genUnboundForwardingResource struct{ baseResource }
+
+type genUnboundForwardingModel struct {
+	ID      types.String `tfsdk:"id"`
+	Enabled types.Bool   `tfsdk:"enabled"`
+}
+
+func (r *genUnboundForwardingResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_unbound_forwarding"
+}
+
+func (r *genUnboundForwardingResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	resp.Schema = schema.Schema{
+		Description: "Unbound query forwarding switch (Services → Unbound DNS → Query Forwarding): forward all queries to the system nameservers instead of resolving recursively. Only one per firewall. Destroying it only removes it from Terraform state. Generated from core/Unbound/Unbound.xml.",
+		Attributes: map[string]schema.Attribute{
+			"id":      schema.StringAttribute{Computed: true, Description: "Always `unbound_forwarding`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+			"enabled": schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Use the system nameservers (System → Settings → General) as forwarders. OPNsense field `enabled`."},
+		},
+	}
+}
+
+func (m *genUnboundForwardingModel) toAPI(ctx context.Context) (opnsense.UnboundForwarding, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var v opnsense.UnboundForwarding
+	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
+	_ = ctx
+	return v, diags
+}
+
+func (m *genUnboundForwardingModel) fromAPI(ctx context.Context, v *opnsense.UnboundForwarding) diag.Diagnostics {
+	m.ID = types.StringValue("unbound_forwarding")
+	var diags diag.Diagnostics
+	m.Enabled = types.BoolValue(bool(v.Enabled))
+	_ = ctx
+	return diags
+}
+
+var genUnboundForwardingCRUD = settingsCRUD[opnsense.UnboundForwarding, genUnboundForwardingModel, *genUnboundForwardingModel]{
+	what: "unbound forwarding",
+	id:   "unbound_forwarding",
+	ctl: func(c *opnsense.Client) *opnsense.SettingsController[opnsense.UnboundForwarding] {
+		return c.Unbound.Forwarding
+	},
+}
+
+func (r *genUnboundForwardingResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	genUnboundForwardingCRUD.create(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundForwardingResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	genUnboundForwardingCRUD.read(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundForwardingResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	genUnboundForwardingCRUD.update(ctx, r.client, req, resp)
+}
+
+func (r *genUnboundForwardingResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	genUnboundForwardingCRUD.delete(ctx, r.client, req, resp)
+}
+
+// ImportState accepts any id; there is only one unbound forwarding.
+func (r *genUnboundForwardingResource) ImportState(ctx context.Context, _ resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	genUnboundForwardingCRUD.importState(ctx, resp)
+}

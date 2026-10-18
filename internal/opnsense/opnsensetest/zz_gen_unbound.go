@@ -115,5 +115,78 @@ func registerGenUnbound(s *Server) {
 			return v
 		}
 	}
+	// unbound_settings
+	s.addSettings("unbound/settings/get", "unbound/settings/set", "unbound", "general", map[string]Field{
+		"enabled":            {Required: true, Default: "0"},
+		"port":               {Required: true, Default: "53"},
+		"stats":              {},
+		"active_interface":   {Kind: List, Sep: ","},
+		"dnssec":             {},
+		"dns64":              {},
+		"dns64prefix":        {},
+		"noarecords":         {},
+		"regdhcp":            {},
+		"regdhcpdomain":      {Mask: "(?i)^(?:(?:[a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*(?:[a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$"},
+		"regdhcpstatic":      {},
+		"noreglladdr6":       {},
+		"noregrecords":       {},
+		"txtsupport":         {},
+		"cacheflush":         {},
+		"safesearch":         {},
+		"local_zone_type":    {Kind: Option, Choices: static("transparent", "always_nxdomain", "always_refuse", "always_transparent", "deny", "inform", "inform_deny", "nodefault", "refuse", "static", "typetransparent"), Required: true, Default: "transparent"},
+		"outgoing_interface": {Kind: List, Sep: ","},
+		"enable_wpad":        {},
+	}, nil)
+	// unbound_advanced
+	s.addSettings("unbound/settings/get", "unbound/settings/set", "unbound", "advanced", map[string]Field{
+		"hideidentity":              {},
+		"hideversion":               {},
+		"prefetch":                  {},
+		"prefetchkey":               {},
+		"dnssecstripped":            {},
+		"belownxdomain":             {Required: true, Default: "1"},
+		"aggressivensec":            {Required: true, Default: "1"},
+		"serveexpired":              {},
+		"serveexpiredreplyttl":      {},
+		"serveexpiredttl":           {},
+		"serveexpiredttlreset":      {},
+		"serveexpiredclienttimeout": {},
+		"qnameminstrict":            {},
+		"extendedstatistics":        {},
+		"logqueries":                {},
+		"logreplies":                {},
+		"logtagqueryreply":          {},
+		"logservfail":               {},
+		"loglocalactions":           {},
+		"logverbosity":              {Kind: Option, Choices: static("0", "1", "2", "3", "4", "5"), Required: true, Default: "1"},
+		"valloglevel":               {Kind: Option, Choices: static("0", "1", "2"), Required: true, Default: "0"},
+		"privatedomain":             {Mask: "\\A[^\\r\\n]*\\z"},
+		"privateaddress":            {Required: true, Default: "0.0.0.0/8,10.0.0.0/8,100.64.0.0/10,169.254.0.0/16,172.16.0.0/12,192.0.2.0/24,192.168.0.0/16,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,::1/128,2001:db8::/32,fc00::/8,fd00::/8,fe80::/10"},
+		"insecuredomain":            {Mask: "\\A[^\\r\\n]*\\z"},
+		"msgcachesize":              {Mask: "(?i)[0-9]+[kmg]?"},
+		"rrsetcachesize":            {Mask: "(?i)[0-9]+[kmg]?"},
+		"outgoingnumtcp":            {},
+		"incomingnumtcp":            {},
+		"numqueriesperthread":       {},
+		"outgoingrange":             {},
+		"jostletimeout":             {},
+		"discardtimeout":            {},
+		"cachemaxttl":               {},
+		"cachemaxnegativettl":       {},
+		"cacheminttl":               {},
+		"infrahostttl":              {},
+		"infrakeepprobing":          {},
+		"infracachenumhosts":        {},
+		"unwantedreplythreshold":    {},
+	}, nil)
+	// unbound_acl_settings
+	s.addSettings("unbound/settings/get", "unbound/settings/set", "unbound", "acls", map[string]Field{
+		"default_action": {Kind: Option, Choices: static("allow", "deny", "refuse"), Required: true, Default: "allow"},
+	}, nil)
+	// unbound_forwarding
+	s.addSettings("unbound/settings/get", "unbound/settings/set", "unbound", "forwarding", map[string]Field{
+		"enabled": {},
+	}, nil)
 	s.reconfigure["unbound/service/reconfigure"] = true
+	s.reconfigure["unbound/service/reconfigureGeneral"] = true
 }

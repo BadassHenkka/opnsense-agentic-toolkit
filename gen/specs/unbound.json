@@ -262,5 +262,138 @@
       "base": "unbound/settings",
       "reconfigure": "unbound/service/reconfigure"
     }
+  ],
+  "settings": [
+    {
+      "resource": "unbound_settings",
+      "go_name": "UnboundGeneral",
+      "plural": "General",
+      "description": "Unbound general settings (Services → Unbound DNS → General). Destroying the resource leaves Unbound as it is.",
+      "node": "general",
+      "path": [
+        "unbound",
+        "general"
+      ],
+      "reconfigure": "unbound/service/reconfigureGeneral",
+      "fields": {
+        "port": {
+          "type": "int",
+          "description": "Listen port."
+        },
+        "active_interface": {
+          "type": "refs",
+          "attr": "listen_interfaces",
+          "description": "Interfaces to listen on; empty for all."
+        },
+        "outgoing_interface": {
+          "type": "refs",
+          "attr": "outgoing_interfaces",
+          "description": "Interfaces for queries to upstreams; empty for all."
+        },
+        "regdhcp": {
+          "attr": "register_dhcp_leases",
+          "description": "Register DHCP leases (ISC DHCP) in DNS."
+        },
+        "regdhcpdomain": {
+          "attr": "dhcp_domain",
+          "description": "Domain for registered DHCP leases."
+        },
+        "regdhcpstatic": {
+          "attr": "register_dhcp_static",
+          "description": "Register static DHCP mappings in DNS."
+        },
+        "noreglladdr6": {
+          "attr": "no_register_ipv6_link_local"
+        },
+        "noregrecords": {
+          "attr": "no_register_system_records"
+        },
+        "txtsupport": {
+          "attr": "txt_support"
+        },
+        "cacheflush": {
+          "attr": "flush_cache_on_reload"
+        },
+        "noarecords": {
+          "attr": "no_a_records"
+        },
+        "dns64prefix": {
+          "attr": "dns64_prefix"
+        }
+      },
+      "update": {
+        "dnssec": "1"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "get": "unbound/settings/get",
+      "set": "unbound/settings/set"
+    },
+    {
+      "resource": "unbound_advanced",
+      "go_name": "UnboundAdvanced",
+      "plural": "Advanced",
+      "description": "Unbound advanced settings (Services → Unbound DNS → Advanced): caching, privacy, logging and tuning.",
+      "node": "advanced",
+      "path": [
+        "unbound",
+        "advanced"
+      ],
+      "reconfigure": "unbound/service/reconfigure",
+      "fields": {
+        "privatedomain": {
+          "tf_type": "set"
+        },
+        "privateaddress": {
+          "tf_type": "set"
+        },
+        "insecuredomain": {
+          "tf_type": "set"
+        }
+      },
+      "update": {
+        "prefetch": "1"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "get": "unbound/settings/get",
+      "set": "unbound/settings/set"
+    },
+    {
+      "resource": "unbound_acl_settings",
+      "go_name": "UnboundACLSettings",
+      "plural": "ACLSettings",
+      "description": "The Unbound access list default (Services → Unbound DNS → Access Lists): what happens to clients no opnsense_unbound_acl matches.",
+      "node": "acls",
+      "path": [
+        "unbound",
+        "acls"
+      ],
+      "reconfigure": "unbound/service/reconfigure",
+      "model": "core/Unbound/Unbound.xml",
+      "get": "unbound/settings/get",
+      "set": "unbound/settings/set"
+    },
+    {
+      "resource": "unbound_forwarding",
+      "go_name": "UnboundForwarding",
+      "plural": "Forwarding",
+      "description": "Unbound query forwarding switch (Services → Unbound DNS → Query Forwarding): forward all queries to the system nameservers instead of resolving recursively.",
+      "node": "forwarding",
+      "path": [
+        "unbound",
+        "forwarding"
+      ],
+      "reconfigure": "unbound/service/reconfigure",
+      "fields": {
+        "enabled": {
+          "description": "Use the system nameservers (System → Settings → General) as forwarders."
+        }
+      },
+      "update": {
+        "enabled": "1"
+      },
+      "model": "core/Unbound/Unbound.xml",
+      "get": "unbound/settings/get",
+      "set": "unbound/settings/set"
+    }
   ]
 }

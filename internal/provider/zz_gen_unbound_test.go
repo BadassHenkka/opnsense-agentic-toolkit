@@ -100,6 +100,94 @@ func genUnboundBlocklistPlan() genUnboundBlocklistModel {
 	}
 }
 
+// genUnboundGeneralPlan returns a create plan with the example values from gen/specs/unbound.json.
+func genUnboundGeneralPlan() genUnboundGeneralModel {
+	return genUnboundGeneralModel{
+		ID:                      types.StringUnknown(),
+		Enabled:                 types.BoolValue(false),
+		Port:                    types.Int64Value(53),
+		Stats:                   types.BoolValue(false),
+		ListenInterfaces:        strSet(),
+		Dnssec:                  types.BoolValue(true),
+		Dns64:                   types.BoolValue(false),
+		Dns64Prefix:             types.StringValue(""),
+		NoARecords:              types.BoolValue(false),
+		RegisterDhcpLeases:      types.BoolValue(false),
+		DhcpDomain:              types.StringValue(""),
+		RegisterDhcpStatic:      types.BoolValue(false),
+		NoRegisterIPv6LinkLocal: types.BoolValue(false),
+		NoRegisterSystemRecords: types.BoolValue(false),
+		TXTSupport:              types.BoolValue(false),
+		FlushCacheOnReload:      types.BoolValue(false),
+		Safesearch:              types.BoolValue(false),
+		LocalZoneType:           types.StringValue("transparent"),
+		OutgoingInterfaces:      strSet(),
+		EnableWpad:              types.BoolValue(false),
+	}
+}
+
+// genUnboundAdvancedPlan returns a create plan with the example values from gen/specs/unbound.json.
+func genUnboundAdvancedPlan() genUnboundAdvancedModel {
+	return genUnboundAdvancedModel{
+		ID:                        types.StringUnknown(),
+		Hideidentity:              types.BoolValue(false),
+		Hideversion:               types.BoolValue(false),
+		Prefetch:                  types.BoolValue(true),
+		Prefetchkey:               types.BoolValue(false),
+		Dnssecstripped:            types.BoolValue(false),
+		Belownxdomain:             types.BoolValue(true),
+		Aggressivensec:            types.BoolValue(true),
+		Serveexpired:              types.BoolValue(false),
+		Serveexpiredreplyttl:      types.StringValue(""),
+		Serveexpiredttl:           types.StringValue(""),
+		Serveexpiredttlreset:      types.BoolValue(false),
+		Serveexpiredclienttimeout: types.StringValue(""),
+		Qnameminstrict:            types.BoolValue(false),
+		Extendedstatistics:        types.BoolValue(false),
+		Logqueries:                types.BoolValue(false),
+		Logreplies:                types.BoolValue(false),
+		Logtagqueryreply:          types.BoolValue(false),
+		Logservfail:               types.BoolValue(false),
+		Loglocalactions:           types.BoolValue(false),
+		Logverbosity:              types.StringValue("1"),
+		Valloglevel:               types.StringValue("0"),
+		Privatedomain:             strSet(),
+		Privateaddress:            strSet("0.0.0.0/8", "10.0.0.0/8", "100.64.0.0/10", "169.254.0.0/16", "172.16.0.0/12", "192.0.2.0/24", "192.168.0.0/16", "198.18.0.0/15", "198.51.100.0/24", "203.0.113.0/24", "233.252.0.0/24", "::1/128", "2001:db8::/32", "fc00::/8", "fd00::/8", "fe80::/10"),
+		Insecuredomain:            strSet(),
+		Msgcachesize:              types.StringValue(""),
+		Rrsetcachesize:            types.StringValue(""),
+		Outgoingnumtcp:            types.StringValue(""),
+		Incomingnumtcp:            types.StringValue(""),
+		Numqueriesperthread:       types.StringValue(""),
+		Outgoingrange:             types.StringValue(""),
+		Jostletimeout:             types.StringValue(""),
+		Discardtimeout:            types.StringValue(""),
+		Cachemaxttl:               types.StringValue(""),
+		Cachemaxnegativettl:       types.StringValue(""),
+		Cacheminttl:               types.StringValue(""),
+		Infrahostttl:              types.StringValue(""),
+		Infrakeepprobing:          types.BoolValue(false),
+		Infracachenumhosts:        types.StringValue(""),
+		Unwantedreplythreshold:    types.StringValue(""),
+	}
+}
+
+// genUnboundACLSettingsPlan returns a create plan with the example values from gen/specs/unbound.json.
+func genUnboundACLSettingsPlan() genUnboundACLSettingsModel {
+	return genUnboundACLSettingsModel{
+		ID:            types.StringUnknown(),
+		DefaultAction: types.StringValue("allow"),
+	}
+}
+
+// genUnboundForwardingPlan returns a create plan with the example values from gen/specs/unbound.json.
+func genUnboundForwardingPlan() genUnboundForwardingModel {
+	return genUnboundForwardingModel{
+		ID:      types.StringUnknown(),
+		Enabled: types.BoolValue(true),
+	}
+}
+
 func TestGenHostOverride(t *testing.T) {
 	fake := opnsensetest.New(t)
 	h := newHarness(t, fake, NewHostOverrideResource())
@@ -433,4 +521,248 @@ func TestGenUnboundBlocklist(t *testing.T) {
 	if fake.Applies["unbound/service/reconfigure"] == 0 {
 		t.Error("never applied")
 	}
+}
+
+func TestGenUnboundGeneral(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewUnboundGeneralResource())
+	plan := genUnboundGeneralPlan()
+	var got genUnboundGeneralModel
+	st, ok := h.create(plan, &got)
+	if !ok || got.ID.ValueString() != "unbound_settings" {
+		t.Fatalf("create: %+v", got)
+	}
+	rec := fake.Settings("unbound/settings/get", "general")
+	if !sameValues(rec["enabled"], "0") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "0")
+	}
+	if !sameValues(rec["port"], "53") {
+		t.Errorf("port: stored %q, want %q", rec["port"], "53")
+	}
+	if !sameValues(rec["stats"], "0") {
+		t.Errorf("stats: stored %q, want %q", rec["stats"], "0")
+	}
+	if !sameValues(rec["active_interface"], "") {
+		t.Errorf("active_interface: stored %q, want %q", rec["active_interface"], "")
+	}
+	if !sameValues(rec["dnssec"], "1") {
+		t.Errorf("dnssec: stored %q, want %q", rec["dnssec"], "1")
+	}
+	if !sameValues(rec["dns64"], "0") {
+		t.Errorf("dns64: stored %q, want %q", rec["dns64"], "0")
+	}
+	if !sameValues(rec["dns64prefix"], "") {
+		t.Errorf("dns64prefix: stored %q, want %q", rec["dns64prefix"], "")
+	}
+	if !sameValues(rec["noarecords"], "0") {
+		t.Errorf("noarecords: stored %q, want %q", rec["noarecords"], "0")
+	}
+	if !sameValues(rec["regdhcp"], "0") {
+		t.Errorf("regdhcp: stored %q, want %q", rec["regdhcp"], "0")
+	}
+	if !sameValues(rec["regdhcpdomain"], "") {
+		t.Errorf("regdhcpdomain: stored %q, want %q", rec["regdhcpdomain"], "")
+	}
+	if !sameValues(rec["regdhcpstatic"], "0") {
+		t.Errorf("regdhcpstatic: stored %q, want %q", rec["regdhcpstatic"], "0")
+	}
+	if !sameValues(rec["noreglladdr6"], "0") {
+		t.Errorf("noreglladdr6: stored %q, want %q", rec["noreglladdr6"], "0")
+	}
+	if !sameValues(rec["noregrecords"], "0") {
+		t.Errorf("noregrecords: stored %q, want %q", rec["noregrecords"], "0")
+	}
+	if !sameValues(rec["txtsupport"], "0") {
+		t.Errorf("txtsupport: stored %q, want %q", rec["txtsupport"], "0")
+	}
+	if !sameValues(rec["cacheflush"], "0") {
+		t.Errorf("cacheflush: stored %q, want %q", rec["cacheflush"], "0")
+	}
+	if !sameValues(rec["safesearch"], "0") {
+		t.Errorf("safesearch: stored %q, want %q", rec["safesearch"], "0")
+	}
+	if !sameValues(rec["local_zone_type"], "transparent") {
+		t.Errorf("local_zone_type: stored %q, want %q", rec["local_zone_type"], "transparent")
+	}
+	if !sameValues(rec["outgoing_interface"], "") {
+		t.Errorf("outgoing_interface: stored %q, want %q", rec["outgoing_interface"], "")
+	}
+	if !sameValues(rec["enable_wpad"], "0") {
+		t.Errorf("enable_wpad: stored %q, want %q", rec["enable_wpad"], "0")
+	}
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	h.delete(st)
+}
+
+func TestGenUnboundAdvanced(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewUnboundAdvancedResource())
+	plan := genUnboundAdvancedPlan()
+	var got genUnboundAdvancedModel
+	st, ok := h.create(plan, &got)
+	if !ok || got.ID.ValueString() != "unbound_advanced" {
+		t.Fatalf("create: %+v", got)
+	}
+	rec := fake.Settings("unbound/settings/get", "advanced")
+	if !sameValues(rec["hideidentity"], "0") {
+		t.Errorf("hideidentity: stored %q, want %q", rec["hideidentity"], "0")
+	}
+	if !sameValues(rec["hideversion"], "0") {
+		t.Errorf("hideversion: stored %q, want %q", rec["hideversion"], "0")
+	}
+	if !sameValues(rec["prefetch"], "1") {
+		t.Errorf("prefetch: stored %q, want %q", rec["prefetch"], "1")
+	}
+	if !sameValues(rec["prefetchkey"], "0") {
+		t.Errorf("prefetchkey: stored %q, want %q", rec["prefetchkey"], "0")
+	}
+	if !sameValues(rec["dnssecstripped"], "0") {
+		t.Errorf("dnssecstripped: stored %q, want %q", rec["dnssecstripped"], "0")
+	}
+	if !sameValues(rec["belownxdomain"], "1") {
+		t.Errorf("belownxdomain: stored %q, want %q", rec["belownxdomain"], "1")
+	}
+	if !sameValues(rec["aggressivensec"], "1") {
+		t.Errorf("aggressivensec: stored %q, want %q", rec["aggressivensec"], "1")
+	}
+	if !sameValues(rec["serveexpired"], "0") {
+		t.Errorf("serveexpired: stored %q, want %q", rec["serveexpired"], "0")
+	}
+	if !sameValues(rec["serveexpiredreplyttl"], "") {
+		t.Errorf("serveexpiredreplyttl: stored %q, want %q", rec["serveexpiredreplyttl"], "")
+	}
+	if !sameValues(rec["serveexpiredttl"], "") {
+		t.Errorf("serveexpiredttl: stored %q, want %q", rec["serveexpiredttl"], "")
+	}
+	if !sameValues(rec["serveexpiredttlreset"], "0") {
+		t.Errorf("serveexpiredttlreset: stored %q, want %q", rec["serveexpiredttlreset"], "0")
+	}
+	if !sameValues(rec["serveexpiredclienttimeout"], "") {
+		t.Errorf("serveexpiredclienttimeout: stored %q, want %q", rec["serveexpiredclienttimeout"], "")
+	}
+	if !sameValues(rec["qnameminstrict"], "0") {
+		t.Errorf("qnameminstrict: stored %q, want %q", rec["qnameminstrict"], "0")
+	}
+	if !sameValues(rec["extendedstatistics"], "0") {
+		t.Errorf("extendedstatistics: stored %q, want %q", rec["extendedstatistics"], "0")
+	}
+	if !sameValues(rec["logqueries"], "0") {
+		t.Errorf("logqueries: stored %q, want %q", rec["logqueries"], "0")
+	}
+	if !sameValues(rec["logreplies"], "0") {
+		t.Errorf("logreplies: stored %q, want %q", rec["logreplies"], "0")
+	}
+	if !sameValues(rec["logtagqueryreply"], "0") {
+		t.Errorf("logtagqueryreply: stored %q, want %q", rec["logtagqueryreply"], "0")
+	}
+	if !sameValues(rec["logservfail"], "0") {
+		t.Errorf("logservfail: stored %q, want %q", rec["logservfail"], "0")
+	}
+	if !sameValues(rec["loglocalactions"], "0") {
+		t.Errorf("loglocalactions: stored %q, want %q", rec["loglocalactions"], "0")
+	}
+	if !sameValues(rec["logverbosity"], "1") {
+		t.Errorf("logverbosity: stored %q, want %q", rec["logverbosity"], "1")
+	}
+	if !sameValues(rec["valloglevel"], "0") {
+		t.Errorf("valloglevel: stored %q, want %q", rec["valloglevel"], "0")
+	}
+	if !sameValues(rec["privatedomain"], "") {
+		t.Errorf("privatedomain: stored %q, want %q", rec["privatedomain"], "")
+	}
+	if !sameValues(rec["privateaddress"], "0.0.0.0/8,10.0.0.0/8,100.64.0.0/10,169.254.0.0/16,172.16.0.0/12,192.0.2.0/24,192.168.0.0/16,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,::1/128,2001:db8::/32,fc00::/8,fd00::/8,fe80::/10") {
+		t.Errorf("privateaddress: stored %q, want %q", rec["privateaddress"], "0.0.0.0/8,10.0.0.0/8,100.64.0.0/10,169.254.0.0/16,172.16.0.0/12,192.0.2.0/24,192.168.0.0/16,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,::1/128,2001:db8::/32,fc00::/8,fd00::/8,fe80::/10")
+	}
+	if !sameValues(rec["insecuredomain"], "") {
+		t.Errorf("insecuredomain: stored %q, want %q", rec["insecuredomain"], "")
+	}
+	if !sameValues(rec["msgcachesize"], "") {
+		t.Errorf("msgcachesize: stored %q, want %q", rec["msgcachesize"], "")
+	}
+	if !sameValues(rec["rrsetcachesize"], "") {
+		t.Errorf("rrsetcachesize: stored %q, want %q", rec["rrsetcachesize"], "")
+	}
+	if !sameValues(rec["outgoingnumtcp"], "") {
+		t.Errorf("outgoingnumtcp: stored %q, want %q", rec["outgoingnumtcp"], "")
+	}
+	if !sameValues(rec["incomingnumtcp"], "") {
+		t.Errorf("incomingnumtcp: stored %q, want %q", rec["incomingnumtcp"], "")
+	}
+	if !sameValues(rec["numqueriesperthread"], "") {
+		t.Errorf("numqueriesperthread: stored %q, want %q", rec["numqueriesperthread"], "")
+	}
+	if !sameValues(rec["outgoingrange"], "") {
+		t.Errorf("outgoingrange: stored %q, want %q", rec["outgoingrange"], "")
+	}
+	if !sameValues(rec["jostletimeout"], "") {
+		t.Errorf("jostletimeout: stored %q, want %q", rec["jostletimeout"], "")
+	}
+	if !sameValues(rec["discardtimeout"], "") {
+		t.Errorf("discardtimeout: stored %q, want %q", rec["discardtimeout"], "")
+	}
+	if !sameValues(rec["cachemaxttl"], "") {
+		t.Errorf("cachemaxttl: stored %q, want %q", rec["cachemaxttl"], "")
+	}
+	if !sameValues(rec["cachemaxnegativettl"], "") {
+		t.Errorf("cachemaxnegativettl: stored %q, want %q", rec["cachemaxnegativettl"], "")
+	}
+	if !sameValues(rec["cacheminttl"], "") {
+		t.Errorf("cacheminttl: stored %q, want %q", rec["cacheminttl"], "")
+	}
+	if !sameValues(rec["infrahostttl"], "") {
+		t.Errorf("infrahostttl: stored %q, want %q", rec["infrahostttl"], "")
+	}
+	if !sameValues(rec["infrakeepprobing"], "0") {
+		t.Errorf("infrakeepprobing: stored %q, want %q", rec["infrakeepprobing"], "0")
+	}
+	if !sameValues(rec["infracachenumhosts"], "") {
+		t.Errorf("infracachenumhosts: stored %q, want %q", rec["infracachenumhosts"], "")
+	}
+	if !sameValues(rec["unwantedreplythreshold"], "") {
+		t.Errorf("unwantedreplythreshold: stored %q, want %q", rec["unwantedreplythreshold"], "")
+	}
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	h.delete(st)
+}
+
+func TestGenUnboundACLSettings(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewUnboundACLSettingsResource())
+	plan := genUnboundACLSettingsPlan()
+	var got genUnboundACLSettingsModel
+	st, ok := h.create(plan, &got)
+	if !ok || got.ID.ValueString() != "unbound_acl_settings" {
+		t.Fatalf("create: %+v", got)
+	}
+	rec := fake.Settings("unbound/settings/get", "acls")
+	if !sameValues(rec["default_action"], "allow") {
+		t.Errorf("default_action: stored %q, want %q", rec["default_action"], "allow")
+	}
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	h.delete(st)
+}
+
+func TestGenUnboundForwarding(t *testing.T) {
+	fake := opnsensetest.New(t)
+	h := newHarness(t, fake, NewUnboundForwardingResource())
+	plan := genUnboundForwardingPlan()
+	var got genUnboundForwardingModel
+	st, ok := h.create(plan, &got)
+	if !ok || got.ID.ValueString() != "unbound_forwarding" {
+		t.Fatalf("create: %+v", got)
+	}
+	rec := fake.Settings("unbound/settings/get", "forwarding")
+	if !sameValues(rec["enabled"], "1") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "1")
+	}
+	if _, ok := h.read(st, &got); !ok {
+		t.Fatal("read removed the resource")
+	}
+	h.delete(st)
 }

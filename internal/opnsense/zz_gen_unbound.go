@@ -187,6 +187,87 @@ type UnboundBlocklistRow struct {
 
 func (r UnboundBlocklistRow) RowRef() (string, string) { return string(r.UUID), string(r.Description) }
 
+// UnboundGeneral: Unbound general settings (Services → Unbound DNS → General). Destroying the resource leaves Unbound as it is.
+// (model core/Unbound/Unbound.xml, section general).
+type UnboundGeneral struct {
+	Enabled                 Bool    `json:"enabled"`
+	Port                    Int     `json:"port"`
+	Stats                   Bool    `json:"stats"`
+	ListenInterfaces        CSVList `json:"active_interface"`
+	Dnssec                  Bool    `json:"dnssec"`
+	Dns64                   Bool    `json:"dns64"`
+	Dns64Prefix             string  `json:"dns64prefix"`
+	NoARecords              Bool    `json:"noarecords"`
+	RegisterDhcpLeases      Bool    `json:"regdhcp"`
+	DhcpDomain              string  `json:"regdhcpdomain"`
+	RegisterDhcpStatic      Bool    `json:"regdhcpstatic"`
+	NoRegisterIPv6LinkLocal Bool    `json:"noreglladdr6"`
+	NoRegisterSystemRecords Bool    `json:"noregrecords"`
+	TXTSupport              Bool    `json:"txtsupport"`
+	FlushCacheOnReload      Bool    `json:"cacheflush"`
+	Safesearch              Bool    `json:"safesearch"`
+	LocalZoneType           Option  `json:"local_zone_type"`
+	OutgoingInterfaces      CSVList `json:"outgoing_interface"`
+	EnableWpad              Bool    `json:"enable_wpad"`
+}
+
+// UnboundAdvanced: Unbound advanced settings (Services → Unbound DNS → Advanced): caching, privacy, logging and tuning.
+// (model core/Unbound/Unbound.xml, section advanced).
+type UnboundAdvanced struct {
+	Hideidentity              Bool    `json:"hideidentity"`
+	Hideversion               Bool    `json:"hideversion"`
+	Prefetch                  Bool    `json:"prefetch"`
+	Prefetchkey               Bool    `json:"prefetchkey"`
+	Dnssecstripped            Bool    `json:"dnssecstripped"`
+	Belownxdomain             Bool    `json:"belownxdomain"`
+	Aggressivensec            Bool    `json:"aggressivensec"`
+	Serveexpired              Bool    `json:"serveexpired"`
+	Serveexpiredreplyttl      string  `json:"serveexpiredreplyttl"`
+	Serveexpiredttl           string  `json:"serveexpiredttl"`
+	Serveexpiredttlreset      Bool    `json:"serveexpiredttlreset"`
+	Serveexpiredclienttimeout string  `json:"serveexpiredclienttimeout"`
+	Qnameminstrict            Bool    `json:"qnameminstrict"`
+	Extendedstatistics        Bool    `json:"extendedstatistics"`
+	Logqueries                Bool    `json:"logqueries"`
+	Logreplies                Bool    `json:"logreplies"`
+	Logtagqueryreply          Bool    `json:"logtagqueryreply"`
+	Logservfail               Bool    `json:"logservfail"`
+	Loglocalactions           Bool    `json:"loglocalactions"`
+	Logverbosity              Option  `json:"logverbosity"`
+	Valloglevel               Option  `json:"valloglevel"`
+	Privatedomain             CSVList `json:"privatedomain"`
+	Privateaddress            CSVList `json:"privateaddress"`
+	Insecuredomain            CSVList `json:"insecuredomain"`
+	Msgcachesize              string  `json:"msgcachesize"`
+	Rrsetcachesize            string  `json:"rrsetcachesize"`
+	Outgoingnumtcp            string  `json:"outgoingnumtcp"`
+	Incomingnumtcp            string  `json:"incomingnumtcp"`
+	Numqueriesperthread       string  `json:"numqueriesperthread"`
+	Outgoingrange             string  `json:"outgoingrange"`
+	Jostletimeout             string  `json:"jostletimeout"`
+	Discardtimeout            string  `json:"discardtimeout"`
+	Cachemaxttl               string  `json:"cachemaxttl"`
+	Cachemaxnegativettl       string  `json:"cachemaxnegativettl"`
+	Cacheminttl               string  `json:"cacheminttl"`
+	Infrahostttl              string  `json:"infrahostttl"`
+	Infrakeepprobing          Bool    `json:"infrakeepprobing"`
+	Infracachenumhosts        string  `json:"infracachenumhosts"`
+	Unwantedreplythreshold    string  `json:"unwantedreplythreshold"`
+}
+
+// UnboundACLSettings: The Unbound access list default (Services → Unbound DNS → Access Lists): what happens to clients no opnsense_unbound_acl matches.
+// (model core/Unbound/Unbound.xml, section acls).
+// Not generated: acl (items; a separate resource).
+type UnboundACLSettings struct {
+	DefaultAction Option `json:"default_action"`
+}
+
+// UnboundForwarding: Unbound query forwarding switch (Services → Unbound DNS → Query Forwarding): forward all queries to the system nameservers instead of resolving recursively.
+// (model core/Unbound/Unbound.xml, section forwarding).
+type UnboundForwarding struct {
+	Enabled Bool `json:"enabled"`
+}
+
 // UnboundService manages Services → Unbound DNS.
 type UnboundService struct {
 	c             *Client
@@ -196,6 +277,10 @@ type UnboundService struct {
 	Forwards      *ItemController[UnboundForward, UnboundForwardRow]
 	DoTs          *ItemController[UnboundDoT, UnboundDoTRow]
 	Blocklists    *ItemController[UnboundBlocklist, UnboundBlocklistRow]
+	General       *SettingsController[UnboundGeneral]
+	Advanced      *SettingsController[UnboundAdvanced]
+	ACLSettings   *SettingsController[UnboundACLSettings]
+	Forwarding    *SettingsController[UnboundForwarding]
 }
 
 func newUnboundService(c *Client) *UnboundService {
@@ -207,5 +292,9 @@ func newUnboundService(c *Client) *UnboundService {
 		Forwards:      NewItemController[UnboundForward, UnboundForwardRow](c, "unbound/settings", "dot", "Forward", nil, "unbound/service/reconfigure"),
 		DoTs:          NewItemController[UnboundDoT, UnboundDoTRow](c, "unbound/settings", "dot", "Dot", nil, "unbound/service/reconfigure"),
 		Blocklists:    NewItemController[UnboundBlocklist, UnboundBlocklistRow](c, "unbound/settings", "blocklist", "Dnsbl", nil, "unbound/service/reconfigure"),
+		General:       NewSettingsController[UnboundGeneral](c, "unbound/settings/get", "unbound/settings/set", []string{"unbound", "general"}, "unbound/service/reconfigureGeneral"),
+		Advanced:      NewSettingsController[UnboundAdvanced](c, "unbound/settings/get", "unbound/settings/set", []string{"unbound", "advanced"}, "unbound/service/reconfigure"),
+		ACLSettings:   NewSettingsController[UnboundACLSettings](c, "unbound/settings/get", "unbound/settings/set", []string{"unbound", "acls"}, "unbound/service/reconfigure"),
+		Forwarding:    NewSettingsController[UnboundForwarding](c, "unbound/settings/get", "unbound/settings/set", []string{"unbound", "forwarding"}, "unbound/service/reconfigure"),
 	}
 }

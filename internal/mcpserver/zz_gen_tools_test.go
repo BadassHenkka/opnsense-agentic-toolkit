@@ -15,6 +15,10 @@ func TestGeneratedTools(t *testing.T) {
 		"unbound_forward_list",
 		"unbound_dot_list",
 		"unbound_blocklist_list",
+		"unbound_settings_get",
+		"unbound_advanced_get",
+		"unbound_acl_settings_get",
+		"unbound_forwarding_get",
 	} {
 		if out, ok := call(t, cs, name, map[string]any{}); !ok {
 			t.Errorf("%s: %v", name, out)

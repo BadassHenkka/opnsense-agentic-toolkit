@@ -25,6 +25,7 @@ Supported so far:
 |---|---|---|
 | Firewall → Aliases | `opnsense_firewall_alias` | `firewall_alias` |
 | Services → Unbound DNS → Overrides | `opnsense_unbound_host_override`, `opnsense_unbound_host_alias` | `unbound` |
+| Services → Unbound DNS → General, Advanced, ACL, Query Forwarding, DNS over TLS, Blocklist | `opnsense_unbound_settings`, `opnsense_unbound_advanced`, `opnsense_unbound_acl_settings`, `opnsense_unbound_forwarding`, `opnsense_unbound_acl`, `opnsense_unbound_forward`, `opnsense_unbound_dot`, `opnsense_unbound_blocklist` | `unbound` (read-only) |
 | Services → ACME Client (plugin os-acme-client) | `opnsense_acme_settings`, `opnsense_acme_account`, `opnsense_acme_challenge_type`, `opnsense_acme_automation`, `opnsense_acme_certificate` | `acme` |
 | VPN → WireGuard | `opnsense_wireguard_settings`, `opnsense_wireguard_instance`, `opnsense_wireguard_peer` | `wireguard` |
 | System → Gateways, Groups, System → Routes | `opnsense_gateway`, `opnsense_gateway_group`, `opnsense_route` | `routing` |
