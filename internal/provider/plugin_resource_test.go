@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
@@ -73,5 +74,18 @@ func TestPluginResource(t *testing.T) {
 
 	if msg := createDiags(h, pluginPlan("os-unknown", true)); !strings.Contains(msg, "cannot add repositories") {
 		t.Fatalf("unknown package: %q", msg)
+	}
+}
+
+func TestPluginImportAllowThirdParty(t *testing.T) {
+	h, _ := pluginHarness(t)
+	for name, want := range map[string]bool{"os-ddclient": false, "os-adguardhome-maxit": true} {
+		resp := resource.ImportStateResponse{State: h.state()}
+		h.r.(resource.ResourceWithImportState).ImportState(h.ctx, resource.ImportStateRequest{ID: name}, &resp)
+		var got types.Bool
+		resp.Diagnostics.Append(resp.State.GetAttribute(h.ctx, path.Root("allow_third_party"), &got)...)
+		if resp.Diagnostics.HasError() || got.ValueBool() != want {
+			t.Fatalf("import %s: allow_third_party=%v, want %v (%v)", name, got, want, resp.Diagnostics)
+		}
 	}
 }

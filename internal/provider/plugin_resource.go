@@ -162,8 +162,14 @@ func (r *pluginResource) Delete(ctx context.Context, req resource.DeleteRequest,
 }
 
 // ImportState takes the package name: terraform import opnsense_plugin.ddclient os-ddclient
+// allow_third_party is set to whether the package is third-party, so an imported official
+// plugin matches a config that leaves it at its default.
 func (r *pluginResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	thirdParty := true // if the package can't be looked up, Read removes it anyway
+	if p, err := r.client.Firmware.Find(ctx, req.ID); err == nil {
+		thirdParty = p.ThirdParty()
+	}
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("name"), req.ID)...)
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("allow_third_party"), true)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("allow_third_party"), thirdParty)...)
 }
