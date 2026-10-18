@@ -1,0 +1,192 @@
+{
+  "area": "system",
+  "title": "System \u2192 Settings: cron, logging and tunables",
+  "items": [
+    {
+      "resource": "cron_job",
+      "go_name": "CronJob",
+      "description": "A scheduled configd action (System \u2192 Settings \u2192 Cron).",
+      "model": "core/Cron/Cron.xml",
+      "node": "jobs.job",
+      "base": "cron/settings",
+      "key": "job",
+      "suffix": "Job",
+      "actions": {
+        "search": "searchJobs"
+      },
+      "reconfigure": "cron/service/reconfigure",
+      "name_field": "description",
+      "fields": {
+        "origin": {
+          "description": "Who owns the job; `cron` for jobs created here."
+        },
+        "command": {
+          "description": "configd action, e.g. `firmware auto-update`."
+        },
+        "parameters": {
+          "description": "Arguments for the command."
+        },
+        "who": {
+          "description": "User the job runs as."
+        }
+      },
+      "example": {
+        "command": "firmware changelog cron",
+        "description": "fetch changelog",
+        "hours": "3"
+      },
+      "update": {
+        "minutes": "30"
+      }
+    },
+    {
+      "resource": "syslog_destination",
+      "go_name": "SyslogDestination",
+      "description": "A remote syslog destination (System \u2192 Settings \u2192 Logging \u2192 Remote).",
+      "model": "core/Syslog/Syslog.xml",
+      "node": "destinations.destination",
+      "base": "syslog/settings",
+      "key": "destination",
+      "suffix": "Destination",
+      "actions": {
+        "search": "searchDestinations"
+      },
+      "reconfigure": "syslog/service/reconfigure",
+      "name_field": "description",
+      "fields": {
+        "program": {
+          "description": "Applications to send; empty for all."
+        },
+        "certificate": {
+          "description": "Client certificate refid for TLS."
+        }
+      },
+      "example": {
+        "hostname": "logs.lan",
+        "description": "loki",
+        "level": "info,notice,warn,err"
+      }
+    },
+    {
+      "resource": "tunable",
+      "description": "A system tunable (sysctl or loader setting, System \u2192 Settings \u2192 Tunables).",
+      "model": "core/Core/Tunables.xml",
+      "node": "item",
+      "base": "core/tunables",
+      "key": "sysctl",
+      "suffix": "Item",
+      "reconfigure": "core/tunables/reconfigure",
+      "name_field": "tunable",
+      "fields": {
+        "tunable": {
+          "description": "Name, e.g. `net.inet.tcp.tso`."
+        },
+        "value": {
+          "description": "Value; empty means the default."
+        }
+      },
+      "example": {
+        "tunable": "net.inet.tcp.tso",
+        "value": "0"
+      },
+      "update": {
+        "value": "1"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "syslog_settings",
+      "go_name": "SyslogSettings",
+      "description": "Local logging settings (System \u2192 Settings \u2192 Logging).",
+      "model": "core/Syslog/Syslog.xml",
+      "node": "general",
+      "get": "syslog/settings/get",
+      "set": "syslog/settings/set",
+      "path": [
+        "syslog",
+        "general"
+      ],
+      "reconfigure": "syslog/service/reconfigure",
+      "fields": {
+        "maxpreserve": {
+          "attr": "preserve_days",
+          "description": "Days of logs to keep."
+        },
+        "maxfilesize": {
+          "attr": "max_file_size",
+          "description": "Maximum log file size in bytes; unset for no limit."
+        }
+      },
+      "update": {
+        "maxpreserve": "14"
+      }
+    },
+    {
+      "resource": "hasync_settings",
+      "go_name": "Hasync",
+      "plural": "Hasync",
+      "description": "High availability sync (System \u2192 High Availability \u2192 Settings): pfsync state sync and XMLRPC configuration sync to the peer. Run it on the primary; the peer needs the matching user and a CARP virtual IP setup (`opnsense_virtual_ip` mode carp).",
+      "model": "core/Core/Hasync.xml",
+      "node": "",
+      "get": "core/hasync/get",
+      "set": "core/hasync/set",
+      "path": [
+        "hasync"
+      ],
+      "reconfigure": "core/hasync/reconfigure",
+      "fields": {
+        "disablepreempt": {
+          "attr": "disable_preempt",
+          "description": "Do not take over MASTER when this node recovers."
+        },
+        "disconnectppps": {
+          "attr": "disconnect_ppps",
+          "description": "Disconnect dialup interfaces while in BACKUP."
+        },
+        "pfsyncinterface": {
+          "attr": "pfsync_interface",
+          "type": "ref",
+          "description": "Interface for pfsync traffic; empty disables state sync."
+        },
+        "pfsyncpeerip": {
+          "attr": "pfsync_peer_ip",
+          "description": "Peer address for unicast pfsync; empty for multicast."
+        },
+        "pfsyncversion": {
+          "attr": "pfsync_version",
+          "description": "`1301`, `1400` or `1500`; match the peer's release."
+        },
+        "pfsyncdefer": {
+          "attr": "pfsync_defer",
+          "description": "Defer packets until the peer acknowledges the state."
+        },
+        "synchronizetoip": {
+          "attr": "synchronize_to_ip",
+          "go_name": "SynchronizeToIP",
+          "description": "Peer address or URL for configuration sync."
+        },
+        "verifypeer": {
+          "attr": "verify_peer",
+          "description": "Verify the peer's TLS certificate."
+        },
+        "username": {
+          "description": "Peer user for XMLRPC sync."
+        },
+        "password": {
+          "sensitive": true,
+          "description": "Peer password for XMLRPC sync."
+        },
+        "syncitems": {
+          "type": "refs",
+          "description": "Parts of the configuration to sync, e.g. `aliases`, `rules`, `nat` (see the web UI)."
+        }
+      },
+      "example": {
+        "pfsyncinterface": "lan",
+        "synchronizetoip": "192.168.1.2",
+        "username": "root"
+      }
+    }
+  ]
+}

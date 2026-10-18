@@ -12,6 +12,8 @@ type generatedServices struct {
 	Firewall *FirewallService
 	// Routing manages System → Gateways and System → Routes.
 	Routing *RoutingService
+	// System manages System → Settings: cron, logging and tunables.
+	System *SystemService
 	// Unbound manages Services → Unbound DNS.
 	Unbound *UnboundService
 	// Wireguard manages VPN → WireGuard.
@@ -25,6 +27,7 @@ func (c *Client) initGenerated() {
 	c.Caddy = newCaddyService(c)
 	c.Firewall = newFirewallService(c)
 	c.Routing = newRoutingService(c)
+	c.System = newSystemService(c)
 	c.Unbound = newUnboundService(c)
 	c.Wireguard = newWireguardService(c)
 	c.Wol = newWolService(c)

@@ -7,6 +7,7 @@ func registerGenerated(s *Server) {
 	registerGenCaddy(s)
 	registerGenFirewall(s)
 	registerGenRouting(s)
+	registerGenSystem(s)
 	registerGenUnbound(s)
 	registerGenWireguard(s)
 	registerGenWol(s)

@@ -9,8 +9,13 @@ import (
 )
 
 func TestGeneratedTools(t *testing.T) {
-	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"unbound"}})
+	cs, _ := connect(t, mcpserver.Options{ReadOnly: true, Toolsets: []string{"system", "unbound"}})
 	for _, name := range []string{
+		"cron_job_list",
+		"syslog_destination_list",
+		"tunable_list",
+		"syslog_settings_get",
+		"hasync_settings_get",
 		"unbound_acl_list",
 		"unbound_forward_list",
 		"unbound_dot_list",

@@ -32,6 +32,8 @@ Supported so far:
 | Firewall → Rules | `opnsense_firewall_rule` | `firewall_rule` |
 | System → Firmware (plugins, updates) | `opnsense_plugin` | `firmware` |
 | Services → Wake on LAN (plugin os-wol) | `opnsense_wol_host`, action `opnsense_wol_wake` | `wol` |
+| System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
+| System → Cron, Logging, Tunables | `opnsense_cron_job`, `opnsense_syslog_destination`, `opnsense_syslog_settings`, `opnsense_tunable` | `system` (read-only) |
 | Services → Caddy Web Server (plugin os-caddy) | `opnsense_caddy_settings`, `opnsense_caddy_domain`, `opnsense_caddy_subdomain`, `opnsense_caddy_handler`, `opnsense_caddy_access_list`, `opnsense_caddy_basic_auth`, `opnsense_caddy_header`, `opnsense_caddy_layer4_route` | `caddy` |
 
 ## Quick start
