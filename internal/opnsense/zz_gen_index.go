@@ -24,6 +24,8 @@ type generatedServices struct {
 	Interfaces *InterfacesService
 	// Kea manages Services → Kea DHCP.
 	Kea *KeaService
+	// Monit manages Services → Monit.
+	Monit *MonitService
 	// NodeExporter manages Services → Prometheus Exporter (plugin os-node_exporter).
 	NodeExporter *NodeExporterService
 	// Routing manages System → Gateways and System → Routes.
@@ -53,6 +55,7 @@ func (c *Client) initGenerated() {
 	c.IDS = newIDSService(c)
 	c.Interfaces = newInterfacesService(c)
 	c.Kea = newKeaService(c)
+	c.Monit = newMonitService(c)
 	c.NodeExporter = newNodeExporterService(c)
 	c.Routing = newRoutingService(c)
 	c.System = newSystemService(c)

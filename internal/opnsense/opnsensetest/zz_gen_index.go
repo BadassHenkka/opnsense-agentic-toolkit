@@ -13,6 +13,7 @@ func registerGenerated(s *Server) {
 	registerGenIDS(s)
 	registerGenInterfaces(s)
 	registerGenKea(s)
+	registerGenMonit(s)
 	registerGenNodeExporter(s)
 	registerGenRouting(s)
 	registerGenSystem(s)

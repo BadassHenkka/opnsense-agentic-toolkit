@@ -1,0 +1,247 @@
+{
+  "area": "monit",
+  "title": "Services \u2192 Monit",
+  "items": [
+    {
+      "resource": "monit_alert",
+      "go_name": "MonitAlert",
+      "plural": "Alerts",
+      "description": "A Monit alert: who is mailed about which events (Services \u2192 Monit \u2192 Settings \u2192 Alert Settings).",
+      "model": "core/Monit/Monit.xml",
+      "node": "alert",
+      "base": "monit/settings",
+      "key": "alert",
+      "suffix": "Alert",
+      "reconfigure": "monit/service/reconfigure",
+      "name_field": "description",
+      "zero_field": "description",
+      "fields": {
+        "recipient": {
+          "description": "Email address that receives the alerts."
+        },
+        "noton": {
+          "description": "Invert: alert on everything except the listed events."
+        },
+        "events": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "Events, e.g. `nonexist`, `timeout`, `connection`, `resource`. Empty means all."
+        },
+        "format": {
+          "description": "Mail format override; leave empty for the default."
+        },
+        "reminder": {
+          "type": "int",
+          "description": "Repeat the alert every N cycles while the problem lasts."
+        }
+      },
+      "example": {
+        "description": "mail me",
+        "recipient": "me@example.com",
+        "enabled": "1"
+      }
+    },
+    {
+      "resource": "monit_test",
+      "go_name": "MonitTest",
+      "plural": "Tests",
+      "description": "A Monit test: a condition and the action to take when it holds (Services \u2192 Monit \u2192 Settings \u2192 Service Tests). Attach it to a service with `test_ids`.",
+      "model": "core/Monit/Monit.xml",
+      "node": "test",
+      "base": "monit/settings",
+      "key": "test",
+      "suffix": "Test",
+      "reconfigure": "monit/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "type": {
+          "type": "string",
+          "description": "Test type, e.g. `Custom`, `ProgramStatus`, `NetworkPing`, `SpaceUsage`, `SystemResource`, `Existence`."
+        },
+        "condition": {
+          "description": "Monit condition, e.g. `failed ping` or `loadavg (5min) > 4`."
+        },
+        "action": {
+          "description": "`alert`, `restart`, `start`, `stop`, `exec` or `unmonitor`."
+        },
+        "path": {
+          "description": "Program path for the `exec` action."
+        }
+      },
+      "example": {
+        "name": "ping-fails",
+        "type": "NetworkPing",
+        "condition": "failed ping",
+        "action": "alert"
+      }
+    },
+    {
+      "resource": "monit_service",
+      "go_name": "MonitCheck",
+      "plural": "Checks",
+      "description": "A Monit service: something to watch (process, file, host, filesystem, system, ...) with its tests (Services \u2192 Monit \u2192 Settings \u2192 Service Settings).",
+      "model": "core/Monit/Monit.xml",
+      "node": "service",
+      "base": "monit/settings",
+      "key": "service",
+      "suffix": "Service",
+      "reconfigure": "monit/service/reconfigure",
+      "name_field": "name",
+      "zero_field": "name",
+      "fields": {
+        "type": {
+          "type": "string",
+          "description": "`process`, `file`, `fifo`, `filesystem`, `directory`, `host`, `system`, `custom` or `network`."
+        },
+        "pidfile": {
+          "description": "PID file, for type `process`."
+        },
+        "match": {
+          "description": "Process name pattern, for type `process` without a PID file."
+        },
+        "path": {
+          "description": "File, directory, filesystem or program path."
+        },
+        "timeout": {
+          "type": "int",
+          "description": "Seconds to wait for the start/stop program."
+        },
+        "starttimeout": {
+          "type": "int",
+          "description": "Seconds to wait for a started process."
+        },
+        "address": {
+          "description": "Host name or IP for type `host`."
+        },
+        "interface": {
+          "type": "ref",
+          "description": "Interface for type `network`."
+        },
+        "start": {
+          "description": "Start command, e.g. `/usr/sbin/service foo start`."
+        },
+        "stop": {
+          "description": "Stop command."
+        },
+        "tests": {
+          "attr": "test_ids",
+          "go_name": "TestIDs",
+          "type": "refs",
+          "description": "`opnsense_monit_test` ids to run."
+        },
+        "depends": {
+          "attr": "depends_ids",
+          "go_name": "DependsIDs",
+          "type": "refs",
+          "description": "Other `opnsense_monit_service` ids that must be up first."
+        },
+        "polltime": {
+          "description": "Cron-like check schedule override, e.g. `* 0-6`."
+        }
+      },
+      "example": {
+        "name": "unbound",
+        "type": "process",
+        "pidfile": "/var/run/unbound.pid",
+        "enabled": "1"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "resource": "monit_settings",
+      "go_name": "MonitGeneral",
+      "plural": "General",
+      "description": "Monit general settings (Services \u2192 Monit \u2192 Settings \u2192 General Settings): check interval, mail server and the optional web interface.",
+      "model": "core/Monit/Monit.xml",
+      "node": "general",
+      "get": "monit/settings/get",
+      "set": "monit/settings/set",
+      "path": [
+        "monit",
+        "general"
+      ],
+      "reconfigure": "monit/service/reconfigure",
+      "fields": {
+        "interval": {
+          "type": "int",
+          "description": "Seconds between checks."
+        },
+        "startdelay": {
+          "type": "int",
+          "description": "Seconds to wait after boot before the first check."
+        },
+        "mailserver": {
+          "type": "list",
+          "tf_type": "set",
+          "description": "SMTP servers used for alerts."
+        },
+        "port": {
+          "type": "int",
+          "description": "SMTP port."
+        },
+        "username": {
+          "description": "SMTP user."
+        },
+        "password": {
+          "sensitive": true,
+          "description": "SMTP password."
+        },
+        "ssl": {
+          "description": "Use TLS for SMTP."
+        },
+        "sslversion": {
+          "description": "`auto`, `tlsv1`, `tlsv11`, `tlsv12`, `tlsv13`."
+        },
+        "sslverify": {
+          "description": "Verify the SMTP server certificate."
+        },
+        "eventqueueSlots": {
+          "attr": "eventqueue_slots",
+          "type": "int",
+          "description": "Maximum queued events."
+        },
+        "httpdEnabled": {
+          "attr": "httpd_enabled",
+          "description": "Run the Monit web interface (needs a password)."
+        },
+        "httpdUsername": {
+          "attr": "httpd_username"
+        },
+        "httpdPassword": {
+          "attr": "httpd_password",
+          "sensitive": true
+        },
+        "httpdPort": {
+          "attr": "httpd_port",
+          "type": "int"
+        },
+        "httpdAllow": {
+          "attr": "httpd_allow",
+          "type": "list",
+          "tf_type": "set",
+          "description": "Hosts and networks allowed to connect."
+        },
+        "mmonitUrl": {
+          "attr": "mmonit_url",
+          "go_name": "MmonitURL",
+          "description": "M/Monit collector URL."
+        },
+        "mmonitTimeout": {
+          "attr": "mmonit_timeout",
+          "type": "int"
+        },
+        "mmonitRegisterCredentials": {
+          "attr": "mmonit_register_credentials",
+          "description": "Send the web interface credentials to M/Monit."
+        }
+      },
+      "example": {
+        "enabled": "1",
+        "interval": "120",
+        "mailserver": "smtp.example.com"
+      }
+    }
+  ]
+}

@@ -36,6 +36,7 @@ Supported so far:
 | Services → Dynamic DNS (plugin os-ddclient) | `opnsense_dyndns_settings`, `opnsense_dyndns_account` | `dyndns` (read-only) |
 | Services → Captive Portal | `opnsense_captive_portal_zone` | `captiveportal` (read-only) |
 | System → High Availability | `opnsense_hasync_settings` | `system` (read-only) |
+| Services → Monit | `opnsense_monit_settings`, `_alert`, `_test`, `_service` | `monit` (read-only) |
 | Services → Kea DHCP | `opnsense_kea_dhcp4_{settings,subnet,reservation,option,peer}`, `opnsense_kea_dhcp6_{settings,subnet,reservation,pd_pool,option,peer}`, `opnsense_kea_ctrl_agent_settings` | `kea` (read-only, plus `kea_lease4_list`, `kea_lease6_list`) |
 | Services → Dnsmasq DNS & DHCP | `opnsense_dnsmasq_settings`, `opnsense_dnsmasq_host`, `_domain`, `_tag`, `_range`, `_option`, `_boot` | `dnsmasq` (read-only, plus `dnsmasq_lease_list`) |
 | System → Access → Users, Groups | `opnsense_auth_user`, `opnsense_auth_group`, `opnsense_auth_api_key` | `auth` (read-only) |
