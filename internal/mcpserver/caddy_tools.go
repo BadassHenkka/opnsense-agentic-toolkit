@@ -261,11 +261,14 @@ func caddyTools(c *opnsense.Client) []tool {
 		}},
 		{toolset: caddyToolset, readOnly: true, register: func(s *mcp.Server) {
 			mcp.AddTool(s, &mcp.Tool{Name: "caddy_caddyfile_get",
-				Description: "The generated Caddyfile: what Caddy actually runs after the last caddy_apply.",
+				Description: "The generated Caddyfile: what Caddy actually runs after the last caddy_apply. Credentials (DNS API key, basic auth hashes) are shown as (set, hidden).",
 				Annotations: &mcp.ToolAnnotations{Title: "Get Caddyfile", ReadOnlyHint: true},
 			}, func(ctx context.Context, _ *mcp.CallToolRequest, _ struct{}) (*mcp.CallToolResult, caddyfileOut, error) {
 				f, err := cd.Caddyfile(ctx)
-				return nil, caddyfileOut{Caddyfile: f}, err
+				if err != nil {
+					return nil, caddyfileOut{}, err
+				}
+				return nil, caddyfileOut{Caddyfile: redactCaddyfile(ctx, cd, f)}, nil
 			})
 		}},
 		listTool(caddyToolset, "caddy_domain_list", "List Caddy domains",

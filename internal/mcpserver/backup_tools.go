@@ -68,7 +68,7 @@ func backupTools(c *opnsense.Client) []tool {
 		}},
 		{toolset: backupToolset, readOnly: true, register: func(s *mcp.Server) {
 			mcp.AddTool(s, &mcp.Tool{Name: "backup_diff_get",
-				Description: "Unified diff between two config backups, e.g. to see exactly what a change did. Use ids from backup_list.",
+				Description: "Unified diff between two config backups, e.g. to see exactly what a change did. Use ids from backup_list. Values of credential elements (keys, passwords, tokens) are shown as (set, hidden).",
 				Annotations: &mcp.ToolAnnotations{Title: "Diff config backups", ReadOnlyHint: true},
 			}, func(ctx context.Context, _ *mcp.CallToolRequest, in backupDiffIn) (*mcp.CallToolResult, backupDiffOut, error) {
 				lines, err := c.Backup.Diff(ctx, in.Newer, in.Older)
@@ -78,6 +78,7 @@ func backupTools(c *opnsense.Client) []tool {
 				if lines == nil {
 					lines = []string{}
 				}
+				lines = redactDiff(lines)
 				return nil, backupDiffOut{Lines: lines, Changed: len(lines) > 0}, nil
 			})
 		}},
