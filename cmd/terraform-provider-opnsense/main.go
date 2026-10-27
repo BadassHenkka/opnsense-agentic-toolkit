@@ -8,13 +8,16 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 
+	"github.com/smulis/opnsense-agentic-toolkit/internal/buildinfo"
 	"github.com/smulis/opnsense-agentic-toolkit/internal/provider"
 )
 
-// version is set at build time with -ldflags "-X main.version=...".
+// version is set at build time with -ldflags "-X main.version=..."; main falls back to the
+// module version (buildinfo.Version).
 var version = "dev"
 
 func main() {
+	version = buildinfo.Version(version)
 	var debug bool
 	flag.BoolVar(&debug, "debug", false, "run with support for debuggers like delve")
 	flag.Parse()
