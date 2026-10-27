@@ -97,12 +97,12 @@ Four steps, then one command tells you whether it worked.
 **1. Create an API user on the firewall.**
 1. System → Access → Users → add a user, e.g. `automation` (a random password you will not use).
 2. Edit it → *Effective Privileges* → add only what the areas you use need. Search the list for
-   the area name: *Firewall: Alias*, *Firewall: Rules*, *Services: Unbound DNS*, *VPN: WireGuard*,
-   *System: Gateways*, *System: Static Routes*, *System: Firmware*, *System: Trust*, *Services:
-   Caddy*, *Services: ACME Client*, *Services: Wake on LAN*. Start small; step 4 tells you what is
-   missing. OPNsense has no read-only privileges for most pages, so "read-only" is enforced by
-   `mcp-opnsense --read-only`, not by the user. Using one user per front end (MCP, Terraform)
-   lets you revoke them separately.
+   the area name: *Firewall: Alias*, *Firewall: Rules [new]*, *Services: Unbound DNS*, *VPN:
+   WireGuard*, *System: Gateways*, *System: Static Routes*, *System: Firmware*, *System: Trust*,
+   *Services: Caddy*, *Services: ACME Client*, *Services: Wake on LAN*. Start small; step 4 tells
+   you what is missing. OPNsense has no read-only privileges for most pages, so "read-only" is
+   enforced by `mcp-opnsense --read-only`, not by the user. Using one user per front end (MCP,
+   Terraform) lets you revoke them separately.
 3. Same user → *API keys* → **+**. The browser downloads a file with `key=` and `secret=`. The
    secret is shown only once.
 
@@ -130,7 +130,7 @@ export OPNSENSE_CA_FILE=$HOME/.config/opnsense/ca.pem   # only for a self-signed
 [ok  ] configuration URL, key and secret are set
 [ok  ] connection    authenticated; OPNsense 26.7.3
 [ok  ] version       26.7.3 matches the tested series
-[warn] permissions   no access to: firewall rules (Firewall: Rules)
+[warn] permissions   no access to: firewall rules (Firewall: Rules [new])
        -> System > Access > Users > edit the API user > Effective Privileges; ...
 [ok  ] plugins       installed: os-caddy; not installed: os-frr, ...
 ```
