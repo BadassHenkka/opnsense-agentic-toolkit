@@ -49,7 +49,7 @@ func (r *genPostfixDomainResource) Schema(_ context.Context, _ resource.SchemaRe
 			"id":          idAttribute("postfix domain"),
 			"enabled":     schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "OPNsense field `enabled`."},
 			"domain":      schema.StringAttribute{Required: true, Description: "OPNsense field `domainname`."},
-			"destination": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Where to deliver: `[host]:port`; empty to use the relay host. OPNsense field `destination`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-zA-Z.:\\-\\[\\]]){1,64}$"), "must match the OPNsense model mask")}},
+			"destination": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Where to deliver: `[host]:port`; empty to use the relay host. OPNsense field `destination`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^([0-9a-zA-Z.:\\-\\[\\]]){1,64}$"))}},
 		},
 	}
 }
@@ -677,7 +677,7 @@ func (r *genPostfixGeneralResource) Schema(_ context.Context, _ resource.SchemaR
 			"certificate":                     schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Server certificate (`opnsense_trust_cert` refid). OPNsense field `certificate`."},
 			"ca":                              schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "CA certificate. OPNsense field `ca`."},
 			"smtpclient_security":             schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("may"), Description: "One of `none`, `may`, `encrypt`, `dane`. OPNsense field `smtpclient_security`.", Validators: []validator.String{stringvalidator.OneOf("none", "may", "encrypt", "dane")}},
-			"relayhost":                       schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Smarthost, e.g. `[smtp.example.com]:587`. OPNsense field `relayhost`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-zA-Z.:\\-\\[\\]]){1,64}$"), "must match the OPNsense model mask")}},
+			"relayhost":                       schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Smarthost, e.g. `[smtp.example.com]:587`. OPNsense field `relayhost`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^([0-9a-zA-Z.:\\-\\[\\]]){1,64}$"))}},
 			"smtpauth_enabled":                schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `smtpauth_enabled`."},
 			"smtpauth_user":                   schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "User for SMTP authentication to the relay. OPNsense field `smtpauth_user`."},
 			"smtpauth_password":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Sensitive: true, Description: "Write-only for MCP: never returned. OPNsense field `smtpauth_password`."},

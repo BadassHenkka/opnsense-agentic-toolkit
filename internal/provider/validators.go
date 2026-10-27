@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"regexp"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 
 	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
@@ -70,4 +72,21 @@ func (wireguardKey) ValidateString(_ context.Context, req validator.StringReques
 		resp.Diagnostics.AddAttributeError(req.Path, "Invalid WireGuard key",
 			"The value is not a WireGuard key (32 bytes, base64 encoded, like the output of `wg genkey`).")
 	}
+}
+
+// optionalMask checks a value against an OPNsense model mask but accepts "", as OPNsense does:
+// a text field only applies its mask to a non-empty value. Generated schemas use it for fields
+// OPNsense does not require; required fields keep stringvalidator.RegexMatches.
+func optionalMask(re *regexp.Regexp) validator.String {
+	return emptyOr{stringvalidator.RegexMatches(re, "must match the OPNsense model mask")}
+}
+
+// emptyOr runs the wrapped validator on every value except "".
+type emptyOr struct{ validator.String }
+
+func (v emptyOr) ValidateString(ctx context.Context, req validator.StringRequest, resp *validator.StringResponse) {
+	if req.ConfigValue.ValueString() == "" { // also true for null and unknown values
+		return
+	}
+	v.String.ValidateString(ctx, req, resp)
 }

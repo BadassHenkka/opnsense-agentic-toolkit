@@ -64,6 +64,19 @@ func TestTranslateMask(t *testing.T) {
 	}
 }
 
+// OPNsense skips the mask for an empty value, so only a required field rejects "".
+func TestMaskValidator(t *testing.T) {
+	for required, want := range map[bool]string{
+		false: `optionalMask(regexp.MustCompile("^0x[0-9a-f]*$"))`,
+		true:  `stringvalidator.RegexMatches(regexp.MustCompile("^0x[0-9a-f]*$"), "must match the OPNsense model mask")`,
+	} {
+		f := &Field{XML: "ifid", Attr: "ifid", Kind: kString, Mask: "^0x[0-9a-f]*$", APIRequired: required, InTF: true}
+		if got := schemaAttr(newW(), f); !strings.Contains(got, want) {
+			t.Errorf("required=%v: %s, want %s", required, got, want)
+		}
+	}
+}
+
 const testModel = `<model><items>
   <thing type="ArrayField">
     <name type="TextField"><Required>Y</Required>
