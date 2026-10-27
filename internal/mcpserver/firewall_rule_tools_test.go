@@ -35,16 +35,26 @@ func TestFirewallRuleTools(t *testing.T) {
 	if !strings.Contains(out["note"].(string), "DISABLED") {
 		t.Fatalf("note: %v", out["note"])
 	}
-	must("firewall_rule_create", map[string]any{"description": "site2 block LAN", "interfaces": []string{"opt3"},
-		"action": "block", "destination": []string{"lan"}, "enabled": true})
+	must("firewall_rule_create", map[string]any{"description": "site2 block non-LAN", "interfaces": []string{"opt3"},
+		"action": "block", "destination": []string{"lan"}, "destination_not": true, "enabled": true})
 
 	must("firewall_rule_update", map[string]any{"name": "site2 to NAS", "enabled": true})
-	must("firewall_rule_move", map[string]any{"rule": map[string]any{"name": "site2 block LAN"},
+	must("firewall_rule_move", map[string]any{"rule": map[string]any{"name": "site2 block non-LAN"},
 		"before": map[string]any{"name": "site2 to NAS"}})
 
 	list := must("firewall_rule_list", map[string]any{"interface": "WG_SITE2"})
 	if list["total"].(float64) != 4 { // 2 rules + 2 automatic
 		t.Fatalf("list: %v", list)
+	}
+	// Inversion must show in the list, not only in get: "!lan" listed as "lan" means the opposite.
+	inverted := false
+	for _, it := range list["items"].([]any) {
+		if row := it.(map[string]any); row["description"] == "site2 block non-LAN" {
+			inverted = row["destination_net"] == "lan" && row["destination_not"] == "1" && row["source_not"] == "0"
+		}
+	}
+	if !inverted {
+		t.Fatalf("inverted rule not listed as inverted: %v", list)
 	}
 	got := must("firewall_rule_get", map[string]any{"name": "site2 to NAS"})
 	if got["enabled"] != true || got["destination_port"] != "445" {
