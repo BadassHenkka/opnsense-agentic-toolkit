@@ -180,9 +180,11 @@ func schemaAttr(b *w, f *Field) string {
 		case f.Kind == kInt && f.HasRange:
 			b.use(pkgIntValidator)
 			validators = append(validators, fmt.Sprintf("int64validator.Between(%d, %d)", f.Min, f.Max))
+		case f.Kind == kString && f.Mask != "" && len(f.Values) == 0 && !f.APIRequired:
+			// OPNsense skips the mask for an empty value (TextField::getValidators), so ""
+			// clears the field. Generated import config writes it out explicitly.
+			validators = append(validators, fmt.Sprintf("optionalMask(regexp.MustCompile(%q))", f.Mask))
 		case f.Kind == kString && f.Mask != "" && len(f.Values) == 0:
-			b.use(pkgStrValidator)
-			b.use("regexp")
 			validators = append(validators, fmt.Sprintf("stringvalidator.RegexMatches(regexp.MustCompile(%q), %q)",
 				f.Mask, "must match the OPNsense model mask"))
 		}

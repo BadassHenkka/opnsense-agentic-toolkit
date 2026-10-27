@@ -115,7 +115,8 @@ becomes a required attribute; everything else is optional with the XML default. 
 that is not one of the field's options is ignored (the Syslog transport ships one).
 
 Masks are translated from PCRE to Go when RE2 can express them; others are only enforced by
-OPNsense. `UniqueConstraint`s are enforced by the fake.
+OPNsense. Like OPNsense, the validator accepts "" unless the field is required, so `= ""` clears
+a field. `UniqueConstraint`s are enforced by the fake.
 
 ## What stays hand-written
 
