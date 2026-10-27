@@ -176,7 +176,9 @@ func firewallRuleTools(c *opnsense.Client) []tool {
 			mcp.AddTool(s, &mcp.Tool{Name: "firewall_rule_list",
 				Description: "List firewall rules in evaluation order, optionally for one interface (including floating and " +
 					"group rules that apply to it), with hit counters. Rows with legacy set are automatic or legacy rules " +
-					"(e.g. the anti-lockout rule) and cannot be changed here.",
+					"(e.g. the anti-lockout rule) and cannot be changed here. interfacenot, source_not or destination_not = 1 " +
+					"inverts the match: the rule applies to everything except those interfaces or networks. With quick = 0 the " +
+					"last matching rule wins instead of the first.",
 				Annotations: &mcp.ToolAnnotations{Title: "List firewall rules", ReadOnlyHint: true},
 			}, func(ctx context.Context, _ *mcp.CallToolRequest, in ruleListIn) (*mcp.CallToolResult, listOut[opnsense.FilterRuleRow], error) {
 				iface := ""

@@ -35,7 +35,8 @@ const (
 // Probes are read calls that need one privilege each. A 403 means the API user lacks it.
 var probes = []struct{ Area, Path, Privilege string }{
 	{"firewall aliases", "firewall/alias/searchItem", "Firewall: Alias"},
-	{"firewall rules", "firewall/filter/searchRule", "Firewall: Rules"},
+	// "Firewall: Rules" without [new] only grants the legacy firewall_rules.php page.
+	{"firewall rules", "firewall/filter/searchRule", "Firewall: Rules [new]"},
 	{"unbound overrides", "unbound/settings/searchHostOverride", "Services: Unbound DNS"},
 	{"firmware", "core/firmware/info", "System: Firmware"},
 }

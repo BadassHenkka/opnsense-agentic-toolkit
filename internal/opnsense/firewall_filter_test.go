@@ -3,6 +3,7 @@ package opnsense_test
 import (
 	"context"
 	"errors"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -95,5 +96,25 @@ func TestFilterApplyDetectsLockout(t *testing.T) {
 	err := fake.Client(t).Filter.ApplyAndVerify(context.Background(), time.Second)
 	if err == nil || !strings.Contains(err.Error(), "no longer reachable") {
 		t.Fatalf("want lockout error, got %v", err)
+	}
+}
+
+// A field missing from FilterRuleRow silently disappears from firewall_rule_list. Leaving out
+// source_not once made inverted rules read as their opposite.
+func TestFilterRuleRowHasEveryField(t *testing.T) {
+	jsonNames := func(v any) map[string]bool {
+		names := map[string]bool{}
+		typ := reflect.TypeOf(v)
+		for i := range typ.NumField() {
+			name, _, _ := strings.Cut(typ.Field(i).Tag.Get("json"), ",")
+			names[name] = true
+		}
+		return names
+	}
+	row := jsonNames(opnsense.FilterRuleRow{})
+	for name := range jsonNames(opnsense.FilterRule{}) {
+		if !row[name] {
+			t.Errorf("FilterRuleRow has no field for %q", name)
+		}
 	}
 }

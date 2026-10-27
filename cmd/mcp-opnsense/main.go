@@ -22,14 +22,17 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
+	"github.com/smulis/opnsense-agentic-toolkit/internal/buildinfo"
 	"github.com/smulis/opnsense-agentic-toolkit/internal/mcpserver"
 	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
 )
 
-// version is set at build time with -ldflags "-X main.version=...".
+// version is set at build time with -ldflags "-X main.version=..."; main falls back to the
+// module version (buildinfo.Version).
 var version = "dev"
 
 func main() {
+	version = buildinfo.Version(version)
 	if err := run(); err != nil {
 		fmt.Fprintln(os.Stderr, "mcp-opnsense:", err)
 		os.Exit(1)

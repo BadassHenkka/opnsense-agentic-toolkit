@@ -62,21 +62,29 @@ type FilterRule struct {
 func (r *FilterRule) IsZero() bool { return r.Action == "" }
 
 // FilterRuleRow is one row of a rule search. Legacy and automatic rules are included, with
-// Legacy set; only MVC rules (Legacy empty) can be changed through the API.
+// Legacy set; only MVC rules (Legacy empty) can be changed through the API. It has every
+// FilterRule field (TestFilterRuleRowHasEveryField), so the list never hides one.
 type FilterRuleRow struct {
 	UUID            Text `json:"uuid"`
 	Enabled         Text `json:"enabled"`
 	Sequence        Text `json:"sequence"`
 	Action          Text `json:"action"`
+	Quick           Text `json:"quick"`
 	Interface       Text `json:"interface"`
+	InterfaceNot    Text `json:"interfacenot"`
 	Direction       Text `json:"direction"`
 	IPProtocol      Text `json:"ipprotocol"`
 	Protocol        Text `json:"protocol"`
 	SourceNet       Text `json:"source_net"`
+	SourceNot       Text `json:"source_not"`
 	SourcePort      Text `json:"source_port"`
 	DestinationNet  Text `json:"destination_net"`
+	DestinationNot  Text `json:"destination_not"`
 	DestinationPort Text `json:"destination_port"`
 	Gateway         Text `json:"gateway"`
+	Log             Text `json:"log"`
+	StateType       Text `json:"statetype"`
+	Categories      Text `json:"categories"`
 	Description     Text `json:"description"`
 	Legacy          Text `json:"legacy"`
 	Evaluations     Text `json:"evaluations"`
