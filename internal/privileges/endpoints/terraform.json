@@ -1,0 +1,948 @@
+{
+  "opnsense_acme_account": [
+    "acmeclient/accounts/add",
+    "acmeclient/accounts/del/{arg}",
+    "acmeclient/accounts/get/{arg}",
+    "acmeclient/accounts/search",
+    "acmeclient/accounts/update/{arg}",
+    "acmeclient/service/reconfigure"
+  ],
+  "opnsense_acme_automation": [
+    "acmeclient/actions/add",
+    "acmeclient/actions/get/{arg}",
+    "acmeclient/service/reconfigure"
+  ],
+  "opnsense_acme_certificate": [
+    "acmeclient/certificates/add",
+    "acmeclient/certificates/get/{arg}",
+    "acmeclient/certificates/search",
+    "acmeclient/certificates/update/{arg}",
+    "acmeclient/service/reconfigure"
+  ],
+  "opnsense_acme_challenge_type": [
+    "acmeclient/service/reconfigure",
+    "acmeclient/validations/add",
+    "acmeclient/validations/get",
+    "acmeclient/validations/get/{arg}",
+    "acmeclient/validations/update/{arg}"
+  ],
+  "opnsense_acme_settings": [
+    "acmeclient/service/reconfigure",
+    "acmeclient/settings/get",
+    "acmeclient/settings/set"
+  ],
+  "opnsense_auth_api_key": [
+    "auth/user/addApiKey/{arg}",
+    "auth/user/delApiKey/{arg}",
+    "auth/user/searchApiKey"
+  ],
+  "opnsense_auth_group": [
+    "auth/group/add",
+    "auth/group/del/{arg}",
+    "auth/group/get/{arg}",
+    "auth/group/search",
+    "auth/group/set/{arg}"
+  ],
+  "opnsense_auth_user": [
+    "auth/user/add",
+    "auth/user/del/{arg}",
+    "auth/user/get/{arg}",
+    "auth/user/search",
+    "auth/user/set/{arg}"
+  ],
+  "opnsense_bridge": [
+    "interfaces/bridge_settings/addItem",
+    "interfaces/bridge_settings/delItem/{arg}",
+    "interfaces/bridge_settings/getItem/{arg}",
+    "interfaces/bridge_settings/reconfigure",
+    "interfaces/bridge_settings/setItem/{arg}"
+  ],
+  "opnsense_caddy_access_list": [
+    "caddy/reverse_proxy/addAccessList",
+    "caddy/reverse_proxy/delAccessList/{arg}",
+    "caddy/reverse_proxy/getAccessList/{arg}",
+    "caddy/reverse_proxy/searchAccessList",
+    "caddy/reverse_proxy/setAccessList/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_basic_auth": [
+    "caddy/reverse_proxy/addBasicAuth",
+    "caddy/reverse_proxy/delBasicAuth/{arg}",
+    "caddy/reverse_proxy/getBasicAuth/{arg}",
+    "caddy/reverse_proxy/searchBasicAuth",
+    "caddy/reverse_proxy/setBasicAuth/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_domain": [
+    "caddy/reverse_proxy/addReverseProxy",
+    "caddy/reverse_proxy/delReverseProxy/{arg}",
+    "caddy/reverse_proxy/getReverseProxy/{arg}",
+    "caddy/reverse_proxy/searchReverseProxy",
+    "caddy/reverse_proxy/setReverseProxy/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_handler": [
+    "caddy/reverse_proxy/addHandle",
+    "caddy/reverse_proxy/delHandle/{arg}",
+    "caddy/reverse_proxy/getHandle/{arg}",
+    "caddy/reverse_proxy/searchHandle",
+    "caddy/reverse_proxy/setHandle/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_header": [
+    "caddy/reverse_proxy/addHeader",
+    "caddy/reverse_proxy/delHeader/{arg}",
+    "caddy/reverse_proxy/getHeader/{arg}",
+    "caddy/reverse_proxy/searchHeader",
+    "caddy/reverse_proxy/setHeader/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_layer4_route": [
+    "caddy/reverse_proxy/addLayer4",
+    "caddy/reverse_proxy/delLayer4/{arg}",
+    "caddy/reverse_proxy/getLayer4/{arg}",
+    "caddy/reverse_proxy/searchLayer4",
+    "caddy/reverse_proxy/setLayer4/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_settings": [
+    "caddy/general/get",
+    "caddy/general/set",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_caddy_subdomain": [
+    "caddy/reverse_proxy/addSubdomain",
+    "caddy/reverse_proxy/delSubdomain/{arg}",
+    "caddy/reverse_proxy/getSubdomain/{arg}",
+    "caddy/service/reconfigure"
+  ],
+  "opnsense_captive_portal_zone": [
+    "captiveportal/service/reconfigure",
+    "captiveportal/settings/addZone",
+    "captiveportal/settings/delZone/{arg}",
+    "captiveportal/settings/getZone/{arg}",
+    "captiveportal/settings/searchZones",
+    "captiveportal/settings/setZone/{arg}"
+  ],
+  "opnsense_cron_job": [
+    "cron/service/reconfigure",
+    "cron/settings/addJob",
+    "cron/settings/delJob/{arg}",
+    "cron/settings/getJob/{arg}",
+    "cron/settings/searchJobs",
+    "cron/settings/setJob/{arg}"
+  ],
+  "opnsense_dnsmasq_boot": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/addBoot",
+    "dnsmasq/settings/delBoot/{arg}",
+    "dnsmasq/settings/getBoot/{arg}",
+    "dnsmasq/settings/searchBoot",
+    "dnsmasq/settings/setBoot/{arg}"
+  ],
+  "opnsense_dnsmasq_domain": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/addDomain",
+    "dnsmasq/settings/delDomain/{arg}",
+    "dnsmasq/settings/getDomain/{arg}",
+    "dnsmasq/settings/searchDomain",
+    "dnsmasq/settings/setDomain/{arg}"
+  ],
+  "opnsense_dnsmasq_host": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/addHost",
+    "dnsmasq/settings/delHost/{arg}",
+    "dnsmasq/settings/getHost/{arg}",
+    "dnsmasq/settings/searchHost",
+    "dnsmasq/settings/setHost/{arg}"
+  ],
+  "opnsense_dnsmasq_option": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/addOption",
+    "dnsmasq/settings/delOption/{arg}",
+    "dnsmasq/settings/getOption/{arg}",
+    "dnsmasq/settings/searchOption",
+    "dnsmasq/settings/setOption/{arg}"
+  ],
+  "opnsense_dnsmasq_range": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/addRange",
+    "dnsmasq/settings/delRange/{arg}",
+    "dnsmasq/settings/getRange/{arg}",
+    "dnsmasq/settings/searchRange",
+    "dnsmasq/settings/setRange/{arg}"
+  ],
+  "opnsense_dnsmasq_settings": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/get",
+    "dnsmasq/settings/set"
+  ],
+  "opnsense_dnsmasq_tag": [
+    "dnsmasq/service/reconfigure",
+    "dnsmasq/settings/addTag",
+    "dnsmasq/settings/delTag/{arg}",
+    "dnsmasq/settings/getTag/{arg}",
+    "dnsmasq/settings/searchTag",
+    "dnsmasq/settings/setTag/{arg}"
+  ],
+  "opnsense_dyndns_account": [
+    "dyndns/accounts/addItem",
+    "dyndns/accounts/delItem/{arg}",
+    "dyndns/accounts/getItem/{arg}",
+    "dyndns/accounts/searchItem",
+    "dyndns/accounts/setItem/{arg}",
+    "dyndns/service/reconfigure"
+  ],
+  "opnsense_dyndns_settings": [
+    "dyndns/service/reconfigure",
+    "dyndns/settings/get",
+    "dyndns/settings/set"
+  ],
+  "opnsense_firewall_alias": [
+    "firewall/alias/addItem",
+    "firewall/alias/delItem/{arg}",
+    "firewall/alias/getItem/{arg}",
+    "firewall/alias/reconfigure",
+    "firewall/alias/searchItem",
+    "firewall/alias/setItem/{arg}"
+  ],
+  "opnsense_firewall_category": [
+    "firewall/category/addItem",
+    "firewall/category/delItem/{arg}",
+    "firewall/category/getItem/{arg}",
+    "firewall/category/searchItem",
+    "firewall/category/setItem/{arg}"
+  ],
+  "opnsense_firewall_interface_group": [
+    "firewall/group/addItem",
+    "firewall/group/delItem/{arg}",
+    "firewall/group/getItem/{arg}",
+    "firewall/group/reconfigure",
+    "firewall/group/searchItem",
+    "firewall/group/setItem/{arg}"
+  ],
+  "opnsense_firewall_nat_npt": [
+    "firewall/npt/addRule",
+    "firewall/npt/apply",
+    "firewall/npt/delRule/{arg}",
+    "firewall/npt/getRule/{arg}",
+    "firewall/npt/searchRule",
+    "firewall/npt/setRule/{arg}"
+  ],
+  "opnsense_firewall_nat_one_to_one": [
+    "firewall/one_to_one/addRule",
+    "firewall/one_to_one/apply",
+    "firewall/one_to_one/delRule/{arg}",
+    "firewall/one_to_one/getRule/{arg}",
+    "firewall/one_to_one/searchRule",
+    "firewall/one_to_one/setRule/{arg}"
+  ],
+  "opnsense_firewall_nat_outbound": [
+    "firewall/source_nat/addRule",
+    "firewall/source_nat/apply",
+    "firewall/source_nat/delRule/{arg}",
+    "firewall/source_nat/getRule/{arg}",
+    "firewall/source_nat/searchRule",
+    "firewall/source_nat/setRule/{arg}"
+  ],
+  "opnsense_firewall_nat_outbound_mode": [
+    "firewall/source_nat/apply",
+    "firewall/source_nat/get",
+    "firewall/source_nat/set"
+  ],
+  "opnsense_firewall_nat_port_forward": [
+    "firewall/d_nat/addRule",
+    "firewall/d_nat/apply",
+    "firewall/d_nat/delRule/{arg}",
+    "firewall/d_nat/getRule/{arg}",
+    "firewall/d_nat/searchRule",
+    "firewall/d_nat/setRule/{arg}"
+  ],
+  "opnsense_firewall_rule": [
+    "core/firmware/running",
+    "firewall/filter/addRule",
+    "firewall/filter/apply",
+    "firewall/filter/delRule/{arg}",
+    "firewall/filter/getRule/{arg}",
+    "firewall/filter/searchRule",
+    "firewall/filter/setRule/{arg}"
+  ],
+  "opnsense_frr_bfd_neighbor": [
+    "quagga/bfd/addNeighbor",
+    "quagga/bfd/delNeighbor/{arg}",
+    "quagga/bfd/getNeighbor/{arg}",
+    "quagga/bfd/searchNeighbor",
+    "quagga/bfd/setNeighbor/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bfd_settings": [
+    "quagga/bfd/get",
+    "quagga/bfd/set",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_aspath": [
+    "quagga/bgp/addAspath",
+    "quagga/bgp/delAspath/{arg}",
+    "quagga/bgp/getAspath/{arg}",
+    "quagga/bgp/searchAspath",
+    "quagga/bgp/setAspath/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_community_list": [
+    "quagga/bgp/addCommunitylist",
+    "quagga/bgp/delCommunitylist/{arg}",
+    "quagga/bgp/getCommunitylist/{arg}",
+    "quagga/bgp/searchCommunitylist",
+    "quagga/bgp/setCommunitylist/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_neighbor": [
+    "quagga/bgp/addNeighbor",
+    "quagga/bgp/delNeighbor/{arg}",
+    "quagga/bgp/getNeighbor/{arg}",
+    "quagga/bgp/searchNeighbor",
+    "quagga/bgp/setNeighbor/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_peer_group": [
+    "quagga/bgp/addPeergroup",
+    "quagga/bgp/delPeergroup/{arg}",
+    "quagga/bgp/getPeergroup/{arg}",
+    "quagga/bgp/searchPeergroup",
+    "quagga/bgp/setPeergroup/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_prefix_list": [
+    "quagga/bgp/addPrefixlist",
+    "quagga/bgp/delPrefixlist/{arg}",
+    "quagga/bgp/getPrefixlist/{arg}",
+    "quagga/bgp/searchPrefixlist",
+    "quagga/bgp/setPrefixlist/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_redistribution": [
+    "quagga/bgp/addRedistribution",
+    "quagga/bgp/delRedistribution/{arg}",
+    "quagga/bgp/getRedistribution/{arg}",
+    "quagga/bgp/searchRedistribution",
+    "quagga/bgp/setRedistribution/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_route_map": [
+    "quagga/bgp/addRoutemap",
+    "quagga/bgp/delRoutemap/{arg}",
+    "quagga/bgp/getRoutemap/{arg}",
+    "quagga/bgp/searchRoutemap",
+    "quagga/bgp/setRoutemap/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_bgp_settings": [
+    "quagga/bgp/get",
+    "quagga/bgp/set",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf6_area": [
+    "quagga/ospf6settings/addArea",
+    "quagga/ospf6settings/delArea/{arg}",
+    "quagga/ospf6settings/getArea/{arg}",
+    "quagga/ospf6settings/searchArea",
+    "quagga/ospf6settings/setArea/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf6_interface": [
+    "quagga/ospf6settings/addInterface",
+    "quagga/ospf6settings/delInterface/{arg}",
+    "quagga/ospf6settings/getInterface/{arg}",
+    "quagga/ospf6settings/searchInterface",
+    "quagga/ospf6settings/setInterface/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf6_prefix_list": [
+    "quagga/ospf6settings/addPrefixlist",
+    "quagga/ospf6settings/delPrefixlist/{arg}",
+    "quagga/ospf6settings/getPrefixlist/{arg}",
+    "quagga/ospf6settings/searchPrefixlist",
+    "quagga/ospf6settings/setPrefixlist/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf6_redistribution": [
+    "quagga/ospf6settings/addRedistribution",
+    "quagga/ospf6settings/delRedistribution/{arg}",
+    "quagga/ospf6settings/getRedistribution/{arg}",
+    "quagga/ospf6settings/searchRedistribution",
+    "quagga/ospf6settings/setRedistribution/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf6_route_map": [
+    "quagga/ospf6settings/addRoutemap",
+    "quagga/ospf6settings/delRoutemap/{arg}",
+    "quagga/ospf6settings/getRoutemap/{arg}",
+    "quagga/ospf6settings/searchRoutemap",
+    "quagga/ospf6settings/setRoutemap/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf6_settings": [
+    "quagga/ospf6settings/get",
+    "quagga/ospf6settings/set",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_area": [
+    "quagga/ospfsettings/addArea",
+    "quagga/ospfsettings/delArea/{arg}",
+    "quagga/ospfsettings/getArea/{arg}",
+    "quagga/ospfsettings/searchArea",
+    "quagga/ospfsettings/setArea/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_interface": [
+    "quagga/ospfsettings/addInterface",
+    "quagga/ospfsettings/delInterface/{arg}",
+    "quagga/ospfsettings/getInterface/{arg}",
+    "quagga/ospfsettings/searchInterface",
+    "quagga/ospfsettings/setInterface/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_neighbor": [
+    "quagga/ospfsettings/addNeighbor",
+    "quagga/ospfsettings/delNeighbor/{arg}",
+    "quagga/ospfsettings/getNeighbor/{arg}",
+    "quagga/ospfsettings/searchNeighbor",
+    "quagga/ospfsettings/setNeighbor/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_network": [
+    "quagga/ospfsettings/addNetwork",
+    "quagga/ospfsettings/delNetwork/{arg}",
+    "quagga/ospfsettings/getNetwork/{arg}",
+    "quagga/ospfsettings/searchNetwork",
+    "quagga/ospfsettings/setNetwork/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_prefix_list": [
+    "quagga/ospfsettings/addPrefixlist",
+    "quagga/ospfsettings/delPrefixlist/{arg}",
+    "quagga/ospfsettings/getPrefixlist/{arg}",
+    "quagga/ospfsettings/searchPrefixlist",
+    "quagga/ospfsettings/setPrefixlist/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_redistribution": [
+    "quagga/ospfsettings/addRedistribution",
+    "quagga/ospfsettings/delRedistribution/{arg}",
+    "quagga/ospfsettings/getRedistribution/{arg}",
+    "quagga/ospfsettings/searchRedistribution",
+    "quagga/ospfsettings/setRedistribution/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_route_map": [
+    "quagga/ospfsettings/addRoutemap",
+    "quagga/ospfsettings/delRoutemap/{arg}",
+    "quagga/ospfsettings/getRoutemap/{arg}",
+    "quagga/ospfsettings/searchRoutemap",
+    "quagga/ospfsettings/setRoutemap/{arg}",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_ospf_settings": [
+    "quagga/ospfsettings/get",
+    "quagga/ospfsettings/set",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_rip_settings": [
+    "quagga/rip/get",
+    "quagga/rip/set",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_settings": [
+    "quagga/general/get",
+    "quagga/general/set",
+    "quagga/service/reconfigure"
+  ],
+  "opnsense_frr_static_route": [
+    "quagga/service/reconfigure",
+    "quagga/static/addRoute",
+    "quagga/static/delRoute/{arg}",
+    "quagga/static/getRoute/{arg}",
+    "quagga/static/searchRoute",
+    "quagga/static/setRoute/{arg}"
+  ],
+  "opnsense_frr_static_settings": [
+    "quagga/service/reconfigure",
+    "quagga/static/get",
+    "quagga/static/set"
+  ],
+  "opnsense_gateway": [
+    "routes/routes/reconfigure",
+    "routing/settings/addGateway",
+    "routing/settings/delGateway/{arg}",
+    "routing/settings/getGateway/{arg}",
+    "routing/settings/searchGateway",
+    "routing/settings/setGateway/{arg}"
+  ],
+  "opnsense_gateway_group": [
+    "routing/group_settings/add",
+    "routing/group_settings/del/{arg}",
+    "routing/group_settings/get/{arg}",
+    "routing/group_settings/reconfigure",
+    "routing/group_settings/search",
+    "routing/group_settings/set/{arg}"
+  ],
+  "opnsense_gif": [
+    "interfaces/gif_settings/addItem",
+    "interfaces/gif_settings/delItem/{arg}",
+    "interfaces/gif_settings/getItem/{arg}",
+    "interfaces/gif_settings/reconfigure",
+    "interfaces/gif_settings/setItem/{arg}"
+  ],
+  "opnsense_gre": [
+    "interfaces/gre_settings/addItem",
+    "interfaces/gre_settings/delItem/{arg}",
+    "interfaces/gre_settings/getItem/{arg}",
+    "interfaces/gre_settings/reconfigure",
+    "interfaces/gre_settings/setItem/{arg}"
+  ],
+  "opnsense_hasync_settings": [
+    "core/hasync/get",
+    "core/hasync/reconfigure",
+    "core/hasync/set"
+  ],
+  "opnsense_ids_policy": [
+    "ids/service/reconfigure",
+    "ids/settings/addPolicy",
+    "ids/settings/delPolicy/{arg}",
+    "ids/settings/getPolicy/{arg}",
+    "ids/settings/searchPolicy",
+    "ids/settings/setPolicy/{arg}"
+  ],
+  "opnsense_ids_ruleset": [
+    "ids/service/reconfigure",
+    "ids/settings/listRulesets",
+    "ids/settings/toggleRuleset/{arg}/{arg}"
+  ],
+  "opnsense_ids_settings": [
+    "ids/service/reconfigure",
+    "ids/settings/get",
+    "ids/settings/set"
+  ],
+  "opnsense_ids_user_rule": [
+    "ids/service/reconfigure",
+    "ids/settings/addUserRule",
+    "ids/settings/delUserRule/{arg}",
+    "ids/settings/getUserRule/{arg}",
+    "ids/settings/searchUserRule",
+    "ids/settings/setUserRule/{arg}"
+  ],
+  "opnsense_interface": [
+    "core/firmware/running",
+    "interfaces/assignment/addItem",
+    "interfaces/assignment/delItem/{arg}",
+    "interfaces/assignment/getItem/{arg}",
+    "interfaces/assignment/reconfigure",
+    "interfaces/assignment/searchItem",
+    "interfaces/assignment/setItem/{arg}"
+  ],
+  "opnsense_kea_ctrl_agent_settings": [
+    "kea/ctrl_agent/get",
+    "kea/ctrl_agent/set",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp4_option": [
+    "kea/dhcpv4/addOption",
+    "kea/dhcpv4/delOption/{arg}",
+    "kea/dhcpv4/getOption/{arg}",
+    "kea/dhcpv4/searchOption",
+    "kea/dhcpv4/setOption/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp4_peer": [
+    "kea/dhcpv4/addPeer",
+    "kea/dhcpv4/delPeer/{arg}",
+    "kea/dhcpv4/getPeer/{arg}",
+    "kea/dhcpv4/searchPeer",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp4_reservation": [
+    "kea/dhcpv4/addReservation",
+    "kea/dhcpv4/delReservation/{arg}",
+    "kea/dhcpv4/getReservation/{arg}",
+    "kea/dhcpv4/searchReservation",
+    "kea/dhcpv4/setReservation/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp4_settings": [
+    "kea/dhcpv4/get",
+    "kea/dhcpv4/set",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp4_subnet": [
+    "kea/dhcpv4/addSubnet",
+    "kea/dhcpv4/delSubnet/{arg}",
+    "kea/dhcpv4/getSubnet/{arg}",
+    "kea/dhcpv4/searchSubnet",
+    "kea/dhcpv4/setSubnet/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp6_option": [
+    "kea/dhcpv6/addOption",
+    "kea/dhcpv6/delOption/{arg}",
+    "kea/dhcpv6/getOption/{arg}",
+    "kea/dhcpv6/searchOption",
+    "kea/dhcpv6/setOption/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp6_pd_pool": [
+    "kea/dhcpv6/addPdPool",
+    "kea/dhcpv6/delPdPool/{arg}",
+    "kea/dhcpv6/getPdPool/{arg}",
+    "kea/dhcpv6/searchPdPool",
+    "kea/dhcpv6/setPdPool/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp6_peer": [
+    "kea/dhcpv6/addPeer",
+    "kea/dhcpv6/delPeer/{arg}",
+    "kea/dhcpv6/getPeer/{arg}",
+    "kea/dhcpv6/searchPeer",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp6_reservation": [
+    "kea/dhcpv6/addReservation",
+    "kea/dhcpv6/delReservation/{arg}",
+    "kea/dhcpv6/getReservation/{arg}",
+    "kea/dhcpv6/searchReservation",
+    "kea/dhcpv6/setReservation/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp6_settings": [
+    "kea/dhcpv6/get",
+    "kea/dhcpv6/set",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_kea_dhcp6_subnet": [
+    "kea/dhcpv6/addSubnet",
+    "kea/dhcpv6/delSubnet/{arg}",
+    "kea/dhcpv6/getSubnet/{arg}",
+    "kea/dhcpv6/searchSubnet",
+    "kea/dhcpv6/setSubnet/{arg}",
+    "kea/service/reconfigure"
+  ],
+  "opnsense_lagg": [
+    "interfaces/lagg_settings/addItem",
+    "interfaces/lagg_settings/delItem/{arg}",
+    "interfaces/lagg_settings/getItem/{arg}",
+    "interfaces/lagg_settings/reconfigure",
+    "interfaces/lagg_settings/setItem/{arg}"
+  ],
+  "opnsense_loopback": [
+    "interfaces/loopback_settings/addItem",
+    "interfaces/loopback_settings/delItem/{arg}",
+    "interfaces/loopback_settings/getItem/{arg}",
+    "interfaces/loopback_settings/reconfigure",
+    "interfaces/loopback_settings/searchItem"
+  ],
+  "opnsense_monit_alert": [
+    "monit/service/reconfigure",
+    "monit/settings/addAlert",
+    "monit/settings/delAlert/{arg}",
+    "monit/settings/getAlert/{arg}",
+    "monit/settings/searchAlert",
+    "monit/settings/setAlert/{arg}"
+  ],
+  "opnsense_monit_service": [
+    "monit/service/reconfigure",
+    "monit/settings/addService",
+    "monit/settings/delService/{arg}",
+    "monit/settings/getService/{arg}",
+    "monit/settings/searchService",
+    "monit/settings/setService/{arg}"
+  ],
+  "opnsense_monit_settings": [
+    "monit/service/reconfigure",
+    "monit/settings/get",
+    "monit/settings/set"
+  ],
+  "opnsense_monit_test": [
+    "monit/service/reconfigure",
+    "monit/settings/addTest",
+    "monit/settings/delTest/{arg}",
+    "monit/settings/getTest/{arg}",
+    "monit/settings/searchTest"
+  ],
+  "opnsense_neighbor": [
+    "interfaces/neighbor_settings/addItem",
+    "interfaces/neighbor_settings/delItem/{arg}",
+    "interfaces/neighbor_settings/getItem/{arg}",
+    "interfaces/neighbor_settings/reconfigure",
+    "interfaces/neighbor_settings/searchItem",
+    "interfaces/neighbor_settings/setItem/{arg}"
+  ],
+  "opnsense_node_exporter_settings": [
+    "nodeexporter/general/get",
+    "nodeexporter/general/set",
+    "nodeexporter/service/reconfigure"
+  ],
+  "opnsense_plugin": [
+    "core/firmware/info",
+    "core/firmware/install/{arg}",
+    "core/firmware/remove/{arg}",
+    "core/firmware/running",
+    "core/firmware/upgradestatus"
+  ],
+  "opnsense_postfix_address": [
+    "postfix/address/addAddress",
+    "postfix/address/delAddress/{arg}",
+    "postfix/address/getAddress/{arg}",
+    "postfix/address/searchAddress",
+    "postfix/address/setAddress/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_antispam_settings": [
+    "postfix/antispam/get",
+    "postfix/antispam/set",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_domain": [
+    "postfix/domain/addDomain",
+    "postfix/domain/delDomain/{arg}",
+    "postfix/domain/getDomain/{arg}",
+    "postfix/domain/searchDomain",
+    "postfix/domain/setDomain/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_header_check": [
+    "postfix/headerchecks/addHeadercheck",
+    "postfix/headerchecks/delHeadercheck/{arg}",
+    "postfix/headerchecks/getHeadercheck/{arg}",
+    "postfix/headerchecks/searchHeaderchecks",
+    "postfix/headerchecks/setHeadercheck/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_recipient": [
+    "postfix/recipient/addRecipient",
+    "postfix/recipient/delRecipient/{arg}",
+    "postfix/recipient/getRecipient/{arg}",
+    "postfix/recipient/searchRecipient",
+    "postfix/recipient/setRecipient/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_recipient_bcc": [
+    "postfix/recipientbcc/addRecipientbcc",
+    "postfix/recipientbcc/delRecipientbcc/{arg}",
+    "postfix/recipientbcc/getRecipientbcc/{arg}",
+    "postfix/recipientbcc/searchRecipientbcc",
+    "postfix/recipientbcc/setRecipientbcc/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_sender": [
+    "postfix/sender/addSender",
+    "postfix/sender/delSender/{arg}",
+    "postfix/sender/getSender/{arg}",
+    "postfix/sender/searchSender",
+    "postfix/sender/setSender/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_sender_bcc": [
+    "postfix/senderbcc/addSenderbcc",
+    "postfix/senderbcc/delSenderbcc/{arg}",
+    "postfix/senderbcc/getSenderbcc/{arg}",
+    "postfix/senderbcc/searchSenderbcc",
+    "postfix/senderbcc/setSenderbcc/{arg}",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_postfix_settings": [
+    "postfix/general/get",
+    "postfix/general/set",
+    "postfix/service/reconfigure"
+  ],
+  "opnsense_route": [
+    "routes/routes/addroute",
+    "routes/routes/delroute/{arg}",
+    "routes/routes/getroute/{arg}",
+    "routes/routes/reconfigure",
+    "routes/routes/searchroute",
+    "routes/routes/setroute/{arg}"
+  ],
+  "opnsense_rspamd_settings": [
+    "rspamd/service/reconfigure",
+    "rspamd/settings/get",
+    "rspamd/settings/set"
+  ],
+  "opnsense_syslog_destination": [
+    "syslog/service/reconfigure",
+    "syslog/settings/addDestination",
+    "syslog/settings/delDestination/{arg}",
+    "syslog/settings/getDestination/{arg}",
+    "syslog/settings/searchDestinations",
+    "syslog/settings/setDestination/{arg}"
+  ],
+  "opnsense_syslog_settings": [
+    "syslog/service/reconfigure",
+    "syslog/settings/get",
+    "syslog/settings/set"
+  ],
+  "opnsense_trafficshaper_pipe": [
+    "trafficshaper/service/reconfigure",
+    "trafficshaper/settings/addPipe",
+    "trafficshaper/settings/delPipe/{arg}",
+    "trafficshaper/settings/getPipe/{arg}",
+    "trafficshaper/settings/searchPipes",
+    "trafficshaper/settings/setPipe/{arg}"
+  ],
+  "opnsense_trafficshaper_queue": [
+    "trafficshaper/service/reconfigure",
+    "trafficshaper/settings/addQueue",
+    "trafficshaper/settings/delQueue/{arg}",
+    "trafficshaper/settings/getQueue/{arg}",
+    "trafficshaper/settings/searchQueues",
+    "trafficshaper/settings/setQueue/{arg}"
+  ],
+  "opnsense_trafficshaper_rule": [
+    "trafficshaper/service/reconfigure",
+    "trafficshaper/settings/addRule",
+    "trafficshaper/settings/delRule/{arg}",
+    "trafficshaper/settings/getRule/{arg}",
+    "trafficshaper/settings/searchRules",
+    "trafficshaper/settings/setRule/{arg}"
+  ],
+  "opnsense_trust_ca": [
+    "trust/ca/add",
+    "trust/ca/get/{arg}",
+    "trust/ca/search",
+    "trust/ca/set/{arg}"
+  ],
+  "opnsense_trust_cert": [
+    "trust/cert/add",
+    "trust/cert/get/{arg}",
+    "trust/cert/set/{arg}"
+  ],
+  "opnsense_trust_settings": [
+    "trust/settings/get",
+    "trust/settings/reconfigure",
+    "trust/settings/set"
+  ],
+  "opnsense_tunable": [
+    "core/tunables/addItem",
+    "core/tunables/delItem/{arg}",
+    "core/tunables/getItem/{arg}",
+    "core/tunables/reconfigure",
+    "core/tunables/searchItem",
+    "core/tunables/setItem/{arg}"
+  ],
+  "opnsense_unbound_acl": [
+    "unbound/service/reconfigure",
+    "unbound/settings/addAcl",
+    "unbound/settings/delAcl/{arg}",
+    "unbound/settings/getAcl/{arg}",
+    "unbound/settings/searchAcl",
+    "unbound/settings/setAcl/{arg}"
+  ],
+  "opnsense_unbound_acl_settings": [
+    "unbound/service/reconfigure",
+    "unbound/settings/get",
+    "unbound/settings/set"
+  ],
+  "opnsense_unbound_advanced": [
+    "unbound/service/reconfigure",
+    "unbound/settings/get",
+    "unbound/settings/set"
+  ],
+  "opnsense_unbound_blocklist": [
+    "unbound/service/dnsbl",
+    "unbound/service/reconfigure",
+    "unbound/settings/addDnsbl",
+    "unbound/settings/delDnsbl/{arg}",
+    "unbound/settings/getDnsbl/{arg}",
+    "unbound/settings/searchDnsbl",
+    "unbound/settings/setDnsbl/{arg}"
+  ],
+  "opnsense_unbound_dot": [
+    "unbound/service/reconfigure",
+    "unbound/settings/addDot",
+    "unbound/settings/delDot/{arg}",
+    "unbound/settings/getDot/{arg}",
+    "unbound/settings/setDot/{arg}"
+  ],
+  "opnsense_unbound_forward": [
+    "unbound/service/reconfigure",
+    "unbound/settings/addForward",
+    "unbound/settings/delForward/{arg}",
+    "unbound/settings/getForward/{arg}",
+    "unbound/settings/setForward/{arg}"
+  ],
+  "opnsense_unbound_forwarding": [
+    "unbound/service/reconfigure",
+    "unbound/settings/get",
+    "unbound/settings/set"
+  ],
+  "opnsense_unbound_host_alias": [
+    "unbound/service/reconfigure",
+    "unbound/settings/addHostAlias",
+    "unbound/settings/delHostAlias/{arg}",
+    "unbound/settings/getHostAlias/{arg}",
+    "unbound/settings/searchHostAlias",
+    "unbound/settings/setHostAlias/{arg}"
+  ],
+  "opnsense_unbound_host_override": [
+    "unbound/service/reconfigure",
+    "unbound/settings/addHostOverride",
+    "unbound/settings/delHostOverride/{arg}",
+    "unbound/settings/getHostOverride/{arg}",
+    "unbound/settings/searchHostOverride",
+    "unbound/settings/setHostOverride/{arg}"
+  ],
+  "opnsense_unbound_settings": [
+    "unbound/service/reconfigureGeneral",
+    "unbound/settings/get",
+    "unbound/settings/set"
+  ],
+  "opnsense_virtual_ip": [
+    "interfaces/vip_settings/addItem",
+    "interfaces/vip_settings/delItem/{arg}",
+    "interfaces/vip_settings/getItem/{arg}",
+    "interfaces/vip_settings/reconfigure",
+    "interfaces/vip_settings/searchItem",
+    "interfaces/vip_settings/setItem/{arg}"
+  ],
+  "opnsense_vlan": [
+    "interfaces/vlan_settings/addItem",
+    "interfaces/vlan_settings/delItem/{arg}",
+    "interfaces/vlan_settings/getItem/{arg}",
+    "interfaces/vlan_settings/reconfigure",
+    "interfaces/vlan_settings/setItem/{arg}"
+  ],
+  "opnsense_vxlan": [
+    "interfaces/vxlan_settings/addItem",
+    "interfaces/vxlan_settings/delItem/{arg}",
+    "interfaces/vxlan_settings/getItem/{arg}",
+    "interfaces/vxlan_settings/reconfigure",
+    "interfaces/vxlan_settings/searchItem",
+    "interfaces/vxlan_settings/setItem/{arg}"
+  ],
+  "opnsense_wireguard_instance": [
+    "wireguard/server/addServer",
+    "wireguard/server/delServer/{arg}",
+    "wireguard/server/getServer/{arg}",
+    "wireguard/server/searchServer",
+    "wireguard/server/setServer/{arg}",
+    "wireguard/service/reconfigure"
+  ],
+  "opnsense_wireguard_peer": [
+    "wireguard/client/addClient",
+    "wireguard/client/delClient/{arg}",
+    "wireguard/client/getClient/{arg}",
+    "wireguard/client/searchClient",
+    "wireguard/client/setClient/{arg}",
+    "wireguard/service/reconfigure"
+  ],
+  "opnsense_wireguard_settings": [
+    "wireguard/general/get",
+    "wireguard/general/set",
+    "wireguard/service/reconfigure"
+  ],
+  "opnsense_wol_host": [
+    "wol/wol/addHost",
+    "wol/wol/delHost/{arg}",
+    "wol/wol/getHost/{arg}",
+    "wol/wol/searchHost",
+    "wol/wol/setHost/{arg}"
+  ]
+}

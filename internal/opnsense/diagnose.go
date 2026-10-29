@@ -33,11 +33,18 @@ const (
 )
 
 // Probes are read calls that need one privilege each. A 403 means the API user lacks it.
-var probes = []struct{ Area, Path, Privilege string }{
-	{"firewall aliases", "firewall/alias/searchItem", "Firewall: Alias"},
+// Probe is one read call --check makes to find missing privileges. TestProbePrivileges in
+// internal/privileges checks Privilege against the ACL.xml files of OPNsense.
+type Probe struct{ Area, Path, Privilege string }
+
+// Probes returns the read calls --check makes.
+func Probes() []Probe { return append([]Probe(nil), probes...) }
+
+var probes = []Probe{
+	{"firewall aliases", "firewall/alias/searchItem", "Firewall: Aliases"},
 	// "Firewall: Rules" without [new] only grants the legacy firewall_rules.php page.
 	{"firewall rules", "firewall/filter/searchRule", "Firewall: Rules [new]"},
-	{"unbound overrides", "unbound/settings/searchHostOverride", "Services: Unbound DNS"},
+	{"unbound overrides", "unbound/settings/searchHostOverride", "Services: Unbound"},
 	{"firmware", "core/firmware/info", "System: Firmware"},
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -66,7 +67,99 @@ func fetchModels(root string) error {
 		}
 		fmt.Println("fetched", m)
 	}
+	return fetchACLs(root, refs, models)
+}
+
+// fetchACLs downloads the ACL.xml of every core module, and of the plugins the specs use, next
+// to the models: core/<Module>/ACL/ACL.xml and plugins/<cat>/<plugin>/<Module>/ACL/ACL.xml.
+// They name the privileges an API user needs (see internal/privileges).
+func fetchACLs(root string, refs map[string]string, models map[string]bool) error {
+	plugins := map[string]bool{}
+	for m := range models {
+		if p := strings.Split(m, "/"); p[0] == "plugins" && len(p) >= 5 {
+			plugins[p[1]+"/"+p[2]] = true
+		}
+	}
+	const mvc = "src/opnsense/mvc/app/models/OPNsense/"
+	for _, repo := range []string{"core", "plugins"} {
+		paths, err := treePaths(repo, refs[repo])
+		if err != nil {
+			return err
+		}
+		for _, p := range paths {
+			if !strings.HasSuffix(p, "/ACL/ACL.xml") {
+				continue
+			}
+			var dst string
+			switch rest, ok := strings.CutPrefix(p, mvc); {
+			case repo == "core" && ok:
+				dst = "core/" + rest
+			case repo == "plugins":
+				parts := strings.SplitN(p, "/", 3)
+				sub, ok := strings.CutPrefix(parts[2], mvc)
+				if len(parts) < 3 || !ok || !plugins[parts[0]+"/"+parts[1]] {
+					continue
+				}
+				dst = "plugins/" + parts[0] + "/" + parts[1] + "/" + sub
+			default:
+				continue
+			}
+			body, err := download(fmt.Sprintf("https://raw.githubusercontent.com/opnsense/%s/%s/%s", repo, refs[repo], p))
+			if err != nil {
+				return err
+			}
+			out := filepath.Join(root, "gen", "models", filepath.FromSlash(dst))
+			if err := os.MkdirAll(filepath.Dir(out), 0o755); err != nil {
+				return err
+			}
+			if err := os.WriteFile(out, body, 0o644); err != nil {
+				return err
+			}
+			fmt.Println("fetched", dst)
+		}
+	}
 	return nil
+}
+
+// treePaths lists the files of a repository at ref through the GitHub API.
+func treePaths(repo, ref string) ([]string, error) {
+	body, err := download(fmt.Sprintf("https://api.github.com/repos/opnsense/%s/git/trees/%s?recursive=1", repo, ref))
+	if err != nil {
+		return nil, err
+	}
+	var tree struct {
+		Tree []struct {
+			Path string `json:"path"`
+		} `json:"tree"`
+		Truncated bool `json:"truncated"`
+	}
+	if err := json.Unmarshal(body, &tree); err != nil {
+		return nil, err
+	}
+	if tree.Truncated {
+		return nil, fmt.Errorf("%s tree at %s is truncated", repo, ref)
+	}
+	var out []string
+	for _, t := range tree.Tree {
+		out = append(out, t.Path)
+	}
+	return out, nil
+}
+
+func download(u string) ([]byte, error) {
+	resp, err := http.Get(u)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %s", u, resp.Status)
+	}
+	return body, nil
 }
 
 func readRefs(path string) (map[string]string, error) {

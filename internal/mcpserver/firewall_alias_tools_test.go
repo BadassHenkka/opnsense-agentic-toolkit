@@ -25,6 +25,7 @@ func connect(t *testing.T, opts mcpserver.Options) (*mcp.ClientSession, *opnsens
 	if err != nil {
 		t.Fatal(err)
 	}
+	srv.AddReceivingMiddleware(recordTool)
 	st, ct := mcp.NewInMemoryTransports()
 	ss, err := srv.Connect(ctx, st, nil)
 	if err != nil {

@@ -1,0 +1,10 @@
+<acl>
+    <page-services-acmeclient>
+        <name>Services: ACME Client</name>
+        <patterns>
+            <pattern>ui/acmeclient/*</pattern>
+            <pattern>api/diagnostics/log/core/acmeclient/*</pattern>
+            <pattern>api/acmeclient/*</pattern>
+        </patterns>
+    </page-services-acmeclient>
+</acl>

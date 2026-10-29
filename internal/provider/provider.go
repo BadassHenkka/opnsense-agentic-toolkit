@@ -157,3 +157,14 @@ func clientFrom(data any) (*opnsense.Client, bool) {
 	c, ok := data.(*opnsense.Client)
 	return c, ok
 }
+
+// ResourceTypes lists the type names of every resource, such as opnsense_firewall_rule.
+func ResourceTypes() []string {
+	var out []string
+	for _, f := range (&opnsenseProvider{}).Resources(context.Background()) {
+		var resp resource.MetadataResponse
+		f().Metadata(context.Background(), resource.MetadataRequest{ProviderTypeName: "opnsense"}, &resp)
+		out = append(out, resp.TypeName)
+	}
+	return out
+}

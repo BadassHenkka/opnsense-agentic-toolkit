@@ -24,8 +24,15 @@ tasks:
     cmds:
       - go run ./cmd/opnsense-gen -check
 
+  endpoints:
+    desc: Record the API endpoints each MCP tool and resource calls (internal/privileges/endpoints)
+    env:
+      OPNSENSE_UPDATE_ENDPOINTS: '1'
+    cmds:
+      - go test -count=1 ./internal/mcpserver ./internal/provider
+
   fetch-models:
-    desc: Download the model XML the specs use, at the commits in gen/models/REFS
+    desc: Download the model and ACL XML the specs use, at the commits in gen/models/REFS
     cmds:
       - go run ./cmd/opnsense-gen -fetch
 

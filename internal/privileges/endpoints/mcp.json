@@ -1,0 +1,1089 @@
+{
+  "acme_account_create": [
+    "acmeclient/accounts/add"
+  ],
+  "acme_account_delete": [
+    "acmeclient/accounts/del/{arg}",
+    "acmeclient/accounts/search"
+  ],
+  "acme_account_get": [
+    "acmeclient/accounts/get/{arg}"
+  ],
+  "acme_account_list": [
+    "acmeclient/accounts/search"
+  ],
+  "acme_account_register": [
+    "acmeclient/accounts/register/{arg}",
+    "acmeclient/accounts/search"
+  ],
+  "acme_account_update": [
+    "acmeclient/accounts/get/{arg}",
+    "acmeclient/accounts/update/{arg}"
+  ],
+  "acme_apply": [
+    "acmeclient/service/reconfigure"
+  ],
+  "acme_automation_create": [
+    "acmeclient/actions/add"
+  ],
+  "acme_automation_delete": [
+    "acmeclient/actions/del/{arg}",
+    "acmeclient/actions/search"
+  ],
+  "acme_automation_fields": [
+    "acmeclient/actions/get"
+  ],
+  "acme_automation_get": [
+    "acmeclient/actions/get/{arg}",
+    "acmeclient/actions/search"
+  ],
+  "acme_automation_list": [
+    "acmeclient/actions/search"
+  ],
+  "acme_automation_update": [
+    "acmeclient/actions/get/{arg}",
+    "acmeclient/actions/update/{arg}"
+  ],
+  "acme_certificate_create": [
+    "acmeclient/accounts/search",
+    "acmeclient/actions/search",
+    "acmeclient/certificates/add",
+    "acmeclient/validations/search"
+  ],
+  "acme_certificate_delete": [
+    "acmeclient/certificates/del/{arg}"
+  ],
+  "acme_certificate_get": [
+    "acmeclient/certificates/get/{arg}",
+    "acmeclient/certificates/search"
+  ],
+  "acme_certificate_issue": [
+    "acmeclient/certificates/search",
+    "acmeclient/certificates/sign/{arg}",
+    "acmeclient/settings/get"
+  ],
+  "acme_certificate_list": [
+    "acmeclient/certificates/search"
+  ],
+  "acme_certificate_revoke": [
+    "acmeclient/certificates/revoke/{arg}",
+    "acmeclient/certificates/search"
+  ],
+  "acme_certificate_run_automations": [
+    "acmeclient/certificates/automation/{arg}",
+    "acmeclient/certificates/search"
+  ],
+  "acme_certificate_update": [
+    "acmeclient/certificates/get/{arg}",
+    "acmeclient/certificates/update/{arg}"
+  ],
+  "acme_challenge_type_create": [
+    "acmeclient/validations/add",
+    "acmeclient/validations/get"
+  ],
+  "acme_challenge_type_delete": [
+    "acmeclient/validations/del/{arg}",
+    "acmeclient/validations/search"
+  ],
+  "acme_challenge_type_fields": [
+    "acmeclient/validations/get"
+  ],
+  "acme_challenge_type_get": [
+    "acmeclient/validations/get/{arg}",
+    "acmeclient/validations/search"
+  ],
+  "acme_challenge_type_list": [
+    "acmeclient/validations/search"
+  ],
+  "acme_challenge_type_update": [
+    "acmeclient/validations/get/{arg}",
+    "acmeclient/validations/search",
+    "acmeclient/validations/update/{arg}"
+  ],
+  "acme_settings_get": [
+    "acmeclient/settings/get"
+  ],
+  "acme_settings_update": [
+    "acmeclient/settings/get",
+    "acmeclient/settings/set"
+  ],
+  "auth_api_key_list": [
+    "auth/user/searchApiKey"
+  ],
+  "auth_group_get": [
+    "auth/group/get/{arg}",
+    "auth/group/search"
+  ],
+  "auth_group_list": [
+    "auth/group/search"
+  ],
+  "auth_user_get": [
+    "auth/user/get/{arg}",
+    "auth/user/search"
+  ],
+  "auth_user_list": [
+    "auth/user/search"
+  ],
+  "backup_diff_get": [
+    "core/backup/diff/{arg}/{arg}/{arg}"
+  ],
+  "backup_list": [
+    "core/backup/backups/{arg}"
+  ],
+  "bridge_get": [
+    "interfaces/bridge_settings/getItem/{arg}",
+    "interfaces/bridge_settings/searchItem"
+  ],
+  "bridge_list": [
+    "interfaces/bridge_settings/searchItem"
+  ],
+  "caddy_access_list_create": [
+    "caddy/reverse_proxy/addAccessList"
+  ],
+  "caddy_access_list_delete": [
+    "caddy/reverse_proxy/delAccessList/{arg}",
+    "caddy/reverse_proxy/searchAccessList"
+  ],
+  "caddy_access_list_list": [
+    "caddy/reverse_proxy/searchAccessList"
+  ],
+  "caddy_apply": [
+    "caddy/service/reconfigure"
+  ],
+  "caddy_caddyfile_get": [
+    "caddy/diagnostics/caddyfile",
+    "caddy/general/get",
+    "caddy/reverse_proxy/searchBasicAuth"
+  ],
+  "caddy_domain_delete": [
+    "caddy/reverse_proxy/delReverseProxy/{arg}",
+    "caddy/reverse_proxy/searchReverseProxy"
+  ],
+  "caddy_domain_list": [
+    "caddy/reverse_proxy/searchReverseProxy"
+  ],
+  "caddy_expose": [
+    "caddy/reverse_proxy/addHandle",
+    "caddy/reverse_proxy/addReverseProxy",
+    "caddy/reverse_proxy/addSubdomain",
+    "caddy/reverse_proxy/getHandle/{arg}",
+    "caddy/reverse_proxy/searchAccessList",
+    "caddy/reverse_proxy/searchHandle",
+    "caddy/reverse_proxy/searchReverseProxy",
+    "caddy/reverse_proxy/searchSubdomain"
+  ],
+  "caddy_handler_delete": [
+    "caddy/reverse_proxy/delHandle/{arg}",
+    "caddy/reverse_proxy/searchHandle"
+  ],
+  "caddy_handler_get": [
+    "caddy/reverse_proxy/getHandle/{arg}",
+    "caddy/reverse_proxy/searchHandle"
+  ],
+  "caddy_handler_list": [
+    "caddy/reverse_proxy/searchHandle"
+  ],
+  "caddy_handler_update": [
+    "caddy/reverse_proxy/getHandle/{arg}",
+    "caddy/reverse_proxy/searchHandle",
+    "caddy/reverse_proxy/setHandle/{arg}"
+  ],
+  "caddy_settings_update": [
+    "caddy/general/get",
+    "caddy/general/set"
+  ],
+  "caddy_status": [
+    "caddy/general/get",
+    "caddy/reverse_proxy/searchHandle",
+    "caddy/reverse_proxy/searchReverseProxy",
+    "caddy/service/status"
+  ],
+  "caddy_subdomain_delete": [
+    "caddy/reverse_proxy/delSubdomain/{arg}",
+    "caddy/reverse_proxy/searchSubdomain"
+  ],
+  "caddy_subdomain_list": [
+    "caddy/reverse_proxy/searchSubdomain"
+  ],
+  "captive_portal_zone_get": [
+    "captiveportal/settings/getZone/{arg}",
+    "captiveportal/settings/searchZones"
+  ],
+  "captive_portal_zone_list": [
+    "captiveportal/settings/searchZones"
+  ],
+  "cron_job_get": [
+    "cron/settings/getJob/{arg}",
+    "cron/settings/searchJobs"
+  ],
+  "cron_job_list": [
+    "cron/settings/searchJobs"
+  ],
+  "dnsmasq_boot_get": [
+    "dnsmasq/settings/getBoot/{arg}",
+    "dnsmasq/settings/searchBoot"
+  ],
+  "dnsmasq_boot_list": [
+    "dnsmasq/settings/searchBoot"
+  ],
+  "dnsmasq_domain_get": [
+    "dnsmasq/settings/getDomain/{arg}",
+    "dnsmasq/settings/searchDomain"
+  ],
+  "dnsmasq_domain_list": [
+    "dnsmasq/settings/searchDomain"
+  ],
+  "dnsmasq_host_get": [
+    "dnsmasq/settings/getHost/{arg}",
+    "dnsmasq/settings/searchHost"
+  ],
+  "dnsmasq_host_list": [
+    "dnsmasq/settings/searchHost"
+  ],
+  "dnsmasq_lease_list": [
+    "dnsmasq/leases/search"
+  ],
+  "dnsmasq_option_get": [
+    "dnsmasq/settings/getOption/{arg}",
+    "dnsmasq/settings/searchOption"
+  ],
+  "dnsmasq_option_list": [
+    "dnsmasq/settings/searchOption"
+  ],
+  "dnsmasq_range_get": [
+    "dnsmasq/settings/getRange/{arg}",
+    "dnsmasq/settings/searchRange"
+  ],
+  "dnsmasq_range_list": [
+    "dnsmasq/settings/searchRange"
+  ],
+  "dnsmasq_settings_get": [
+    "dnsmasq/settings/get"
+  ],
+  "dnsmasq_tag_get": [
+    "dnsmasq/settings/getTag/{arg}",
+    "dnsmasq/settings/searchTag"
+  ],
+  "dnsmasq_tag_list": [
+    "dnsmasq/settings/searchTag"
+  ],
+  "dyndns_account_get": [
+    "dyndns/accounts/getItem/{arg}",
+    "dyndns/accounts/searchItem"
+  ],
+  "dyndns_account_list": [
+    "dyndns/accounts/searchItem"
+  ],
+  "dyndns_settings_get": [
+    "dyndns/settings/get"
+  ],
+  "firewall_alias_apply": [
+    "firewall/alias/reconfigure"
+  ],
+  "firewall_alias_create": [
+    "firewall/alias/addItem"
+  ],
+  "firewall_alias_delete": [
+    "firewall/alias/delItem/{arg}",
+    "firewall/alias/getAliasUUID/{arg}"
+  ],
+  "firewall_alias_get": [
+    "firewall/alias/getAliasUUID/{arg}",
+    "firewall/alias/getItem/{arg}"
+  ],
+  "firewall_alias_list": [
+    "firewall/alias/searchItem"
+  ],
+  "firewall_alias_update": [
+    "firewall/alias/getAliasUUID/{arg}",
+    "firewall/alias/getItem/{arg}",
+    "firewall/alias/setItem/{arg}"
+  ],
+  "firewall_category_get": [
+    "firewall/category/getItem/{arg}",
+    "firewall/category/searchItem"
+  ],
+  "firewall_category_list": [
+    "firewall/category/searchItem"
+  ],
+  "firewall_interface_group_get": [
+    "firewall/group/getItem/{arg}",
+    "firewall/group/searchItem"
+  ],
+  "firewall_interface_group_list": [
+    "firewall/group/searchItem"
+  ],
+  "firewall_interface_list": [
+    "firewall/filter/getInterfaceList"
+  ],
+  "firewall_nat_npt_get": [
+    "firewall/npt/getRule/{arg}",
+    "firewall/npt/searchRule"
+  ],
+  "firewall_nat_npt_list": [
+    "firewall/npt/searchRule"
+  ],
+  "firewall_nat_one_to_one_get": [
+    "firewall/one_to_one/getRule/{arg}",
+    "firewall/one_to_one/searchRule"
+  ],
+  "firewall_nat_one_to_one_list": [
+    "firewall/one_to_one/searchRule"
+  ],
+  "firewall_nat_outbound_get": [
+    "firewall/source_nat/getRule/{arg}",
+    "firewall/source_nat/searchRule"
+  ],
+  "firewall_nat_outbound_list": [
+    "firewall/source_nat/searchRule"
+  ],
+  "firewall_nat_outbound_mode_get": [
+    "firewall/source_nat/get"
+  ],
+  "firewall_nat_port_forward_get": [
+    "firewall/d_nat/getRule/{arg}",
+    "firewall/d_nat/searchRule"
+  ],
+  "firewall_nat_port_forward_list": [
+    "firewall/d_nat/searchRule"
+  ],
+  "firewall_rule_apply": [
+    "core/firmware/running",
+    "firewall/filter/apply"
+  ],
+  "firewall_rule_create": [
+    "firewall/filter/addRule",
+    "firewall/filter/getInterfaceList"
+  ],
+  "firewall_rule_delete": [
+    "firewall/filter/delRule/{arg}",
+    "firewall/filter/searchRule"
+  ],
+  "firewall_rule_get": [
+    "firewall/filter/getRule/{arg}",
+    "firewall/filter/searchRule"
+  ],
+  "firewall_rule_list": [
+    "firewall/filter/getInterfaceList",
+    "firewall/filter/searchRule"
+  ],
+  "firewall_rule_move": [
+    "firewall/filter/moveRuleBefore/{arg}/{arg}",
+    "firewall/filter/searchRule"
+  ],
+  "firewall_rule_update": [
+    "firewall/filter/getRule/{arg}",
+    "firewall/filter/searchRule",
+    "firewall/filter/setRule/{arg}"
+  ],
+  "firmware_plugin_install": [
+    "core/firmware/info",
+    "core/firmware/install/{arg}",
+    "core/firmware/running",
+    "core/firmware/upgradestatus"
+  ],
+  "firmware_plugin_list": [
+    "core/firmware/info"
+  ],
+  "firmware_plugin_remove": [
+    "core/firmware/info",
+    "core/firmware/remove/{arg}",
+    "core/firmware/running",
+    "core/firmware/upgradestatus"
+  ],
+  "firmware_status": [
+    "core/firmware/status"
+  ],
+  "firmware_update": [
+    "core/firmware/running",
+    "core/firmware/update",
+    "core/firmware/upgradestatus"
+  ],
+  "frr_bfd_neighbor_get": [
+    "quagga/bfd/getNeighbor/{arg}",
+    "quagga/bfd/searchNeighbor"
+  ],
+  "frr_bfd_neighbor_list": [
+    "quagga/bfd/searchNeighbor"
+  ],
+  "frr_bfd_settings_get": [
+    "quagga/bfd/get"
+  ],
+  "frr_bgp_aspath_get": [
+    "quagga/bgp/getAspath/{arg}",
+    "quagga/bgp/searchAspath"
+  ],
+  "frr_bgp_aspath_list": [
+    "quagga/bgp/searchAspath"
+  ],
+  "frr_bgp_community_list_get": [
+    "quagga/bgp/getCommunitylist/{arg}",
+    "quagga/bgp/searchCommunitylist"
+  ],
+  "frr_bgp_community_list_list": [
+    "quagga/bgp/searchCommunitylist"
+  ],
+  "frr_bgp_neighbor_get": [
+    "quagga/bgp/getNeighbor/{arg}",
+    "quagga/bgp/searchNeighbor"
+  ],
+  "frr_bgp_neighbor_list": [
+    "quagga/bgp/searchNeighbor"
+  ],
+  "frr_bgp_peer_group_get": [
+    "quagga/bgp/getPeergroup/{arg}",
+    "quagga/bgp/searchPeergroup"
+  ],
+  "frr_bgp_peer_group_list": [
+    "quagga/bgp/searchPeergroup"
+  ],
+  "frr_bgp_prefix_list_get": [
+    "quagga/bgp/getPrefixlist/{arg}",
+    "quagga/bgp/searchPrefixlist"
+  ],
+  "frr_bgp_prefix_list_list": [
+    "quagga/bgp/searchPrefixlist"
+  ],
+  "frr_bgp_redistribution_get": [
+    "quagga/bgp/getRedistribution/{arg}",
+    "quagga/bgp/searchRedistribution"
+  ],
+  "frr_bgp_redistribution_list": [
+    "quagga/bgp/searchRedistribution"
+  ],
+  "frr_bgp_route_map_get": [
+    "quagga/bgp/getRoutemap/{arg}",
+    "quagga/bgp/searchRoutemap"
+  ],
+  "frr_bgp_route_map_list": [
+    "quagga/bgp/searchRoutemap"
+  ],
+  "frr_bgp_settings_get": [
+    "quagga/bgp/get"
+  ],
+  "frr_ospf6_area_get": [
+    "quagga/ospf6settings/getArea/{arg}",
+    "quagga/ospf6settings/searchArea"
+  ],
+  "frr_ospf6_area_list": [
+    "quagga/ospf6settings/searchArea"
+  ],
+  "frr_ospf6_interface_get": [
+    "quagga/ospf6settings/getInterface/{arg}",
+    "quagga/ospf6settings/searchInterface"
+  ],
+  "frr_ospf6_interface_list": [
+    "quagga/ospf6settings/searchInterface"
+  ],
+  "frr_ospf6_prefix_list_get": [
+    "quagga/ospf6settings/getPrefixlist/{arg}",
+    "quagga/ospf6settings/searchPrefixlist"
+  ],
+  "frr_ospf6_prefix_list_list": [
+    "quagga/ospf6settings/searchPrefixlist"
+  ],
+  "frr_ospf6_redistribution_get": [
+    "quagga/ospf6settings/getRedistribution/{arg}",
+    "quagga/ospf6settings/searchRedistribution"
+  ],
+  "frr_ospf6_redistribution_list": [
+    "quagga/ospf6settings/searchRedistribution"
+  ],
+  "frr_ospf6_route_map_get": [
+    "quagga/ospf6settings/getRoutemap/{arg}",
+    "quagga/ospf6settings/searchRoutemap"
+  ],
+  "frr_ospf6_route_map_list": [
+    "quagga/ospf6settings/searchRoutemap"
+  ],
+  "frr_ospf6_settings_get": [
+    "quagga/ospf6settings/get"
+  ],
+  "frr_ospf_area_get": [
+    "quagga/ospfsettings/getArea/{arg}",
+    "quagga/ospfsettings/searchArea"
+  ],
+  "frr_ospf_area_list": [
+    "quagga/ospfsettings/searchArea"
+  ],
+  "frr_ospf_interface_get": [
+    "quagga/ospfsettings/getInterface/{arg}",
+    "quagga/ospfsettings/searchInterface"
+  ],
+  "frr_ospf_interface_list": [
+    "quagga/ospfsettings/searchInterface"
+  ],
+  "frr_ospf_neighbor_get": [
+    "quagga/ospfsettings/getNeighbor/{arg}",
+    "quagga/ospfsettings/searchNeighbor"
+  ],
+  "frr_ospf_neighbor_list": [
+    "quagga/ospfsettings/searchNeighbor"
+  ],
+  "frr_ospf_network_get": [
+    "quagga/ospfsettings/getNetwork/{arg}",
+    "quagga/ospfsettings/searchNetwork"
+  ],
+  "frr_ospf_network_list": [
+    "quagga/ospfsettings/searchNetwork"
+  ],
+  "frr_ospf_prefix_list_get": [
+    "quagga/ospfsettings/getPrefixlist/{arg}",
+    "quagga/ospfsettings/searchPrefixlist"
+  ],
+  "frr_ospf_prefix_list_list": [
+    "quagga/ospfsettings/searchPrefixlist"
+  ],
+  "frr_ospf_redistribution_get": [
+    "quagga/ospfsettings/getRedistribution/{arg}",
+    "quagga/ospfsettings/searchRedistribution"
+  ],
+  "frr_ospf_redistribution_list": [
+    "quagga/ospfsettings/searchRedistribution"
+  ],
+  "frr_ospf_route_map_get": [
+    "quagga/ospfsettings/getRoutemap/{arg}",
+    "quagga/ospfsettings/searchRoutemap"
+  ],
+  "frr_ospf_route_map_list": [
+    "quagga/ospfsettings/searchRoutemap"
+  ],
+  "frr_ospf_settings_get": [
+    "quagga/ospfsettings/get"
+  ],
+  "frr_rip_settings_get": [
+    "quagga/rip/get"
+  ],
+  "frr_settings_get": [
+    "quagga/general/get"
+  ],
+  "frr_static_route_get": [
+    "quagga/static/getRoute/{arg}",
+    "quagga/static/searchRoute"
+  ],
+  "frr_static_route_list": [
+    "quagga/static/searchRoute"
+  ],
+  "frr_static_settings_get": [
+    "quagga/static/get"
+  ],
+  "gif_get": [
+    "interfaces/gif_settings/getItem/{arg}",
+    "interfaces/gif_settings/searchItem"
+  ],
+  "gif_list": [
+    "interfaces/gif_settings/searchItem"
+  ],
+  "gre_get": [
+    "interfaces/gre_settings/getItem/{arg}",
+    "interfaces/gre_settings/searchItem"
+  ],
+  "gre_list": [
+    "interfaces/gre_settings/searchItem"
+  ],
+  "hasync_settings_get": [
+    "core/hasync/get"
+  ],
+  "ids_policy_get": [
+    "ids/settings/getPolicy/{arg}",
+    "ids/settings/searchPolicy"
+  ],
+  "ids_policy_list": [
+    "ids/settings/searchPolicy"
+  ],
+  "ids_ruleset_list": [
+    "ids/settings/listRulesets"
+  ],
+  "ids_settings_get": [
+    "ids/settings/get"
+  ],
+  "ids_user_rule_get": [
+    "ids/settings/getUserRule/{arg}",
+    "ids/settings/searchUserRule"
+  ],
+  "ids_user_rule_list": [
+    "ids/settings/searchUserRule"
+  ],
+  "interface_get": [
+    "interfaces/assignment/getItem/{arg}",
+    "interfaces/assignment/searchItem"
+  ],
+  "interface_list": [
+    "interfaces/assignment/searchItem"
+  ],
+  "kea_ctrl_agent_settings_get": [
+    "kea/ctrl_agent/get"
+  ],
+  "kea_dhcp4_option_get": [
+    "kea/dhcpv4/getOption/{arg}",
+    "kea/dhcpv4/searchOption"
+  ],
+  "kea_dhcp4_option_list": [
+    "kea/dhcpv4/searchOption"
+  ],
+  "kea_dhcp4_peer_get": [
+    "kea/dhcpv4/getPeer/{arg}",
+    "kea/dhcpv4/searchPeer"
+  ],
+  "kea_dhcp4_peer_list": [
+    "kea/dhcpv4/searchPeer"
+  ],
+  "kea_dhcp4_reservation_get": [
+    "kea/dhcpv4/getReservation/{arg}",
+    "kea/dhcpv4/searchReservation"
+  ],
+  "kea_dhcp4_reservation_list": [
+    "kea/dhcpv4/searchReservation"
+  ],
+  "kea_dhcp4_settings_get": [
+    "kea/dhcpv4/get"
+  ],
+  "kea_dhcp4_subnet_get": [
+    "kea/dhcpv4/getSubnet/{arg}",
+    "kea/dhcpv4/searchSubnet"
+  ],
+  "kea_dhcp4_subnet_list": [
+    "kea/dhcpv4/searchSubnet"
+  ],
+  "kea_dhcp6_option_get": [
+    "kea/dhcpv6/getOption/{arg}",
+    "kea/dhcpv6/searchOption"
+  ],
+  "kea_dhcp6_option_list": [
+    "kea/dhcpv6/searchOption"
+  ],
+  "kea_dhcp6_pd_pool_get": [
+    "kea/dhcpv6/getPdPool/{arg}",
+    "kea/dhcpv6/searchPdPool"
+  ],
+  "kea_dhcp6_pd_pool_list": [
+    "kea/dhcpv6/searchPdPool"
+  ],
+  "kea_dhcp6_peer_get": [
+    "kea/dhcpv6/getPeer/{arg}",
+    "kea/dhcpv6/searchPeer"
+  ],
+  "kea_dhcp6_peer_list": [
+    "kea/dhcpv6/searchPeer"
+  ],
+  "kea_dhcp6_reservation_get": [
+    "kea/dhcpv6/getReservation/{arg}",
+    "kea/dhcpv6/searchReservation"
+  ],
+  "kea_dhcp6_reservation_list": [
+    "kea/dhcpv6/searchReservation"
+  ],
+  "kea_dhcp6_settings_get": [
+    "kea/dhcpv6/get"
+  ],
+  "kea_dhcp6_subnet_get": [
+    "kea/dhcpv6/getSubnet/{arg}",
+    "kea/dhcpv6/searchSubnet"
+  ],
+  "kea_dhcp6_subnet_list": [
+    "kea/dhcpv6/searchSubnet"
+  ],
+  "kea_lease4_list": [
+    "kea/leases4/search"
+  ],
+  "kea_lease6_list": [
+    "kea/leases6/search"
+  ],
+  "lagg_get": [
+    "interfaces/lagg_settings/getItem/{arg}",
+    "interfaces/lagg_settings/searchItem"
+  ],
+  "lagg_list": [
+    "interfaces/lagg_settings/searchItem"
+  ],
+  "loopback_get": [
+    "interfaces/loopback_settings/getItem/{arg}",
+    "interfaces/loopback_settings/searchItem"
+  ],
+  "loopback_list": [
+    "interfaces/loopback_settings/searchItem"
+  ],
+  "monit_alert_get": [
+    "monit/settings/getAlert/{arg}",
+    "monit/settings/searchAlert"
+  ],
+  "monit_alert_list": [
+    "monit/settings/searchAlert"
+  ],
+  "monit_service_get": [
+    "monit/settings/getService/{arg}",
+    "monit/settings/searchService"
+  ],
+  "monit_service_list": [
+    "monit/settings/searchService"
+  ],
+  "monit_settings_get": [
+    "monit/settings/get"
+  ],
+  "monit_test_get": [
+    "monit/settings/getTest/{arg}",
+    "monit/settings/searchTest"
+  ],
+  "monit_test_list": [
+    "monit/settings/searchTest"
+  ],
+  "neighbor_get": [
+    "interfaces/neighbor_settings/getItem/{arg}",
+    "interfaces/neighbor_settings/searchItem"
+  ],
+  "neighbor_list": [
+    "interfaces/neighbor_settings/searchItem"
+  ],
+  "node_exporter_settings_get": [
+    "nodeexporter/general/get"
+  ],
+  "postfix_address_get": [
+    "postfix/address/getAddress/{arg}",
+    "postfix/address/searchAddress"
+  ],
+  "postfix_address_list": [
+    "postfix/address/searchAddress"
+  ],
+  "postfix_antispam_settings_get": [
+    "postfix/antispam/get"
+  ],
+  "postfix_domain_get": [
+    "postfix/domain/getDomain/{arg}",
+    "postfix/domain/searchDomain"
+  ],
+  "postfix_domain_list": [
+    "postfix/domain/searchDomain"
+  ],
+  "postfix_header_check_get": [
+    "postfix/headerchecks/getHeadercheck/{arg}",
+    "postfix/headerchecks/searchHeaderchecks"
+  ],
+  "postfix_header_check_list": [
+    "postfix/headerchecks/searchHeaderchecks"
+  ],
+  "postfix_recipient_bcc_get": [
+    "postfix/recipientbcc/getRecipientbcc/{arg}",
+    "postfix/recipientbcc/searchRecipientbcc"
+  ],
+  "postfix_recipient_bcc_list": [
+    "postfix/recipientbcc/searchRecipientbcc"
+  ],
+  "postfix_recipient_get": [
+    "postfix/recipient/getRecipient/{arg}",
+    "postfix/recipient/searchRecipient"
+  ],
+  "postfix_recipient_list": [
+    "postfix/recipient/searchRecipient"
+  ],
+  "postfix_sender_bcc_get": [
+    "postfix/senderbcc/getSenderbcc/{arg}",
+    "postfix/senderbcc/searchSenderbcc"
+  ],
+  "postfix_sender_bcc_list": [
+    "postfix/senderbcc/searchSenderbcc"
+  ],
+  "postfix_sender_get": [
+    "postfix/sender/getSender/{arg}",
+    "postfix/sender/searchSender"
+  ],
+  "postfix_sender_list": [
+    "postfix/sender/searchSender"
+  ],
+  "postfix_settings_get": [
+    "postfix/general/get"
+  ],
+  "routing_apply": [
+    "routes/routes/reconfigure"
+  ],
+  "routing_gateway_create": [
+    "routing/settings/addGateway"
+  ],
+  "routing_gateway_delete": [
+    "routing/settings/delGateway/{arg}",
+    "routing/settings/searchGateway"
+  ],
+  "routing_gateway_get": [
+    "routing/settings/getGateway/{arg}",
+    "routing/settings/searchGateway"
+  ],
+  "routing_gateway_group_get": [
+    "routing/group_settings/get/{arg}",
+    "routing/group_settings/search"
+  ],
+  "routing_gateway_group_list": [
+    "routing/group_settings/search"
+  ],
+  "routing_gateway_list": [
+    "routing/settings/searchGateway"
+  ],
+  "routing_gateway_status": [
+    "routes/gateway/status"
+  ],
+  "routing_gateway_update": [
+    "routing/settings/getGateway/{arg}",
+    "routing/settings/setGateway/{arg}"
+  ],
+  "routing_route_create": [
+    "routes/routes/addroute",
+    "routing/settings/searchGateway"
+  ],
+  "routing_route_delete": [
+    "routes/routes/delroute/{arg}",
+    "routes/routes/searchroute"
+  ],
+  "routing_route_get": [
+    "routes/routes/getroute/{arg}",
+    "routes/routes/searchroute"
+  ],
+  "routing_route_list": [
+    "routes/routes/searchroute"
+  ],
+  "routing_route_update": [
+    "routes/routes/getroute/{arg}",
+    "routes/routes/searchroute",
+    "routes/routes/setroute/{arg}"
+  ],
+  "rspamd_settings_get": [
+    "rspamd/settings/get"
+  ],
+  "snapshot_list": [
+    "core/snapshots/isSupported",
+    "core/snapshots/search"
+  ],
+  "syslog_destination_get": [
+    "syslog/settings/getDestination/{arg}",
+    "syslog/settings/searchDestinations"
+  ],
+  "syslog_destination_list": [
+    "syslog/settings/searchDestinations"
+  ],
+  "syslog_settings_get": [
+    "syslog/settings/get"
+  ],
+  "trafficshaper_pipe_get": [
+    "trafficshaper/settings/getPipe/{arg}",
+    "trafficshaper/settings/searchPipes"
+  ],
+  "trafficshaper_pipe_list": [
+    "trafficshaper/settings/searchPipes"
+  ],
+  "trafficshaper_queue_get": [
+    "trafficshaper/settings/getQueue/{arg}",
+    "trafficshaper/settings/searchQueues"
+  ],
+  "trafficshaper_queue_list": [
+    "trafficshaper/settings/searchQueues"
+  ],
+  "trafficshaper_rule_get": [
+    "trafficshaper/settings/getRule/{arg}",
+    "trafficshaper/settings/searchRules"
+  ],
+  "trafficshaper_rule_list": [
+    "trafficshaper/settings/searchRules"
+  ],
+  "trust_ca_get": [
+    "trust/ca/get/{arg}",
+    "trust/ca/search"
+  ],
+  "trust_ca_list": [
+    "trust/ca/search"
+  ],
+  "trust_cert_get": [
+    "trust/cert/get/{arg}",
+    "trust/cert/search"
+  ],
+  "trust_cert_list": [
+    "trust/cert/search"
+  ],
+  "trust_settings_get": [
+    "trust/settings/get"
+  ],
+  "tunable_get": [
+    "core/tunables/getItem/{arg}",
+    "core/tunables/searchItem"
+  ],
+  "tunable_list": [
+    "core/tunables/searchItem"
+  ],
+  "unbound_acl_get": [
+    "unbound/settings/getAcl/{arg}",
+    "unbound/settings/searchAcl"
+  ],
+  "unbound_acl_list": [
+    "unbound/settings/searchAcl"
+  ],
+  "unbound_acl_settings_get": [
+    "unbound/settings/get"
+  ],
+  "unbound_advanced_get": [
+    "unbound/settings/get"
+  ],
+  "unbound_apply": [
+    "unbound/service/reconfigure"
+  ],
+  "unbound_blocklist_get": [
+    "unbound/settings/getDnsbl/{arg}",
+    "unbound/settings/searchDnsbl"
+  ],
+  "unbound_blocklist_list": [
+    "unbound/settings/searchDnsbl"
+  ],
+  "unbound_dot_get": [
+    "unbound/settings/getDot/{arg}",
+    "unbound/settings/searchDot"
+  ],
+  "unbound_dot_list": [
+    "unbound/settings/searchDot"
+  ],
+  "unbound_forward_get": [
+    "unbound/settings/getForward/{arg}",
+    "unbound/settings/searchForward"
+  ],
+  "unbound_forward_list": [
+    "unbound/settings/searchForward"
+  ],
+  "unbound_forwarding_get": [
+    "unbound/settings/get"
+  ],
+  "unbound_host_alias_create": [
+    "unbound/settings/addHostAlias",
+    "unbound/settings/searchHostOverride"
+  ],
+  "unbound_host_alias_delete": [
+    "unbound/settings/delHostAlias/{arg}",
+    "unbound/settings/searchHostAlias"
+  ],
+  "unbound_host_alias_get": [
+    "unbound/settings/getHostAlias/{arg}",
+    "unbound/settings/searchHostAlias"
+  ],
+  "unbound_host_alias_list": [
+    "unbound/settings/searchHostAlias"
+  ],
+  "unbound_host_alias_update": [
+    "unbound/settings/getHostAlias/{arg}",
+    "unbound/settings/searchHostAlias",
+    "unbound/settings/setHostAlias/{arg}"
+  ],
+  "unbound_host_override_create": [
+    "unbound/settings/addHostOverride"
+  ],
+  "unbound_host_override_delete": [
+    "unbound/settings/delHostOverride/{arg}"
+  ],
+  "unbound_host_override_get": [
+    "unbound/settings/getHostOverride/{arg}",
+    "unbound/settings/searchHostAlias",
+    "unbound/settings/searchHostOverride"
+  ],
+  "unbound_host_override_list": [
+    "unbound/settings/searchHostOverride"
+  ],
+  "unbound_host_override_update": [
+    "unbound/settings/getHostOverride/{arg}",
+    "unbound/settings/setHostOverride/{arg}"
+  ],
+  "unbound_settings_get": [
+    "unbound/settings/get"
+  ],
+  "virtual_ip_get": [
+    "interfaces/vip_settings/getItem/{arg}",
+    "interfaces/vip_settings/searchItem"
+  ],
+  "virtual_ip_list": [
+    "interfaces/vip_settings/searchItem"
+  ],
+  "vlan_get": [
+    "interfaces/vlan_settings/getItem/{arg}",
+    "interfaces/vlan_settings/searchItem"
+  ],
+  "vlan_list": [
+    "interfaces/vlan_settings/searchItem"
+  ],
+  "vxlan_get": [
+    "interfaces/vxlan_settings/getItem/{arg}",
+    "interfaces/vxlan_settings/searchItem"
+  ],
+  "vxlan_list": [
+    "interfaces/vxlan_settings/searchItem"
+  ],
+  "wireguard_apply": [
+    "wireguard/service/reconfigure"
+  ],
+  "wireguard_instance_create": [
+    "wireguard/server/addServer"
+  ],
+  "wireguard_instance_delete": [
+    "wireguard/server/delServer/{arg}",
+    "wireguard/server/searchServer"
+  ],
+  "wireguard_instance_get": [
+    "wireguard/client/searchClient",
+    "wireguard/server/getServer/{arg}",
+    "wireguard/server/searchServer"
+  ],
+  "wireguard_instance_list": [
+    "wireguard/server/searchServer"
+  ],
+  "wireguard_instance_update": [
+    "wireguard/server/getServer/{arg}",
+    "wireguard/server/setServer/{arg}"
+  ],
+  "wireguard_peer_create": [
+    "wireguard/client/addClient",
+    "wireguard/server/getServer/{arg}",
+    "wireguard/server/searchServer"
+  ],
+  "wireguard_peer_delete": [
+    "wireguard/client/delClient/{arg}",
+    "wireguard/client/searchClient"
+  ],
+  "wireguard_peer_get": [
+    "wireguard/client/getClient/{arg}",
+    "wireguard/client/searchClient",
+    "wireguard/server/searchServer"
+  ],
+  "wireguard_peer_list": [
+    "wireguard/client/searchClient"
+  ],
+  "wireguard_peer_update": [
+    "wireguard/client/getClient/{arg}",
+    "wireguard/client/searchClient",
+    "wireguard/client/setClient/{arg}"
+  ],
+  "wireguard_settings_get": [
+    "wireguard/general/get"
+  ],
+  "wireguard_settings_update": [
+    "wireguard/general/set"
+  ],
+  "wireguard_status": [
+    "wireguard/service/show"
+  ],
+  "wol_host_create": [
+    "firewall/filter/getInterfaceList",
+    "wol/wol/addHost",
+    "wol/wol/searchHost"
+  ],
+  "wol_host_delete": [
+    "wol/wol/delHost/{arg}",
+    "wol/wol/getHost/{arg}",
+    "wol/wol/searchHost"
+  ],
+  "wol_host_list": [
+    "wol/wol/searchHost"
+  ],
+  "wol_host_update": [
+    "wol/wol/getHost/{arg}",
+    "wol/wol/searchHost",
+    "wol/wol/setHost/{arg}"
+  ],
+  "wol_wake": [
+    "firewall/filter/getInterfaceList",
+    "wol/wol/searchHost",
+    "wol/wol/set"
+  ],
+  "wol_wake_all": [
+    "wol/wol/wakeall"
+  ]
+}

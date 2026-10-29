@@ -158,7 +158,18 @@ func (c *Client) Post(ctx context.Context, path string, body, out any) error {
 	return c.do(ctx, http.MethodPost, path, body, out)
 }
 
+type callRecorderKey struct{}
+
+// WithCallRecorder returns a context that reports each API call made with it to rec, as the
+// path below /api/. Tests use it to find the endpoints each tool and resource calls.
+func WithCallRecorder(ctx context.Context, rec func(path string)) context.Context {
+	return context.WithValue(ctx, callRecorderKey{}, rec)
+}
+
 func (c *Client) do(ctx context.Context, method, path string, body, out any) error {
+	if rec, ok := ctx.Value(callRecorderKey{}).(func(string)); ok {
+		rec(path)
+	}
 	u := c.base.JoinPath("api", path)
 
 	var rdr io.Reader

@@ -96,11 +96,10 @@ Four steps, then one command tells you whether it worked.
 
 **1. Create an API user on the firewall.**
 1. System → Access → Users → add a user, e.g. `automation` (a random password you will not use).
-2. Edit it → *Effective Privileges* → add only what the areas you use need. Search the list for
-   the area name: *Firewall: Alias*, *Firewall: Rules [new]*, *Services: Unbound DNS*, *VPN:
-   WireGuard*, *System: Gateways*, *System: Static Routes*, *System: Firmware*, *System: Trust*,
-   *Services: Caddy*, *Services: ACME Client*, *Services: Wake on LAN*. Start small; step 4 tells
-   you what is missing. OPNsense has no read-only privileges for most pages, so "read-only" is
+2. Edit it → *Effective Privileges* → add only what the areas you use need.
+   `bin/mcp-opnsense privileges -read-only` lists them for the MCP server, and
+   `bin/terraform-provider-opnsense privileges -resources ...` for Terraform (see
+   [Privileges](#privileges)). Start small; step 4 tells you what is missing. OPNsense has no read-only privileges for most pages, so "read-only" is
    enforced by `mcp-opnsense --read-only`, not by the user. Using one user per front end (MCP,
    Terraform) lets you revoke them separately.
 3. Same user → *API keys* → **+**. The browser downloads a file with `key=` and `secret=`. The
@@ -382,6 +381,32 @@ WireGuard: `opnsense_wireguard_instance` generates its private key when you omit
 shows the derived `public_key` in the plan. Peer membership is set only on the peer
 (`instance_ids`). OPNsense stores it on the instance, but the provider never writes it there,
 so two resources never fight over it.
+
+### Privileges
+
+Each MCP tool and each resource calls a known set of API endpoints. The tests record them
+against the fake (`internal/privileges/endpoints/`), and the `ACL.xml` files of OPNsense, pinned
+with the models, say which privilege grants which endpoint. From both, two commands print the
+privileges a least-privilege API user needs:
+
+```sh
+bin/mcp-opnsense privileges -read-only -toolsets firewall_alias,unbound
+bin/terraform-provider-opnsense privileges -resources opnsense_firewall_rule,opnsense_wireguard_peer
+```
+
+For each privilege they print its URL patterns and what else it allows, such as the writes and
+service restarts behind a read. Add `-v` to see which endpoints each privilege is for. The
+reference pages show the same for each tool and resource.
+
+- For each endpoint the commands pick the narrowest privilege, the one that grants the fewest
+  endpoints the toolkit knows. "All pages" never counts.
+- A privilege covers URL paths, not methods, so most also allow changes. "Firewall: Aliases" is
+  one of the few read-only ones.
+- After an apply, the lockout check reads `core/firmware/running`. A 403 there still proves the
+  API answers, so it doesn't need "System: Firmware".
+- After a change to `gen/models/REFS`, `task fetch-models` and `task gen` show changed
+  privileges as a diff of `internal/privileges/zz_gen_acl.go`. After a change to a tool or
+  resource, run `task endpoints`; the tests fail while the files miss an endpoint they call.
 
 ### Routing to networks behind a WireGuard peer (site-to-site)
 

@@ -1,5 +1,8 @@
 // Command mcp-opnsense is a local MCP server (stdio) for an OPNsense firewall.
 //
+// `mcp-opnsense privileges [-read-only] [-toolsets ...]` prints the OPNsense privileges the
+// selected tools need, for setting up a least-privilege API user.
+//
 // Configuration comes from the environment:
 //
 //	OPNSENSE_URL         https://opnsense.lan
@@ -25,6 +28,7 @@ import (
 	"github.com/smulis/opnsense-agentic-toolkit/internal/buildinfo"
 	"github.com/smulis/opnsense-agentic-toolkit/internal/mcpserver"
 	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
+	"github.com/smulis/opnsense-agentic-toolkit/internal/privileges"
 )
 
 // version is set at build time with -ldflags "-X main.version=..."; main falls back to the
@@ -40,6 +44,9 @@ func main() {
 }
 
 func run() error {
+	if len(os.Args) > 1 && os.Args[1] == "privileges" {
+		return runPrivileges(os.Args[2:])
+	}
 	readOnly := flag.Bool("read-only", envBool("OPNSENSE_MCP_READ_ONLY"), "register only tools that do not change OPNsense")
 	toolsets := flag.String("toolsets", envOr("OPNSENSE_MCP_TOOLSETS", "all"),
 		"comma-separated toolsets to enable ("+strings.Join(mcpserver.Toolsets(), ", ")+", all)")
@@ -110,4 +117,24 @@ func runCheck() error {
 	}
 	fmt.Println("\nSetup looks good. Register the server with your MCP client (see README).")
 	return nil
+}
+
+// runPrivileges prints the privileges the tools selected by the flags need.
+func runPrivileges(args []string) error {
+	fs := flag.NewFlagSet("mcp-opnsense privileges", flag.ExitOnError)
+	readOnly := fs.Bool("read-only", envBool("OPNSENSE_MCP_READ_ONLY"), "only the tools that do not change OPNsense")
+	toolsets := fs.String("toolsets", envOr("OPNSENSE_MCP_TOOLSETS", "all"), "comma-separated toolsets ("+strings.Join(mcpserver.Toolsets(), ", ")+", all)")
+	verbose := fs.Bool("v", false, "also list the endpoints each privilege is needed for")
+	_ = fs.Parse(args)
+
+	tools, err := mcpserver.ListTools(context.Background(), mcpserver.Options{ReadOnly: *readOnly, Toolsets: strings.Split(*toolsets, ",")})
+	if err != nil {
+		return err
+	}
+	var endpoints []string
+	for _, t := range tools {
+		endpoints = append(endpoints, privileges.ToolEndpoints(t.Name)...)
+	}
+	fmt.Printf("Privileges for %d tools (toolsets %s, read-only %v):\n\n", len(tools), *toolsets, *readOnly)
+	return privileges.Write(os.Stdout, privileges.For(endpoints), *verbose)
 }

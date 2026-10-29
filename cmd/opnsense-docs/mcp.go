@@ -10,10 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-
 	"github.com/smulis/opnsense-agentic-toolkit/internal/mcpserver"
-	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
+	"github.com/smulis/opnsense-agentic-toolkit/internal/privileges"
 )
 
 // toolDoc is one MCP tool as a client sees it.
@@ -36,45 +34,13 @@ type paramDoc struct {
 	Enum        []string
 }
 
-// connectTools starts a server with opts and returns the tools a client lists. Registering a
-// tool makes no API call, so a client that points nowhere is enough.
-func connectTools(ctx context.Context, opts mcpserver.Options) ([]*mcp.Tool, error) {
-	c, err := opnsense.NewClient(opnsense.Config{URL: "https://opnsense.invalid", APIKey: "docs", APISecret: "docs"})
-	if err != nil {
-		return nil, err
-	}
-	srv, err := mcpserver.New(c, opts)
-	if err != nil {
-		return nil, err
-	}
-	st, ct := mcp.NewInMemoryTransports()
-	ss, err := srv.Connect(ctx, st, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer ss.Close()
-	cs, err := mcp.NewClient(&mcp.Implementation{Name: "opnsense-docs"}, nil).Connect(ctx, ct, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer cs.Close()
-	var tools []*mcp.Tool
-	for t, err := range cs.Tools(ctx, nil) {
-		if err != nil {
-			return nil, err
-		}
-		tools = append(tools, t)
-	}
-	return tools, nil
-}
-
 // collectTools lists every tool with its toolset. The protocol does not say which toolset a
 // tool belongs to, so each toolset is registered on its own.
 func collectTools(ctx context.Context) ([]toolDoc, error) {
 	var docs []toolDoc
 	seen := map[string]bool{}
 	for _, ts := range mcpserver.Toolsets() {
-		tools, err := connectTools(ctx, mcpserver.Options{Toolsets: []string{ts}})
+		tools, err := mcpserver.ListTools(ctx, mcpserver.Options{Toolsets: []string{ts}})
 		if err != nil {
 			return nil, err
 		}
@@ -219,8 +185,9 @@ func toolMarkdown(d toolDoc) string {
 		}
 		b.WriteString("\n")
 	}
-	b.WriteString("\n## Example call\n\n```json\n" + exampleArgs(d) + "\n```\n")
-	return b.String()
+	b.WriteString("\n## Example call\n\n```json\n" + exampleArgs(d) + "\n```\n\n")
+	b.WriteString(privilegesMarkdown(privileges.ToolEndpoints(d.Name)))
+	return strings.TrimRight(b.String(), "\n") + "\n"
 }
 
 func toolHTML(d toolDoc) string {
@@ -253,6 +220,7 @@ func toolHTML(d toolDoc) string {
 		b.WriteString("</dl>\n")
 	}
 	b.WriteString("<h2>Example call</h2>\n<pre><code>" + html.EscapeString(exampleArgs(d)) + "</code></pre>\n")
+	b.WriteString(privilegesHTML(privileges.ToolEndpoints(d.Name)))
 	return b.String()
 }
 

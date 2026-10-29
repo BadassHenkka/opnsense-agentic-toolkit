@@ -27,6 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
+	"github.com/smulis/opnsense-agentic-toolkit/internal/privileges"
 	opnprovider "github.com/smulis/opnsense-agentic-toolkit/internal/provider"
 )
 
@@ -414,6 +415,7 @@ func markdown(p page) string {
 	section("Required", func(a attrDoc) bool { return a.Required })
 	section("Optional", func(a attrDoc) bool { return !a.Required && a.Optional })
 	section("Read-only", func(a attrDoc) bool { return !a.Required && !a.Optional })
+	b.WriteString(privilegesMarkdown(privileges.ResourceEndpoints(p.Name)))
 	if cmd, note := importText(p); cmd != "" {
 		b.WriteString("## Import\n\n" + note + "\n\n```sh\n" + cmd + "\n```\n")
 	}
@@ -507,6 +509,7 @@ func htmlResource(p page) string {
 	section("Required", func(a attrDoc) bool { return a.Required })
 	section("Optional", func(a attrDoc) bool { return !a.Required && a.Optional })
 	section("Read-only", func(a attrDoc) bool { return !a.Required && !a.Optional })
+	b.WriteString(privilegesHTML(privileges.ResourceEndpoints(p.Name)))
 	if cmd, note := importText(p); cmd != "" {
 		b.WriteString("<h2>Import</h2>\n<p>" + htmlText(note) + "</p>\n<pre><code>" + html.EscapeString(cmd) + "</code></pre>\n")
 	}

@@ -10,6 +10,9 @@ specs, so a wrong key passes every local test; run it after adding or changing a
 - `models/` — OPNsense model XML, pinned to the commits in `models/REFS`. `task fetch-models`
   downloads every model a spec mentions. To follow upstream, bump `REFS`, fetch, regenerate and
   review the diff: new fields, changed options and removed fields all show up there.
+  `-fetch` also downloads the `ACL/ACL.xml` of every core module and of each plugin the specs
+  use. The generator turns their API patterns into `internal/privileges/zz_gen_acl.go`, so
+  changed privileges show up in the same diff.
 - `specs/<area>.json` — one file per area. The area name is the MCP toolset and, camel-cased,
   the client service (`client.Interfaces.VLANs`); set `service` when camel-casing gives an odd
   name (`ids` → `IDS`, `trafficshaper` → `TrafficShaper`).

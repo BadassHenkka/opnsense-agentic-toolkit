@@ -87,6 +87,12 @@ func generate(root string) (map[string][]byte, error) {
 	out["internal/mcpserver/zz_gen_tools_test.go"] = emitMCPTest(areas)
 	out["internal/provider/zz_gen_helpers_test.go"] = emitProviderTestHelpers()
 
+	acls, sources, err := loadACLs(filepath.Join(root, "gen", "models"))
+	if err != nil {
+		return nil, err
+	}
+	out["internal/privileges/zz_gen_acl.go"] = emitACL(acls, sources)
+
 	files := map[string][]byte{}
 	for name, src := range out {
 		b, err := format.Source([]byte(src))
@@ -115,7 +121,7 @@ func writeFiles(root string, files map[string][]byte, check bool) ([]string, err
 			}
 		}
 	}
-	for _, dir := range []string{"internal/opnsense", "internal/opnsense/opnsensetest", "internal/provider", "internal/mcpserver"} {
+	for _, dir := range []string{"internal/opnsense", "internal/opnsense/opnsensetest", "internal/provider", "internal/mcpserver", "internal/privileges"} {
 		existing, _ := filepath.Glob(filepath.Join(root, dir, "zz_gen_*.go"))
 		for _, p := range existing {
 			rel, _ := filepath.Rel(root, p)

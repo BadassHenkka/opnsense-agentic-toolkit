@@ -253,6 +253,22 @@ func emitMCPTest(areas []*Area) string {
 	b.p("\t\t\tt.Errorf(\"%%s: %%v\", name, out)")
 	b.p("\t\t}")
 	b.p("\t}")
+	b.p("\t// Item look-ups by name and by uuid; nothing exists, so both report not found.")
+	b.p("\tfor _, name := range []string{")
+	for _, a := range areas {
+		for _, o := range a.Items {
+			if o.mcp() {
+				b.p("\t\t%q,", o.Resource+"_get")
+			}
+		}
+	}
+	b.p("\t} {")
+	b.p("\t\tfor _, args := range []map[string]any{{\"name\": \"missing\"}, {\"uuid\": \"00000000-0000-4000-8000-00000000ffff\"}} {")
+	b.p("\t\t\tif out, ok := call(t, cs, name, args); ok {")
+	b.p("\t\t\t\tt.Errorf(\"%%s %%v: found %%v\", name, args, out)")
+	b.p("\t\t\t}")
+	b.p("\t\t}")
+	b.p("\t}")
 	b.p("}")
 	return b.file("mcpserver_test", "gen/specs")
 }

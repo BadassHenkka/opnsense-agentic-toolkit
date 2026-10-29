@@ -2,6 +2,8 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -13,6 +15,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
 	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense/opnsensetest"
+	"github.com/smulis/opnsense-agentic-toolkit/internal/privileges"
 )
 
 // harness drives one resource's methods directly against the fake API, the way Terraform
@@ -36,9 +39,25 @@ func newHarness(t *testing.T, fake *opnsensetest.Server, r resource.Resource) *h
 	if cresp.Diagnostics.HasError() {
 		t.Fatal(cresp.Diagnostics)
 	}
-	h := &harness{t: t, ctx: ctx, r: r, fake: fake}
+	var meta resource.MetadataResponse
+	r.Metadata(ctx, resource.MetadataRequest{ProviderTypeName: "opnsense"}, &meta)
+	h := &harness{t: t, ctx: endpoints.Context(ctx, meta.TypeName), r: r, fake: fake}
 	r.Schema(ctx, resource.SchemaRequest{}, &h.schema)
 	return h
+}
+
+// endpoints records the API endpoints each resource type calls.
+var endpoints privileges.Recorder
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	if code == 0 {
+		if err := endpoints.Finish("../privileges/endpoints/terraform.json"); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			code = 1
+		}
+	}
+	os.Exit(code)
 }
 
 func (h *harness) empty() tftypes.Value {
