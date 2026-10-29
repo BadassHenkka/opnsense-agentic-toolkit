@@ -38,10 +38,23 @@ func required(prefix string, r Record, fields ...string) map[string]string {
 }
 
 // Firewall aliases (generated collection). Adds name uniqueness, the real API's option map
-// for content, and getAliasUUID.
+// for content, getAliasUUID and the built-in aliases.
 func registerFirewallAlias(s *Server) {
 	aliases := s.collection("firewall/alias", "alias")
 	aliases.Fields["content"] = Field{Kind: List, Sep: "\n"}
+	// OPNsense adds built-in aliases to the model as static children (ArrayField::
+	// getStaticChildren): the core.json static aliases and one network alias per interface.
+	// Their uuid is the alias name.
+	aliases.ExtraRows = func(*Server) []map[string]string {
+		var rows []map[string]string
+		for _, n := range []string{"bogons", "bogonsv6", "sshlockout", "virusprot"} {
+			rows = append(rows, map[string]string{"uuid": n, "enabled": "1", "name": n, "type": "external"})
+		}
+		for _, n := range []string{"__wan_network", "__lan_network"} {
+			rows = append(rows, map[string]string{"uuid": n, "enabled": "1", "name": n, "type": "internal"})
+		}
+		return rows
+	}
 	alsoValidate(aliases, func(_ *Server, self string, r Record) map[string]string {
 		for id, other := range aliases.items {
 			if id != self && r["name"] != "" && other["name"] == r["name"] {

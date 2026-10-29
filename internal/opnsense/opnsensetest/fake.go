@@ -400,7 +400,12 @@ func (c *Collection) serve(s *Server, verb, arg string, w http.ResponseWriter, r
 			rows = append(rows, row)
 		}
 		if c.ExtraRows != nil {
-			rows = append(rows, c.ExtraRows(s)...)
+			// OPNsense searches built-in and automatic records like the others.
+			for _, row := range c.ExtraRows(s) {
+				if phrase == "" || matches(row, phrase) {
+					rows = append(rows, row)
+				}
+			}
 		}
 		writeJSON(w, map[string]any{"rows": rows, "rowCount": len(rows), "total": len(rows), "current": 1})
 

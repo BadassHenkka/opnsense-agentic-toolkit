@@ -64,7 +64,7 @@ func TestFilterRules(t *testing.T) {
 
 	// Search includes automatic rules, but name look-ups only match API-managed rules.
 	res, err := f.SearchInterface(ctx, "opt3", "")
-	if err != nil || res.Total != 4 {
+	if err != nil || res.Total != 5 {
 		t.Fatalf("search: %+v, %v", res, err)
 	}
 	if _, err := opnsense.ResolveByName(ctx, f.Rules, "Anti-Lockout Rule"); !errors.Is(err, opnsense.ErrNotFound) {

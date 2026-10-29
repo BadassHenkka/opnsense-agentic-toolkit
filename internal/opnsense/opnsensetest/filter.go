@@ -89,8 +89,11 @@ func registerFilter(s *Server) {
 	}
 	rules.ExtraRows = func(*Server) []map[string]string {
 		return []map[string]string{
-			{"uuid": "", "legacy": "1", "action": "pass", "interface": "lan", "description": "Anti-Lockout Rule"},
-			{"uuid": "", "legacy": "1", "action": "block", "interface": "", "description": "Default deny / state violation rule"},
+			// list_non_mvc_rules.php: the uuid is the pf label, a hash for automatic rules and
+			// the rule's uuid for rules from the legacy rules page.
+			{"uuid": "bbabcf4bd0a5b8bfbe1b6b2b5d3e2a5e", "legacy": "1", "is_automatic": "1", "action": "pass", "interface": "lan", "description": "Anti-Lockout Rule"},
+			{"uuid": "02f4bab031b57d1e30553ce08e0ec131", "legacy": "1", "is_automatic": "1", "action": "block", "interface": "", "description": "Default deny / state violation rule"},
+			{"uuid": "8c3e1a6e-6f1d-4d8e-9a7b-2f0c3d4e5f60", "legacy": "1", "is_automatic": "0", "action": "pass", "interface": "lan", "description": "Legacy rule"},
 		}
 	}
 
@@ -134,6 +137,11 @@ func registerDNat(s *Server) {
 		s.collection("firewall/npt", "rule"),
 	} {
 		autoSequence(c)
+	}
+	// DNatController::getAutomaticDestinationNatRules adds rules other services generate,
+	// with an id that is not a UUID.
+	s.collection("firewall/d_nat", "rule").ExtraRows = func(*Server) []map[string]string {
+		return []map[string]string{{"uuid": "automatic_ipsec_1", "is_automatic": "1", "interface": "wan", "descr": "IPsec NAT-T"}}
 	}
 }
 

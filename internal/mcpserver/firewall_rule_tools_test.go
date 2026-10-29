@@ -43,7 +43,7 @@ func TestFirewallRuleTools(t *testing.T) {
 		"before": map[string]any{"name": "site2 to NAS"}})
 
 	list := must("firewall_rule_list", map[string]any{"interface": "WG_SITE2"})
-	if list["total"].(float64) != 4 { // 2 rules + 2 automatic
+	if list["total"].(float64) != 5 { // 2 rules + 2 automatic + 1 legacy
 		t.Fatalf("list: %v", list)
 	}
 	// Inversion must show in the list, not only in get: "!lan" listed as "lan" means the opposite.
