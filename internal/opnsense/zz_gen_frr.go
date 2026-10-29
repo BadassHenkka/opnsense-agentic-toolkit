@@ -343,7 +343,7 @@ type FrrOspfInterface struct {
 	Area               Option `json:"area"`
 	Cost               Int    `json:"cost"`
 	CostDemoted        Int    `json:"cost_demoted"`
-	CarpDependOn       string `json:"carp_depend_on"`
+	CarpDependOn       Option `json:"carp_depend_on"`
 	HelloInterval      Int    `json:"hellointerval"`
 	DeadInterval       Int    `json:"deadinterval"`
 	RetransmitInterval Int    `json:"retransmitinterval"`
@@ -489,7 +489,7 @@ type FrrOspf6Interface struct {
 	Passive            Bool   `json:"passive"`
 	Cost               Int    `json:"cost"`
 	CostDemoted        Int    `json:"cost_demoted"`
-	CarpDependOn       string `json:"carp_depend_on"`
+	CarpDependOn       Option `json:"carp_depend_on"`
 	HelloInterval      Int    `json:"hellointerval"`
 	DeadInterval       Int    `json:"deadinterval"`
 	RetransmitInterval Int    `json:"retransmitinterval"`

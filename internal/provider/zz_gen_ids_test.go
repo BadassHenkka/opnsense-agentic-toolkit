@@ -42,7 +42,7 @@ func genIDSUserRulePlan() genIDSUserRuleModel {
 func genIDSGeneralPlan() genIDSGeneralModel {
 	return genIDSGeneralModel{
 		ID:                   types.StringUnknown(),
-		Enabled:              types.BoolValue(true),
+		Enabled:              types.BoolValue(false),
 		Mode:                 types.StringValue("pcap"),
 		DivertListeners:      types.Int64Value(1),
 		Promisc:              types.BoolValue(false),
@@ -52,7 +52,7 @@ func genIDSGeneralPlan() genIDSGeneralModel {
 		AlertLogrotate:       types.StringValue("W0D23"),
 		AlertSaveLogs:        types.Int64Value(4),
 		MpmAlgo:              types.StringValue(""),
-		DetectProfile:        types.StringValue("updated by test"),
+		DetectProfile:        types.StringValue(""),
 		DetectToclientGroups: types.Int64Null(),
 		DetectToserverGroups: types.Int64Null(),
 		Syslog:               types.BoolValue(false),
@@ -206,8 +206,8 @@ func TestGenIDSGeneral(t *testing.T) {
 		t.Fatalf("create: %+v", got)
 	}
 	rec := fake.Settings("ids/settings/get", "general")
-	if !sameValues(rec["enabled"], "1") {
-		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "1")
+	if !sameValues(rec["enabled"], "0") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "0")
 	}
 	if !sameValues(rec["mode"], "pcap") {
 		t.Errorf("mode: stored %q, want %q", rec["mode"], "pcap")
@@ -236,8 +236,8 @@ func TestGenIDSGeneral(t *testing.T) {
 	if !sameValues(rec["MPMAlgo"], "") {
 		t.Errorf("MPMAlgo: stored %q, want %q", rec["MPMAlgo"], "")
 	}
-	if !sameValues(rec["detect.Profile"], "updated by test") {
-		t.Errorf("detect.Profile: stored %q, want %q", rec["detect.Profile"], "updated by test")
+	if !sameValues(rec["detect.Profile"], "") {
+		t.Errorf("detect.Profile: stored %q, want %q", rec["detect.Profile"], "")
 	}
 	if !sameValues(rec["detect.toclient_groups"], "") {
 		t.Errorf("detect.toclient_groups: stored %q, want %q", rec["detect.toclient_groups"], "")

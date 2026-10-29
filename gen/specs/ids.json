@@ -116,8 +116,7 @@
           "skip": true
         },
         "detect.Profile": {
-          "attr": "detect_profile",
-          "type": "string"
+          "attr": "detect_profile"
         },
         "detect.toclient_groups": {
           "attr": "detect_toclient_groups",

@@ -136,8 +136,8 @@ func (r DnsmasqRangeRow) RowRef() (string, string) { return string(r.UUID), stri
 // (model core/Dnsmasq/Dnsmasq.xml, array dhcp_options).
 type DnsmasqOption struct {
 	Type        Option  `json:"type"`
-	Option      string  `json:"option"`
-	Option6     string  `json:"option6"`
+	Option      Option  `json:"option"`
+	Option6     Option  `json:"option6"`
 	Interface   Option  `json:"interface"`
 	Tag         CSVList `json:"tag"`
 	SetTag      Option  `json:"set_tag"`

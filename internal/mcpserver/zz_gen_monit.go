@@ -49,7 +49,7 @@ func genMonitTestViewOf(id string, v *opnsense.MonitTest) genMonitTestView {
 	return genMonitTestView{
 		UUID:      id,
 		Name:      v.Name,
-		Type:      v.Type,
+		Type:      string(v.Type),
 		Condition: v.Condition,
 		Action:    string(v.Action),
 		Path:      v.Path,
@@ -82,7 +82,7 @@ func genMonitCheckViewOf(id string, v *opnsense.MonitCheck) genMonitCheckView {
 		Enabled:      bool(v.Enabled),
 		Name:         v.Name,
 		Description:  v.Description,
-		Type:         v.Type,
+		Type:         string(v.Type),
 		Pidfile:      v.Pidfile,
 		Match:        v.Match,
 		Path:         v.Path,

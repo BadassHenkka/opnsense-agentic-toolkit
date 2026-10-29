@@ -92,7 +92,7 @@ func genIDSGeneralViewOf(v *opnsense.IDSGeneral) genIDSGeneralView {
 		AlertLogrotate:       string(v.AlertLogrotate),
 		AlertSaveLogs:        intPtr(v.AlertSaveLogs),
 		MpmAlgo:              string(v.MpmAlgo),
-		DetectProfile:        v.Detect.Profile,
+		DetectProfile:        string(v.Detect.Profile),
 		DetectToclientGroups: intPtr(v.Detect.ToclientGroups),
 		DetectToserverGroups: intPtr(v.Detect.ToserverGroups),
 		Syslog:               bool(v.Syslog),

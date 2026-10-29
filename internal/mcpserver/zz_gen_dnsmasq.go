@@ -147,8 +147,8 @@ func genDnsmasqOptionViewOf(id string, v *opnsense.DnsmasqOption) genDnsmasqOpti
 	return genDnsmasqOptionView{
 		UUID:        id,
 		Type:        string(v.Type),
-		Option:      v.Option,
-		Option6:     v.Option6,
+		Option:      string(v.Option),
+		Option6:     string(v.Option6),
 		Interface:   string(v.Interface),
 		Tag:         nonNil([]string(v.Tag)),
 		SetTag:      string(v.SetTag),

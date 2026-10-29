@@ -435,11 +435,11 @@ func (r *genKeaDhcp4OptionResource) Schema(_ context.Context, _ resource.SchemaR
 func (m *genKeaDhcp4OptionModel) toAPI(ctx context.Context) (opnsense.KeaDhcp4Option, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	var v opnsense.KeaDhcp4Option
-	v.Code = m.Code.ValueString()
+	v.Code = opnsense.Option(m.Code.ValueString())
 	v.Encoding = opnsense.Option(m.Encoding.ValueString())
 	v.Data = m.Data.ValueString()
 	v.Force = opnsense.Bool(m.Force.ValueBool())
-	v.MatchCode = m.MatchCode.ValueString()
+	v.MatchCode = opnsense.Option(m.MatchCode.ValueString())
 	v.MatchEncoding = opnsense.Option(m.MatchEncoding.ValueString())
 	v.MatchData = m.MatchData.ValueString()
 	v.Description = m.Description.ValueString()
@@ -450,11 +450,11 @@ func (m *genKeaDhcp4OptionModel) toAPI(ctx context.Context) (opnsense.KeaDhcp4Op
 func (m *genKeaDhcp4OptionModel) fromAPI(ctx context.Context, id string, v *opnsense.KeaDhcp4Option) diag.Diagnostics {
 	m.ID = types.StringValue(id)
 	var diags diag.Diagnostics
-	m.Code = types.StringValue(v.Code)
+	m.Code = types.StringValue(string(v.Code))
 	m.Encoding = types.StringValue(string(v.Encoding))
 	m.Data = types.StringValue(v.Data)
 	m.Force = types.BoolValue(bool(v.Force))
-	m.MatchCode = types.StringValue(v.MatchCode)
+	m.MatchCode = types.StringValue(string(v.MatchCode))
 	m.MatchEncoding = types.StringValue(string(v.MatchEncoding))
 	m.MatchData = types.StringValue(v.MatchData)
 	m.Description = types.StringValue(v.Description)
@@ -995,11 +995,11 @@ func (r *genKeaDhcp6OptionResource) Schema(_ context.Context, _ resource.SchemaR
 func (m *genKeaDhcp6OptionModel) toAPI(ctx context.Context) (opnsense.KeaDhcp6Option, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	var v opnsense.KeaDhcp6Option
-	v.Code = m.Code.ValueString()
+	v.Code = opnsense.Option(m.Code.ValueString())
 	v.Encoding = opnsense.Option(m.Encoding.ValueString())
 	v.Data = m.Data.ValueString()
 	v.Force = opnsense.Bool(m.Force.ValueBool())
-	v.MatchCode = m.MatchCode.ValueString()
+	v.MatchCode = opnsense.Option(m.MatchCode.ValueString())
 	v.MatchEncoding = opnsense.Option(m.MatchEncoding.ValueString())
 	v.MatchData = m.MatchData.ValueString()
 	v.Description = m.Description.ValueString()
@@ -1010,11 +1010,11 @@ func (m *genKeaDhcp6OptionModel) toAPI(ctx context.Context) (opnsense.KeaDhcp6Op
 func (m *genKeaDhcp6OptionModel) fromAPI(ctx context.Context, id string, v *opnsense.KeaDhcp6Option) diag.Diagnostics {
 	m.ID = types.StringValue(id)
 	var diags diag.Diagnostics
-	m.Code = types.StringValue(v.Code)
+	m.Code = types.StringValue(string(v.Code))
 	m.Encoding = types.StringValue(string(v.Encoding))
 	m.Data = types.StringValue(v.Data)
 	m.Force = types.BoolValue(bool(v.Force))
-	m.MatchCode = types.StringValue(v.MatchCode)
+	m.MatchCode = types.StringValue(string(v.MatchCode))
 	m.MatchEncoding = types.StringValue(string(v.MatchEncoding))
 	m.MatchData = types.StringValue(v.MatchData)
 	m.Description = types.StringValue(v.Description)

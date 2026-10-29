@@ -511,8 +511,8 @@ func (m *genDnsmasqOptionModel) toAPI(ctx context.Context) (opnsense.DnsmasqOpti
 	var diags diag.Diagnostics
 	var v opnsense.DnsmasqOption
 	v.Type = opnsense.Option(m.Type.ValueString())
-	v.Option = m.Option.ValueString()
-	v.Option6 = m.Option6.ValueString()
+	v.Option = opnsense.Option(m.Option.ValueString())
+	v.Option6 = opnsense.Option(m.Option6.ValueString())
 	v.Interface = opnsense.Option(m.Interface.ValueString())
 	diags.Append(m.Tag.ElementsAs(ctx, (*[]string)(&v.Tag), false)...)
 	v.SetTag = opnsense.Option(m.SetTag.ValueString())
@@ -528,8 +528,8 @@ func (m *genDnsmasqOptionModel) fromAPI(ctx context.Context, id string, v *opnse
 	var diags diag.Diagnostics
 	var d diag.Diagnostics
 	m.Type = types.StringValue(string(v.Type))
-	m.Option = types.StringValue(v.Option)
-	m.Option6 = types.StringValue(v.Option6)
+	m.Option = types.StringValue(string(v.Option))
+	m.Option6 = types.StringValue(string(v.Option6))
 	m.Interface = types.StringValue(string(v.Interface))
 	m.Tag, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Tag)))
 	diags.Append(d...)

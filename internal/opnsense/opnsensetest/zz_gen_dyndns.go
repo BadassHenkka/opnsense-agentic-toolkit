@@ -8,7 +8,7 @@ func registerGenDynDNS(s *Server) {
 			Actions: map[string]string{"search": "searchItem"},
 			Fields: map[string]Field{
 				"enabled":         {Required: true, Default: "1"},
-				"service":         {Required: true},
+				"service":         {Kind: List, Sep: ",", Required: true},
 				"protocol":        {Kind: Option, Choices: static("dyndns1", "dyndns2", "get", "post", "put")},
 				"server":          {},
 				"username":        {Mask: "^([a-zA-Z0-9\\-.@_:+\\%])*$"},
@@ -17,7 +17,7 @@ func registerGenDynDNS(s *Server) {
 				"hostnames":       {Required: true},
 				"wildcard":        {Required: true, Default: "0"},
 				"zone":            {},
-				"checkip":         {Required: true, Default: "web_dyndns"},
+				"checkip":         {Kind: Option, Choices: static("web_akamai", "akamai-ipv4", "akamai-ipv6", "web_cloudflare", "cloudflare-ipv4", "cloudflare-ipv6", "dns_cloudflare-dns", "dynu-ipv4", "dynu-ipv6", "web_freedns", "web_he", "web_icanhazip", "web_ipify-ipv4", "web_ipify-ipv6", "web_loopia", "web_myonlineportal", "web_noip-ipv4", "web_noip-ipv6", "web_nsupdate.info-ipv4", "web_nsupdate.info-ipv6", "web_zoneedit", "if", "if6"), Required: true, Default: "web_dyndns"},
 				"dynipv6host":     {Mask: "^::(([0-9a-fA-F]{1,4}:){0,3}[0-9a-fA-F]{1,4})?$"},
 				"checkip_timeout": {Required: true, Default: "10", HasRange: true, Min: 10, Max: 60},
 				"force_ssl":       {Required: true, Default: "1"},

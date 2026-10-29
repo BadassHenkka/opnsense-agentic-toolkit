@@ -81,7 +81,7 @@ type IDSGeneral struct {
 
 // IDSGeneralDetect is the detect part of a IDSGeneral.
 type IDSGeneralDetect struct {
-	Profile        string `json:"Profile"`
+	Profile        Option `json:"Profile"`
 	ToclientGroups Int    `json:"toclient_groups"`
 	ToserverGroups Int    `json:"toserver_groups"`
 }

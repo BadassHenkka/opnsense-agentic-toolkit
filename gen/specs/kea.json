@@ -236,7 +236,7 @@
       "reconfigure": "kea/service/reconfigure",
       "fields": {
         "code": {
-          "type": "string",
+          "type": "ref",
           "description": "Option code (see the web UI list)."
         },
         "encoding": {
@@ -250,7 +250,7 @@
           "description": "Send the option even if the client did not ask for it."
         },
         "match_code": {
-          "type": "string",
+          "type": "ref",
           "description": "Only for clients sending this option code."
         },
         "match_encoding": {},
@@ -473,7 +473,7 @@
       "reconfigure": "kea/service/reconfigure",
       "fields": {
         "code": {
-          "type": "string",
+          "type": "ref",
           "description": "Option code (see the web UI list)."
         },
         "encoding": {
@@ -487,7 +487,7 @@
           "description": "Send the option even if the client did not ask for it."
         },
         "match_code": {
-          "type": "string",
+          "type": "ref",
           "description": "Only for clients sending this option code."
         },
         "match_encoding": {},

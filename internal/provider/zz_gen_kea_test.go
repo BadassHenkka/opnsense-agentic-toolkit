@@ -536,11 +536,11 @@ func TestGenKeaDhcp4Option(t *testing.T) {
 	}
 
 	plan.ID = got.ID
-	plan.MatchCode = types.StringValue("updated by test")
+	plan.MatchData = types.StringValue("updated by test")
 	st = h.update(st, plan, &got)
 	rec, _ = fake.Get("option", id)
-	if !sameValues(rec["match_code"], "updated by test") {
-		t.Errorf("match_code: stored %q, want %q", rec["match_code"], "updated by test")
+	if !sameValues(rec["match_data"], "updated by test") {
+		t.Errorf("match_data: stored %q, want %q", rec["match_data"], "updated by test")
 	}
 
 	if _, ok := h.read(st, &got); !ok {
@@ -902,11 +902,11 @@ func TestGenKeaDhcp6Option(t *testing.T) {
 	}
 
 	plan.ID = got.ID
-	plan.MatchCode = types.StringValue("updated by test")
+	plan.MatchData = types.StringValue("updated by test")
 	st = h.update(st, plan, &got)
 	rec, _ = fake.Get("option", id)
-	if !sameValues(rec["match_code"], "updated by test") {
-		t.Errorf("match_code: stored %q, want %q", rec["match_code"], "updated by test")
+	if !sameValues(rec["match_data"], "updated by test") {
+		t.Errorf("match_data: stored %q, want %q", rec["match_data"], "updated by test")
 	}
 
 	if _, ok := h.read(st, &got); !ok {

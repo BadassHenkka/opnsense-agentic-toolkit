@@ -56,7 +56,6 @@
       "zero_field": "name",
       "fields": {
         "type": {
-          "type": "string",
           "description": "Test type, e.g. `Custom`, `ProgramStatus`, `NetworkPing`, `SpaceUsage`, `SystemResource`, `Existence`."
         },
         "condition": {
@@ -91,7 +90,6 @@
       "zero_field": "name",
       "fields": {
         "type": {
-          "type": "string",
           "description": "`process`, `file`, `fifo`, `filesystem`, `directory`, `host`, `system`, `custom` or `network`."
         },
         "pidfile": {

@@ -103,6 +103,9 @@ type FieldSpec struct {
 	Sensitive   bool     `json:"sensitive,omitempty"`
 	Description string   `json:"description,omitempty"`
 	Choices     []string `json:"choices,omitempty"`
+	// ExtraChoices adds options the model's PHP class adds at runtime to the OptionValues
+	// of the XML (e.g. "if6" of the DynDNS CheckipField with the native backend).
+	ExtraChoices []string `json:"extra_choices,omitempty"`
 	// FakeValue is the pattern the fake uses for a computed field on add ("%d" = counter).
 	FakeValue string `json:"fake_value,omitempty"`
 
@@ -638,6 +641,13 @@ func field(n *xmlNode, typ string, fs FieldSpec, container string) (*Field, erro
 	default:
 		return nil, fmt.Errorf("unknown type override %q", kind)
 	}
+	// A list field (an option list, or a relation such as an interface) reads back as an
+	// option map, which a string can't hold. NetworkAliasField is the exception: it is a list
+	// only for validation and reads back as its value.
+	if t := strings.TrimPrefix(typ, ".\\"); kind == kString && t != "NetworkAliasField" &&
+		(n.child("OptionValues") != nil || xmlTypes[t] == kOption || xmlTypes[t] == kRef) {
+		return nil, fmt.Errorf("%s is a list field and reads back as an option map: set fields.%s.type to option or ref", typ, f.XML)
+	}
 	f.Kind = kind
 	f.Sep = ","
 	if sep := n.value("FieldSeparator"); sep != "" {
@@ -655,7 +665,7 @@ func field(n *xmlNode, typ string, fs FieldSpec, container string) (*Field, erro
 	if kind == kOption || kind == kOptions {
 		f.Choices = fs.Choices
 		if f.Choices == nil {
-			f.Choices = optionValues(n.child("OptionValues"))
+			f.Choices = append(optionValues(n.child("OptionValues")), fs.ExtraChoices...)
 		}
 		if len(f.Choices) == 0 {
 			return nil, fmt.Errorf("option field without OptionValues; use type ref or set choices")

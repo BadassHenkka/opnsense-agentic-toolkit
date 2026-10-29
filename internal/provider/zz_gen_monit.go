@@ -149,7 +149,7 @@ func (r *genMonitTestResource) Schema(_ context.Context, _ resource.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"id":        idAttribute("monit test"),
 			"name":      schema.StringAttribute{Required: true, Description: "OPNsense field `name`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-zA-Z\\._\\- ]){1,255}$"), "must match the OPNsense model mask")}},
-			"type":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("Custom"), Description: "Test type, e.g. `Custom`, `ProgramStatus`, `NetworkPing`, `SpaceUsage`, `SystemResource`, `Existence`. OPNsense field `type`."},
+			"type":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("Custom"), Description: "Test type, e.g. `Custom`, `ProgramStatus`, `NetworkPing`, `SpaceUsage`, `SystemResource`, `Existence`. One of `Existence`, `SystemResource`, `ProcessResource`, `ProcessDiskIO`, `FileChecksum`, `Timestamp`, `FileSize`, `FileContent`, `FilesystemMountFlags`, `SpaceUsage`, `InodeUsage`, `DiskIO`, `Permisssion`, `UID`, `GID`, `PID`, `PPID`, `Uptime`, `ProgramStatus`, `NetworkInterface`, `NetworkPing`, `Connection`, `Custom`. OPNsense field `type`.", Validators: []validator.String{stringvalidator.OneOf("Existence", "SystemResource", "ProcessResource", "ProcessDiskIO", "FileChecksum", "Timestamp", "FileSize", "FileContent", "FilesystemMountFlags", "SpaceUsage", "InodeUsage", "DiskIO", "Permisssion", "UID", "GID", "PID", "PPID", "Uptime", "ProgramStatus", "NetworkInterface", "NetworkPing", "Connection", "Custom")}},
 			"condition": schema.StringAttribute{Required: true, Description: "Monit condition, e.g. `failed ping` or `loadavg (5min) > 4`. OPNsense field `condition`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^.{1,255}$"), "must match the OPNsense model mask")}},
 			"action":    schema.StringAttribute{Required: true, Description: "`alert`, `restart`, `start`, `stop`, `exec` or `unmonitor`. OPNsense field `action`.", Validators: []validator.String{stringvalidator.OneOf("alert", "restart", "start", "stop", "exec", "unmonitor")}},
 			"path":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Program path for the `exec` action. OPNsense field `path`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^(\\/[^\\/ ]*)+\\/?.*$"))}},
@@ -161,7 +161,7 @@ func (m *genMonitTestModel) toAPI(ctx context.Context) (opnsense.MonitTest, diag
 	var diags diag.Diagnostics
 	var v opnsense.MonitTest
 	v.Name = m.Name.ValueString()
-	v.Type = m.Type.ValueString()
+	v.Type = opnsense.Option(m.Type.ValueString())
 	v.Condition = m.Condition.ValueString()
 	v.Action = opnsense.Option(m.Action.ValueString())
 	v.Path = m.Path.ValueString()
@@ -173,7 +173,7 @@ func (m *genMonitTestModel) fromAPI(ctx context.Context, id string, v *opnsense.
 	m.ID = types.StringValue(id)
 	var diags diag.Diagnostics
 	m.Name = types.StringValue(v.Name)
-	m.Type = types.StringValue(v.Type)
+	m.Type = types.StringValue(string(v.Type))
 	m.Condition = types.StringValue(v.Condition)
 	m.Action = types.StringValue(string(v.Action))
 	m.Path = types.StringValue(v.Path)
@@ -251,7 +251,7 @@ func (r *genMonitCheckResource) Schema(_ context.Context, _ resource.SchemaReque
 			"enabled":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `enabled`."},
 			"name":         schema.StringAttribute{Required: true, Description: "OPNsense field `name`.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile("^([0-9a-zA-Z\\._\\-\\$]){1,255}$"), "must match the OPNsense model mask")}},
 			"description":  schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `description`."},
-			"type":         schema.StringAttribute{Required: true, Description: "`process`, `file`, `fifo`, `filesystem`, `directory`, `host`, `system`, `custom` or `network`. OPNsense field `type`."},
+			"type":         schema.StringAttribute{Required: true, Description: "`process`, `file`, `fifo`, `filesystem`, `directory`, `host`, `system`, `custom` or `network`. OPNsense field `type`.", Validators: []validator.String{stringvalidator.OneOf("process", "file", "fifo", "filesystem", "directory", "host", "system", "custom", "network")}},
 			"pidfile":      schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "PID file, for type `process`. OPNsense field `pidfile`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^(\\/[^\\/ ]*)+\\/?$"))}},
 			"match":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Process name pattern, for type `process` without a PID file. OPNsense field `match`."},
 			"path":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "File, directory, filesystem or program path. OPNsense field `path`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^(\\/[^\\/ ]*)+\\/?.*$"))}},
@@ -274,7 +274,7 @@ func (m *genMonitCheckModel) toAPI(ctx context.Context) (opnsense.MonitCheck, di
 	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
 	v.Name = m.Name.ValueString()
 	v.Description = m.Description.ValueString()
-	v.Type = m.Type.ValueString()
+	v.Type = opnsense.Option(m.Type.ValueString())
 	v.Pidfile = m.Pidfile.ValueString()
 	v.Match = m.Match.ValueString()
 	v.Path = m.Path.ValueString()
@@ -298,7 +298,7 @@ func (m *genMonitCheckModel) fromAPI(ctx context.Context, id string, v *opnsense
 	m.Enabled = types.BoolValue(bool(v.Enabled))
 	m.Name = types.StringValue(v.Name)
 	m.Description = types.StringValue(v.Description)
-	m.Type = types.StringValue(v.Type)
+	m.Type = types.StringValue(string(v.Type))
 	m.Pidfile = types.StringValue(v.Pidfile)
 	m.Match = types.StringValue(v.Match)
 	m.Path = types.StringValue(v.Path)

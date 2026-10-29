@@ -40,14 +40,14 @@ type User struct {
 	Scope          ReadOnly `json:"scope,omitzero"`
 	Expires        string   `json:"expires"`
 	AuthorizedKeys string   `json:"authorizedkeys"`
-	Shell          string   `json:"shell"`
+	Shell          Option   `json:"shell"`
 	Password       string   `json:"password"`
 	PwdChangedAt   ReadOnly `json:"pwd_changed_at,omitzero"`
 	LandingPage    string   `json:"landing_page"`
 	Comment        string   `json:"comment"`
 	Email          string   `json:"email"`
 	Privileges     CSVList  `json:"priv"`
-	Language       string   `json:"language"`
+	Language       Option   `json:"language"`
 	Groups         CSVList  `json:"group_memberships"`
 	FullName       string   `json:"descr"`
 }

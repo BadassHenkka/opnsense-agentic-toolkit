@@ -51,7 +51,7 @@ func registerGenIDS(s *Server) {
 		"AlertLogrotate":         {Kind: Option, Choices: static("W0D23", "D0"), Required: true, Default: "W0D23"},
 		"AlertSaveLogs":          {Required: true, Default: "4", HasRange: true, Min: 1, Max: 1000},
 		"MPMAlgo":                {Kind: Option, Choices: static("ac", "ac-ks", "hs")},
-		"detect.Profile":         {},
+		"detect.Profile":         {Kind: Option, Choices: static("low", "medium", "high", "custom")},
 		"detect.toclient_groups": {HasRange: true, Min: 0, Max: 65535},
 		"detect.toserver_groups": {HasRange: true, Min: 0, Max: 65535},
 		"syslog":                 {Required: true, Default: "0"},

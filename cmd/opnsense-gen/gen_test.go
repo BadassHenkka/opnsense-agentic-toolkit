@@ -115,7 +115,7 @@ func TestResolveFields(t *testing.T) {
 	specs, models := writeTestSpec(t, `{"area": "t", "title": "T", "items": [{
 		"resource": "thing", "description": "d", "model": "core/T/T.xml", "node": "thing",
 		"base": "t/thing", "key": "thing", "name_field": "name",
-		"fields": {"link": {"type": "ref"}}}]}`)
+		"fields": {"link": {"type": "ref"}, "tags": {"extra_choices": ["z"]}}}]}`)
 	areas, err := loadSpecs(specs, models)
 	if err != nil {
 		t.Fatal(err)
@@ -145,6 +145,9 @@ func TestResolveFields(t *testing.T) {
 	if strings.Join(mode.Choices, ",") != "a,b,c" || mode.Default != "b" || mode.Required() {
 		t.Errorf("mode %+v", mode)
 	}
+	if tags := o.field("tags"); strings.Join(tags.Choices, ",") != "x,y,z" {
+		t.Errorf("tags choices %v, want the model's plus extra_choices", tags.Choices)
+	}
 	if !o.field("name").Required() || !o.field("name").Unique {
 		t.Error("name should be required and unique")
 	}
@@ -162,6 +165,8 @@ func TestResolveErrors(t *testing.T) {
 		"unknown field": {`{"link": {"type": "ref"}, "nope": {}}`, `"nope"`},
 		"reserved attr": {`{"link": {"type": "ref"}, "name": {"attr": "count"}}`, "reserved"},
 		"duplicate":     {`{"link": {"type": "ref", "attr": "name"}}`, "both map"},
+		// A list field reads back as an option map, which a string can't hold.
+		"list as string": {`{"link": {"type": "ref"}, "mode": {"type": "string"}}`, "reads back as an option map"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			specs, models := writeTestSpec(t, `{"area": "t", "title": "T", "items": [{

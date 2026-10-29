@@ -197,9 +197,9 @@ func TestGenMonitTest(t *testing.T) {
 		t.Error("never applied")
 	}
 	bad := plan
-	bad.Action = types.StringValue("not-an-option")
+	bad.Type = types.StringValue("not-an-option")
 	if !h.validateStrings(bad).HasError() {
-		t.Error("invalid action accepted")
+		t.Error("invalid type accepted")
 	}
 }
 
@@ -289,6 +289,11 @@ func TestGenMonitCheck(t *testing.T) {
 	}
 	if fake.Applies["monit/service/reconfigure"] == 0 {
 		t.Error("never applied")
+	}
+	bad := plan
+	bad.Type = types.StringValue("not-an-option")
+	if !h.validateStrings(bad).HasError() {
+		t.Error("invalid type accepted")
 	}
 }
 

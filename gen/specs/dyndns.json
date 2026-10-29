@@ -21,7 +21,7 @@
       "zero_field": "description",
       "fields": {
         "service": {
-          "type": "string",
+          "type": "ref",
           "description": "Provider, e.g. `cloudflare`, `duckdns`, `namecheap`, `custom` (see the list in the web UI)."
         },
         "protocol": {
@@ -49,8 +49,11 @@
           "description": "Host names to update, e.g. `home.example.com`."
         },
         "checkip": {
-          "type": "string",
-          "description": "How the current address is found: `web_dyndns`, `web_cloudflare`, `web_ipify-ipv4`, ..., or `if` to read an interface."
+          "type": "option",
+          "extra_choices": [
+            "if6"
+          ],
+          "description": "How the current address is found, e.g. `web_cloudflare` or `web_ipify-ipv4`; `if` reads an interface, `if6` its IPv6 address (native backend only)."
         },
         "dynipv6host": {
           "attr": "dynipv6_host",

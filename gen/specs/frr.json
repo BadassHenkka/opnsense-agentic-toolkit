@@ -523,7 +523,7 @@
           "type": "int"
         },
         "carp_depend_on": {
-          "type": "string",
+          "type": "ref",
           "description": "CARP virtual IP the interface follows."
         },
         "hellointerval": {
@@ -734,7 +734,7 @@
           "type": "int"
         },
         "carp_depend_on": {
-          "type": "string",
+          "type": "ref",
           "description": "CARP virtual IP the interface follows."
         },
         "hellointerval": {

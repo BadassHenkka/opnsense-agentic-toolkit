@@ -84,11 +84,11 @@ func registerGenKea(s *Server) {
 	{ // kea_dhcp4_option
 		c := s.add(&Collection{Base: "kea/dhcpv4", Suffix: "Option", Key: "option",
 			Fields: map[string]Field{
-				"code":           {Required: true},
+				"code":           {Kind: List, Sep: ",", Required: true},
 				"encoding":       {Kind: Option, Choices: static("hex", "ipv4-address", "ipv6-address", "uint8", "uint16", "uint32", "int32", "boolean", "string", "fqdn"), Required: true, Default: "hex"},
 				"data":           {Required: true},
 				"force":          {},
-				"match_code":     {},
+				"match_code":     {Kind: List, Sep: ","},
 				"match_encoding": {Kind: Option, Choices: static("hex", "ipv4-address", "ipv6-address", "uint8", "uint16", "uint32", "int32", "boolean", "string", "fqdn")},
 				"match_data":     {},
 				"description":    {Required: true},
@@ -194,11 +194,11 @@ func registerGenKea(s *Server) {
 	{ // kea_dhcp6_option
 		c := s.add(&Collection{Base: "kea/dhcpv6", Suffix: "Option", Key: "option",
 			Fields: map[string]Field{
-				"code":           {Required: true},
+				"code":           {Kind: List, Sep: ",", Required: true},
 				"encoding":       {Kind: Option, Choices: static("hex", "ipv4-address", "ipv6-address", "uint8", "uint16", "uint32", "int32", "boolean", "string", "fqdn"), Required: true, Default: "hex"},
 				"data":           {Required: true},
 				"force":          {},
-				"match_code":     {},
+				"match_code":     {Kind: List, Sep: ","},
 				"match_encoding": {Kind: Option, Choices: static("hex", "ipv4-address", "ipv6-address", "uint8", "uint16", "uint32", "int32", "boolean", "string", "fqdn")},
 				"match_data":     {},
 				"description":    {Required: true},

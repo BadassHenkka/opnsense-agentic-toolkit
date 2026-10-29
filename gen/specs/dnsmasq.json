@@ -226,11 +226,11 @@
       "zero_field": "-",
       "fields": {
         "option": {
-          "type": "string",
+          "type": "ref",
           "description": "DHCPv4 option number, e.g. `6` (DNS servers)."
         },
         "option6": {
-          "type": "string",
+          "type": "ref",
           "description": "DHCPv6 option number."
         },
         "interface": {

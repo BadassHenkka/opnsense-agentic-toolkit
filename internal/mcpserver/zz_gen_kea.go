@@ -153,11 +153,11 @@ type genKeaDhcp4OptionView struct {
 func genKeaDhcp4OptionViewOf(id string, v *opnsense.KeaDhcp4Option) genKeaDhcp4OptionView {
 	return genKeaDhcp4OptionView{
 		UUID:          id,
-		Code:          v.Code,
+		Code:          string(v.Code),
 		Encoding:      string(v.Encoding),
 		Data:          v.Data,
 		Force:         bool(v.Force),
-		MatchCode:     v.MatchCode,
+		MatchCode:     string(v.MatchCode),
 		MatchEncoding: string(v.MatchEncoding),
 		MatchData:     v.MatchData,
 		Description:   v.Description,
@@ -305,11 +305,11 @@ type genKeaDhcp6OptionView struct {
 func genKeaDhcp6OptionViewOf(id string, v *opnsense.KeaDhcp6Option) genKeaDhcp6OptionView {
 	return genKeaDhcp6OptionView{
 		UUID:          id,
-		Code:          v.Code,
+		Code:          string(v.Code),
 		Encoding:      string(v.Encoding),
 		Data:          v.Data,
 		Force:         bool(v.Force),
-		MatchCode:     v.MatchCode,
+		MatchCode:     string(v.MatchCode),
 		MatchEncoding: string(v.MatchEncoding),
 		MatchData:     v.MatchData,
 		Description:   v.Description,

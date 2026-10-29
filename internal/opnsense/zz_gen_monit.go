@@ -34,7 +34,7 @@ func (r MonitAlertRow) RowRef() (string, string) { return string(r.UUID), string
 // (model core/Monit/Monit.xml, array test).
 type MonitTest struct {
 	Name      string `json:"name"`
-	Type      string `json:"type"`
+	Type      Option `json:"type"`
 	Condition string `json:"condition"`
 	Action    Option `json:"action"`
 	Path      string `json:"path"`
@@ -60,7 +60,7 @@ type MonitCheck struct {
 	Enabled      Bool    `json:"enabled"`
 	Name         string  `json:"name"`
 	Description  string  `json:"description"`
-	Type         string  `json:"type"`
+	Type         Option  `json:"type"`
 	Pidfile      string  `json:"pidfile"`
 	Match        string  `json:"match"`
 	Path         string  `json:"path"`

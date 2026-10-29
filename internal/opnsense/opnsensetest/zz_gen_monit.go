@@ -24,7 +24,7 @@ func registerGenMonit(s *Server) {
 		c := s.add(&Collection{Base: "monit/settings", Suffix: "Test", Key: "test",
 			Fields: map[string]Field{
 				"name":      {Required: true, Mask: "^([0-9a-zA-Z\\._\\- ]){1,255}$"},
-				"type":      {Required: true, Default: "Custom"},
+				"type":      {Kind: Option, Choices: static("Existence", "SystemResource", "ProcessResource", "ProcessDiskIO", "FileChecksum", "Timestamp", "FileSize", "FileContent", "FilesystemMountFlags", "SpaceUsage", "InodeUsage", "DiskIO", "Permisssion", "UID", "GID", "PID", "PPID", "Uptime", "ProgramStatus", "NetworkInterface", "NetworkPing", "Connection", "Custom"), Required: true, Default: "Custom"},
 				"condition": {Required: true, Mask: "^.{1,255}$"},
 				"action":    {Kind: Option, Choices: static("alert", "restart", "start", "stop", "exec", "unmonitor"), Required: true},
 				"path":      {Mask: "^(\\/[^\\/ ]*)+\\/?.*$"},
@@ -41,7 +41,7 @@ func registerGenMonit(s *Server) {
 				"enabled":      {Required: true, Default: "0"},
 				"name":         {Required: true, Mask: "^([0-9a-zA-Z\\._\\-\\$]){1,255}$"},
 				"description":  {},
-				"type":         {Required: true},
+				"type":         {Kind: Option, Choices: static("process", "file", "fifo", "filesystem", "directory", "host", "system", "custom", "network"), Required: true},
 				"pidfile":      {Mask: "^(\\/[^\\/ ]*)+\\/?$"},
 				"match":        {},
 				"path":         {Mask: "^(\\/[^\\/ ]*)+\\/?.*$"},

@@ -7,7 +7,7 @@ package opnsense
 // Not generated: current_ip, current_mtime.
 type DynDNSAccount struct {
 	Enabled        Bool    `json:"enabled"`
-	Service        string  `json:"service"`
+	Service        Option  `json:"service"`
 	Protocol       Option  `json:"protocol"`
 	Server         string  `json:"server"`
 	Username       string  `json:"username"`
@@ -16,7 +16,7 @@ type DynDNSAccount struct {
 	Hostnames      CSVList `json:"hostnames"`
 	Wildcard       Bool    `json:"wildcard"`
 	Zone           string  `json:"zone"`
-	Checkip        string  `json:"checkip"`
+	Checkip        Option  `json:"checkip"`
 	DynIPv6Host    string  `json:"dynipv6host"`
 	CheckipTimeout Int     `json:"checkip_timeout"`
 	ForceSsl       Bool    `json:"force_ssl"`

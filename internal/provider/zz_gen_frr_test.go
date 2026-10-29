@@ -1222,11 +1222,11 @@ func TestGenFrrOspfInterface(t *testing.T) {
 	}
 
 	plan.ID = got.ID
-	plan.CarpDependOn = types.StringValue("updated by test")
+	plan.Enabled = types.BoolValue(false)
 	st = h.update(st, plan, &got)
 	rec, _ = fake.Get("interface", id)
-	if !sameValues(rec["carp_depend_on"], "updated by test") {
-		t.Errorf("carp_depend_on: stored %q, want %q", rec["carp_depend_on"], "updated by test")
+	if !sameValues(rec["enabled"], "0") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "0")
 	}
 
 	if _, ok := h.read(st, &got); !ok {
@@ -1557,11 +1557,11 @@ func TestGenFrrOspf6Interface(t *testing.T) {
 	}
 
 	plan.ID = got.ID
-	plan.CarpDependOn = types.StringValue("updated by test")
+	plan.Enabled = types.BoolValue(false)
 	st = h.update(st, plan, &got)
 	rec, _ = fake.Get("interface", id)
-	if !sameValues(rec["carp_depend_on"], "updated by test") {
-		t.Errorf("carp_depend_on: stored %q, want %q", rec["carp_depend_on"], "updated by test")
+	if !sameValues(rec["enabled"], "0") {
+		t.Errorf("enabled: stored %q, want %q", rec["enabled"], "0")
 	}
 
 	if _, ok := h.read(st, &got); !ok {

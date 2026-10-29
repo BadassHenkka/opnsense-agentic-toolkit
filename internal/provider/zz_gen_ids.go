@@ -269,7 +269,7 @@ func (r *genIDSGeneralResource) Schema(_ context.Context, _ resource.SchemaReque
 			"alert_logrotate":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("W0D23"), Description: "One of `W0D23`, `D0`. OPNsense field `AlertLogrotate`.", Validators: []validator.String{stringvalidator.OneOf("W0D23", "D0")}},
 			"alert_save_logs":        schema.Int64Attribute{Optional: true, Computed: true, Default: int64default.StaticInt64(4), Description: "OPNsense field `AlertSaveLogs`.", Validators: []validator.Int64{int64validator.Between(1, 1000)}},
 			"mpm_algo":               schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "One of `ac`, `ac-ks`, `hs`. OPNsense field `MPMAlgo`.", Validators: []validator.String{stringvalidator.OneOf("", "ac", "ac-ks", "hs")}},
-			"detect_profile":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `detect.Profile`."},
+			"detect_profile":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "One of `low`, `medium`, `high`, `custom`. OPNsense field `detect.Profile`.", Validators: []validator.String{stringvalidator.OneOf("", "low", "medium", "high", "custom")}},
 			"detect_toclient_groups": schema.Int64Attribute{Optional: true, Description: "OPNsense field `detect.toclient_groups`.", Validators: []validator.Int64{int64validator.Between(0, 65535)}},
 			"detect_toserver_groups": schema.Int64Attribute{Optional: true, Description: "OPNsense field `detect.toserver_groups`.", Validators: []validator.Int64{int64validator.Between(0, 65535)}},
 			"syslog":                 schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `syslog`."},
@@ -293,7 +293,7 @@ func (m *genIDSGeneralModel) toAPI(ctx context.Context) (opnsense.IDSGeneral, di
 	v.AlertLogrotate = opnsense.Option(m.AlertLogrotate.ValueString())
 	v.AlertSaveLogs = apiInt(m.AlertSaveLogs)
 	v.MpmAlgo = opnsense.Option(m.MpmAlgo.ValueString())
-	v.Detect.Profile = m.DetectProfile.ValueString()
+	v.Detect.Profile = opnsense.Option(m.DetectProfile.ValueString())
 	v.Detect.ToclientGroups = apiInt(m.DetectToclientGroups)
 	v.Detect.ToserverGroups = apiInt(m.DetectToserverGroups)
 	v.Syslog = opnsense.Bool(m.Syslog.ValueBool())
@@ -320,7 +320,7 @@ func (m *genIDSGeneralModel) fromAPI(ctx context.Context, v *opnsense.IDSGeneral
 	m.AlertLogrotate = types.StringValue(string(v.AlertLogrotate))
 	m.AlertSaveLogs = int64Value(v.AlertSaveLogs)
 	m.MpmAlgo = types.StringValue(string(v.MpmAlgo))
-	m.DetectProfile = types.StringValue(v.Detect.Profile)
+	m.DetectProfile = types.StringValue(string(v.Detect.Profile))
 	m.DetectToclientGroups = int64Value(v.Detect.ToclientGroups)
 	m.DetectToserverGroups = int64Value(v.Detect.ToserverGroups)
 	m.Syslog = types.BoolValue(bool(v.Syslog))

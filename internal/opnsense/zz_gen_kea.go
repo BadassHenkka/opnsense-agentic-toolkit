@@ -126,11 +126,11 @@ func (r KeaDhcp4ReservationRow) RowRef() (string, string) { return string(r.UUID
 // KeaDhcp4Option: A custom DHCP4 option that can be attached to subnets and reservations (Services → Kea DHCP → Kea DHCPv4 → Settings → Options).
 // (model core/Kea/KeaDhcpv4.xml, array options.option).
 type KeaDhcp4Option struct {
-	Code          string `json:"code"`
+	Code          Option `json:"code"`
 	Encoding      Option `json:"encoding"`
 	Data          string `json:"data"`
 	Force         Bool   `json:"force"`
-	MatchCode     string `json:"match_code"`
+	MatchCode     Option `json:"match_code"`
 	MatchEncoding Option `json:"match_encoding"`
 	MatchData     string `json:"match_data"`
 	Description   string `json:"description"`
@@ -299,11 +299,11 @@ func (r KeaDhcp6PDPoolRow) RowRef() (string, string) { return string(r.UUID), st
 // KeaDhcp6Option: A custom DHCP6 option that can be attached to subnets and reservations (Services → Kea DHCP → Kea DHCPv6 → Settings → Options).
 // (model core/Kea/KeaDhcpv6.xml, array options.option).
 type KeaDhcp6Option struct {
-	Code          string `json:"code"`
+	Code          Option `json:"code"`
 	Encoding      Option `json:"encoding"`
 	Data          string `json:"data"`
 	Force         Bool   `json:"force"`
-	MatchCode     string `json:"match_code"`
+	MatchCode     Option `json:"match_code"`
 	MatchEncoding Option `json:"match_encoding"`
 	MatchData     string `json:"match_data"`
 	Description   string `json:"description"`

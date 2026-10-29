@@ -37,7 +37,7 @@ func genDynDNSAccountViewOf(id string, v *opnsense.DynDNSAccount) genDynDNSAccou
 	return genDynDNSAccountView{
 		UUID:           id,
 		Enabled:        bool(v.Enabled),
-		Service:        v.Service,
+		Service:        string(v.Service),
 		Protocol:       string(v.Protocol),
 		Server:         v.Server,
 		Username:       v.Username,
@@ -46,7 +46,7 @@ func genDynDNSAccountViewOf(id string, v *opnsense.DynDNSAccount) genDynDNSAccou
 		Hostnames:      nonNil([]string(v.Hostnames)),
 		Wildcard:       bool(v.Wildcard),
 		Zone:           v.Zone,
-		Checkip:        v.Checkip,
+		Checkip:        string(v.Checkip),
 		Dynipv6Host:    v.DynIPv6Host,
 		CheckipTimeout: intPtr(v.CheckipTimeout),
 		ForceSsl:       bool(v.ForceSsl),

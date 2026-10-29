@@ -87,8 +87,8 @@ func registerGenDnsmasq(s *Server) {
 		c := s.add(&Collection{Base: "dnsmasq/settings", Suffix: "Option", Key: "option",
 			Fields: map[string]Field{
 				"type":        {Kind: Option, Choices: static("set", "match"), Required: true, Default: "set"},
-				"option":      {},
-				"option6":     {},
+				"option":      {Kind: List, Sep: ","},
+				"option6":     {Kind: List, Sep: ","},
 				"interface":   {Kind: List, Sep: ","},
 				"tag":         {Kind: List, Sep: ","},
 				"set_tag":     {Kind: List, Sep: ","},

@@ -73,6 +73,7 @@ Field:
 |---|---|
 | `attr`, `go_name` | Terraform attribute and client field names (the Terraform model uses the attribute's name) |
 | `type`, `sep`, `tf_type` | kind override; list separator (`"\n"`); `set` or `list` in Terraform |
+| `choices`, `extra_choices` | options instead of the model's; options the field's class adds at runtime (`if6` of the DynDNS `checkip`) |
 | `required`, `default`, `no_default` | Terraform only; the fake keeps the model's own default |
 | `invert` | boolean exposed negated (`disabled` → `enabled`) |
 | `as_bool` | two-value option as a boolean: `{"true": "0", "false": "1"}` |
@@ -110,7 +111,10 @@ them: `ValidateConfig`, `ModifyPlan` or `ImportState` on `gen<Name>Resource`, ex
 | `volatile="true"`, nested containers | skipped | | |
 
 Custom field types (`.\FooField`) need `"type"` in the spec: read the class in the model's
-`FieldTypes/` directory and pick the base it extends. A required field without a default
+`FieldTypes/` directory and pick the base it extends. A class built on `BaseListField` reads back
+as an option map, so it needs `option` (static options) or `ref` (options from the backend);
+the generator refuses `string` for a field with `OptionValues` or a list type.
+`NetworkAliasField` is the exception: it reads back as its value. A required field without a default
 becomes a required attribute; everything else is optional with the XML default. A default
 that is not one of the field's options is ignored (the Syslog transport ships one).
 

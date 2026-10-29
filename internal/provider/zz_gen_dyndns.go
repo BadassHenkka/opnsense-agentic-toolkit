@@ -69,7 +69,7 @@ func (r *genDynDNSAccountResource) Schema(_ context.Context, _ resource.SchemaRe
 			"hostnames":       schema.SetAttribute{ElementType: types.StringType, Required: true, Description: "Host names to update, e.g. `home.example.com`. OPNsense field `hostnames`."},
 			"wildcard":        schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `wildcard`."},
 			"zone":            schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `zone`."},
-			"checkip":         schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString("web_dyndns"), Description: "How the current address is found: `web_dyndns`, `web_cloudflare`, `web_ipify-ipv4`, ..., or `if` to read an interface. OPNsense field `checkip`."},
+			"checkip":         schema.StringAttribute{Required: true, Description: "How the current address is found, e.g. `web_cloudflare` or `web_ipify-ipv4`; `if` reads an interface, `if6` its IPv6 address (native backend only). (The model default \"web_dyndns\" is not a valid option.) One of `web_akamai`, `akamai-ipv4`, `akamai-ipv6`, `web_cloudflare`, `cloudflare-ipv4`, `cloudflare-ipv6`, `dns_cloudflare-dns`, `dynu-ipv4`, `dynu-ipv6`, `web_freedns`, `web_he`, `web_icanhazip`, `web_ipify-ipv4`, `web_ipify-ipv6`, `web_loopia`, `web_myonlineportal`, `web_noip-ipv4`, `web_noip-ipv6`, `web_nsupdate.info-ipv4`, `web_nsupdate.info-ipv6`, `web_zoneedit`, `if`, `if6`. OPNsense field `checkip`.", Validators: []validator.String{stringvalidator.OneOf("web_akamai", "akamai-ipv4", "akamai-ipv6", "web_cloudflare", "cloudflare-ipv4", "cloudflare-ipv6", "dns_cloudflare-dns", "dynu-ipv4", "dynu-ipv6", "web_freedns", "web_he", "web_icanhazip", "web_ipify-ipv4", "web_ipify-ipv6", "web_loopia", "web_myonlineportal", "web_noip-ipv4", "web_noip-ipv6", "web_nsupdate.info-ipv4", "web_nsupdate.info-ipv6", "web_zoneedit", "if", "if6")}},
 			"dynipv6_host":    schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "IPv6 host part (`::1234`) to combine with the interface prefix. OPNsense field `dynipv6host`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^::(([0-9a-fA-F]{1,4}:){0,3}[0-9a-fA-F]{1,4})?$"))}},
 			"checkip_timeout": schema.Int64Attribute{Optional: true, Computed: true, Default: int64default.StaticInt64(10), Description: "Seconds to wait for the address lookup, 10-60. OPNsense field `checkip_timeout`.", Validators: []validator.Int64{int64validator.Between(10, 60)}},
 			"force_ssl":       schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(true), Description: "Use HTTPS to the update server. OPNsense field `force_ssl`."},
@@ -84,7 +84,7 @@ func (m *genDynDNSAccountModel) toAPI(ctx context.Context) (opnsense.DynDNSAccou
 	var diags diag.Diagnostics
 	var v opnsense.DynDNSAccount
 	v.Enabled = opnsense.Bool(m.Enabled.ValueBool())
-	v.Service = m.Service.ValueString()
+	v.Service = opnsense.Option(m.Service.ValueString())
 	v.Protocol = opnsense.Option(m.Protocol.ValueString())
 	v.Server = m.Server.ValueString()
 	v.Username = m.Username.ValueString()
@@ -93,7 +93,7 @@ func (m *genDynDNSAccountModel) toAPI(ctx context.Context) (opnsense.DynDNSAccou
 	diags.Append(m.Hostnames.ElementsAs(ctx, (*[]string)(&v.Hostnames), false)...)
 	v.Wildcard = opnsense.Bool(m.Wildcard.ValueBool())
 	v.Zone = m.Zone.ValueString()
-	v.Checkip = m.Checkip.ValueString()
+	v.Checkip = opnsense.Option(m.Checkip.ValueString())
 	v.DynIPv6Host = m.Dynipv6Host.ValueString()
 	v.CheckipTimeout = apiInt(m.CheckipTimeout)
 	v.ForceSsl = opnsense.Bool(m.ForceSsl.ValueBool())
@@ -109,7 +109,7 @@ func (m *genDynDNSAccountModel) fromAPI(ctx context.Context, id string, v *opnse
 	var diags diag.Diagnostics
 	var d diag.Diagnostics
 	m.Enabled = types.BoolValue(bool(v.Enabled))
-	m.Service = types.StringValue(v.Service)
+	m.Service = types.StringValue(string(v.Service))
 	m.Protocol = types.StringValue(string(v.Protocol))
 	m.Server = types.StringValue(v.Server)
 	m.Username = types.StringValue(v.Username)
@@ -123,7 +123,7 @@ func (m *genDynDNSAccountModel) fromAPI(ctx context.Context, id string, v *opnse
 	diags.Append(d...)
 	m.Wildcard = types.BoolValue(bool(v.Wildcard))
 	m.Zone = types.StringValue(v.Zone)
-	m.Checkip = types.StringValue(v.Checkip)
+	m.Checkip = types.StringValue(string(v.Checkip))
 	m.Dynipv6Host = types.StringValue(v.DynIPv6Host)
 	m.CheckipTimeout = int64Value(v.CheckipTimeout)
 	m.ForceSsl = types.BoolValue(bool(v.ForceSsl))
