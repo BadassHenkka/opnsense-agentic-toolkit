@@ -446,7 +446,7 @@ func (r *genVirtualIPResource) Schema(_ context.Context, _ resource.SchemaReques
 			"gateway":     schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "OPNsense field `gateway`."},
 			"noexpand":    schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `noexpand`."},
 			"nobind":      schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `nobind`."},
-			"password":    schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Sensitive: true, Description: "CARP password. Write-only for MCP: never returned. OPNsense field `password`."},
+			"password":    schema.StringAttribute{Optional: true, Computed: true, Sensitive: true, Description: "CARP password. Write-only for MCP: never returned. Unset keeps the value OPNsense has; `\"\"` clears it. OPNsense field `password`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
 			"vhid":        schema.Int64Attribute{Optional: true, Description: "OPNsense field `vhid`.", Validators: []validator.Int64{int64validator.Between(1, 255)}},
 			"advbase":     schema.Int64Attribute{Optional: true, Computed: true, Default: int64default.StaticInt64(1), Description: "OPNsense field `advbase`.", Validators: []validator.Int64{int64validator.Between(1, 254)}},
 			"advskew":     schema.Int64Attribute{Optional: true, Computed: true, Default: int64default.StaticInt64(0), Description: "OPNsense field `advskew`.", Validators: []validator.Int64{int64validator.Between(0, 254)}},

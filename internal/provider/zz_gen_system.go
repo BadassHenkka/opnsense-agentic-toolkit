@@ -454,7 +454,7 @@ func (r *genHasyncResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 			"synchronize_to_ip": schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Peer address or URL for configuration sync. OPNsense field `synchronizetoip`."},
 			"verify_peer":       schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "Verify the peer's TLS certificate. OPNsense field `verifypeer`."},
 			"username":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Peer user for XMLRPC sync. OPNsense field `username`."},
-			"password":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Sensitive: true, Description: "Peer password for XMLRPC sync. Write-only for MCP: never returned. OPNsense field `password`."},
+			"password":          schema.StringAttribute{Optional: true, Computed: true, Sensitive: true, Description: "Peer password for XMLRPC sync. Write-only for MCP: never returned. Unset keeps the value OPNsense has; `\"\"` clears it. OPNsense field `password`.", PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
 			"syncitems":         schema.SetAttribute{ElementType: types.StringType, Optional: true, Computed: true, Default: setdefault.StaticValue(types.SetValueMust(types.StringType, []attr.Value{})), Description: "Parts of the configuration to sync, e.g. `aliases`, `rules`, `nat` (see the web UI). OPNsense field `syncitems`."},
 		},
 	}

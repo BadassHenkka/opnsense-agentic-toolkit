@@ -64,7 +64,7 @@ func (r *genDynDNSAccountResource) Schema(_ context.Context, _ resource.SchemaRe
 			"protocol":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Only for `custom`: `dyndns2`, `get`, `post` or `put`. One of `dyndns1`, `dyndns2`, `get`, `post`, `put`. OPNsense field `protocol`.", Validators: []validator.String{stringvalidator.OneOf("", "dyndns1", "dyndns2", "get", "post", "put")}},
 			"server":          schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Update server for custom providers. OPNsense field `server`."},
 			"username":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Account user name, or the zone/API user for some providers. OPNsense field `username`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^([a-zA-Z0-9\\-.@_:+\\%])*$"))}},
-			"password":        schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Sensitive: true, Description: "Password or API token. OPNsense does return it; this provider and the MCP server never expose it. Write-only for MCP: never returned. OPNsense field `password`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^[^\\n]*$"))}},
+			"password":        schema.StringAttribute{Optional: true, Computed: true, Sensitive: true, Description: "Password or API token. OPNsense does return it; this provider and the MCP server never expose it. Write-only for MCP: never returned. Unset keeps the current value; OPNsense ignores `\"\"`. OPNsense field `password`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^[^\\n]*$"))}, PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
 			"resource_id":     schema.StringAttribute{Optional: true, Computed: true, Default: stringdefault.StaticString(""), Description: "Provider specific resource/zone id. OPNsense field `resourceId`.", Validators: []validator.String{optionalMask(regexp.MustCompile("^[^\\n]*$"))}},
 			"hostnames":       schema.SetAttribute{ElementType: types.StringType, Required: true, Description: "Host names to update, e.g. `home.example.com`. OPNsense field `hostnames`."},
 			"wildcard":        schema.BoolAttribute{Optional: true, Computed: true, Default: booldefault.StaticBool(false), Description: "OPNsense field `wildcard`."},
@@ -113,7 +113,7 @@ func (m *genDynDNSAccountModel) fromAPI(ctx context.Context, id string, v *opnse
 	m.Protocol = types.StringValue(string(v.Protocol))
 	m.Server = types.StringValue(v.Server)
 	m.Username = types.StringValue(v.Username)
-	if m.Password.IsUnknown() { // write-only: keep what Terraform has
+	if m.Password.IsUnknown() || m.Password.IsNull() { // write-only: keep what Terraform has
 		if v.Password != "" || m.Password.IsUnknown() || m.Password.IsNull() {
 			m.Password = types.StringValue(v.Password)
 		}

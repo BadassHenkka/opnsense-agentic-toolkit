@@ -226,8 +226,11 @@ type Field struct {
 	HasRange      bool
 	Computed      bool
 	Sensitive     bool
-	Desc          string
-	FakeValue     string
+	// UpdateOnly fields (UpdateOnlyTextField) read back empty, and OPNsense ignores an empty
+	// value on write.
+	UpdateOnly bool
+	Desc       string
+	FakeValue  string
 	// Mask is the model's validation regex translated to Go syntax ("" if none or untranslatable).
 	Mask string
 	// Unique fields must not repeat across items (optionally together with UniqueWith).
@@ -617,7 +620,7 @@ func field(n *xmlNode, typ string, fs FieldSpec, container string) (*Field, erro
 		}
 		kind = k
 		if typ == "UpdateOnlyTextField" {
-			f.Sensitive = true
+			f.Sensitive, f.UpdateOnly = true, true
 		}
 		if typ == "AutoNumberField" {
 			f.Computed = true

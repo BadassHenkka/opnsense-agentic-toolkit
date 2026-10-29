@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -153,6 +154,34 @@ func TestResolveFields(t *testing.T) {
 	}
 	if p := o.field("port"); !p.HasRange || p.Min != 1 || p.Max != 10 {
 		t.Errorf("port range %+v", p)
+	}
+}
+
+// Import-generated config writes a secret as null. The secret must keep its value then,
+// not fall back to a default of "" that the next apply sends.
+func TestSecretKeepsUnset(t *testing.T) {
+	for _, writeOnly := range []bool{false, true} {
+		specs, models := writeTestSpec(t, fmt.Sprintf(`{"area": "t", "title": "T", "items": [{
+			"resource": "thing", "description": "d", "model": "core/T/T.xml", "node": "thing",
+			"base": "t/thing", "key": "thing",
+			"fields": {"link": {"type": "ref"}, "secret": {"write_only": %v}}}]}`, writeOnly))
+		areas, err := loadSpecs(specs, models)
+		if err != nil {
+			t.Fatal(err)
+		}
+		f := areas[0].Items[0].field("secret")
+		attr := schemaAttr(newW(), f)
+		for _, want := range []string{"Optional: true, Computed: true", "Sensitive: true", "UseStateForUnknown()", "OPNsense ignores"} {
+			if !strings.Contains(attr, want) {
+				t.Errorf("write_only=%v: %s lacks %q", writeOnly, attr, want)
+			}
+		}
+		if strings.Contains(attr, "Default:") {
+			t.Errorf("write_only=%v: %s has a default", writeOnly, attr)
+		}
+		if stmt := fromAPIStmt(f); writeOnly && !strings.Contains(stmt, "IsNull()") {
+			t.Errorf("write-only read does not fill a null value after import: %s", stmt)
+		}
 	}
 }
 

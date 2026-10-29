@@ -282,6 +282,12 @@ terraform import opnsense_plugin.ddclient os-ddclient                 # plugin b
 terraform import opnsense_wol_host.nas nas                            # WoL host by description
 ```
 
+Config that `tofu plan -generate-config-out` writes for an import has no secrets: OpenTofu
+writes each sensitive attribute as `null # sensitive`. An optional secret left unset keeps the
+value OPNsense has, so the plan after the import is empty, and `""` clears it. OPNsense never
+returns or clears update-only fields, such as the DynDNS password and user passwords. The state
+still holds the secrets OPNsense returns, such as WireGuard keys, so keep it encrypted.
+
 ### Plugins
 
 `opnsense_plugin` installs a plugin on create and removes it on destroy. Both wait for the
