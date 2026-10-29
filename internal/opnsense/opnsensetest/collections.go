@@ -2,6 +2,7 @@ package opnsensetest
 
 import (
 	"net/http"
+	"strings"
 )
 
 // registerAll declares every API area the fake serves. Add new areas here.
@@ -102,4 +103,24 @@ func registerUnbound(s *Server) {
 		}
 	}
 	s.reconfigure["unbound/service/reconfigure"] = true
+
+	// Query forwarding and DNS over TLS servers are one array, dots.dot, told apart by type.
+	// Like SettingsController, search lists one type, get returns either, and add and set
+	// write the type of the action.
+	var shared map[string]Record
+	for _, c := range s.collections {
+		if c.Base != "unbound/settings" || c.Key != "dot" {
+			continue
+		}
+		if shared == nil {
+			shared = c.items
+		}
+		c.items = shared
+		typ := strings.ToLower(c.Suffix)
+		f := c.Fields["type"]
+		f.Kind, f.Choices = Option, static("dot", "forward")
+		c.Fields["type"] = f
+		c.OnWrite = func(_ *Server, _ string, posted Record) { posted["type"] = typ }
+		c.SearchFilter = func(r Record) bool { return r["type"] == typ }
+	}
 }

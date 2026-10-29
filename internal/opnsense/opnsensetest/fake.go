@@ -85,6 +85,9 @@ type Collection struct {
 	// ExtraRows are appended to search results, e.g. automatic/legacy firewall rules that
 	// are not part of the model.
 	ExtraRows func(s *Server) []map[string]string
+	// SearchFilter, when set, limits search results like a controller's filter function,
+	// e.g. Unbound's searchForward lists only query forwarding servers.
+	SearchFilter func(rec Record) bool
 	// OnWrite runs on add and set with the posted fields, before they are stored. It may
 	// remove volatile fields from posted after acting on them.
 	OnWrite func(s *Server, uuid string, posted Record)
@@ -388,6 +391,9 @@ func (c *Collection) serve(s *Server, verb, arg string, w http.ResponseWriter, r
 		for _, id := range ids {
 			rec := c.items[id]
 			if phrase != "" && !matches(rec, phrase) {
+				continue
+			}
+			if c.SearchFilter != nil && !c.SearchFilter(rec) {
 				continue
 			}
 			if !filtersMatch(c, c.withVirtual(s, id, rec), req) {
