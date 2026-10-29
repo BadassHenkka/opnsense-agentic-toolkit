@@ -50,7 +50,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	listTypes := fs.Bool("list-types", false, "print the resource types it can check and exit")
 	showVersion := fs.Bool("version", false, "print version and exit")
 	fs.Usage = func() {
-		fmt.Fprintln(stderr, "usage: tofu show -json | opnsense-unmanaged [flags] [state.json]")
+		_, _ = fmt.Fprintln(stderr, "usage: tofu show -json | opnsense-unmanaged [flags] [state.json]")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
@@ -58,10 +58,10 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	switch {
 	case *showVersion:
-		fmt.Fprintln(stdout, version)
+		_, _ = fmt.Fprintln(stdout, version)
 		return 0
 	case *listTypes:
-		fmt.Fprintln(stdout, strings.Join(unmanaged.Types(), "\n"))
+		_, _ = fmt.Fprintln(stdout, strings.Join(unmanaged.Types(), "\n"))
 		return 0
 	case fs.NArg() > 1:
 		fs.Usage()
@@ -72,7 +72,7 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	if fs.NArg() == 1 && fs.Arg(0) != "-" {
 		f, err := os.Open(fs.Arg(0))
 		if err != nil {
-			fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
+			_, _ = fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
 			return 2
 		}
 		defer func() { _ = f.Close() }()
@@ -80,13 +80,13 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	st, err := unmanaged.ReadState(in)
 	if err != nil {
-		fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
+		_, _ = fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
 		return 2
 	}
 
 	client, err := opnsense.NewClient(opnsense.ConfigFromEnv())
 	if err != nil {
-		fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
+		_, _ = fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
 		return 2
 	}
 	client.SetUserAgent("opnsense-unmanaged/" + version)
@@ -105,10 +105,10 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 func report(rep unmanaged.Report, st *unmanaged.State, imports bool, stdout, stderr io.Writer) int {
 	if len(rep.Checked) == 0 && len(rep.Errors) == 0 {
-		fmt.Fprintln(stderr, "opnsense-unmanaged: no opnsense_* resources in the state and no -types; nothing to check")
+		_, _ = fmt.Fprintln(stderr, "opnsense-unmanaged: no opnsense_* resources in the state and no -types; nothing to check")
 	}
 	for _, t := range rep.Unchecked {
-		fmt.Fprintf(stderr, "opnsense-unmanaged: not checked: %s has no list call\n", t)
+		_, _ = fmt.Fprintf(stderr, "opnsense-unmanaged: not checked: %s has no list call\n", t)
 	}
 	labels := map[string]bool{}
 	for a := range st.Addresses {
@@ -118,11 +118,11 @@ func report(rep unmanaged.Report, st *unmanaged.State, imports bool, stdout, std
 		if imports {
 			printImport(stdout, o, labels)
 		} else {
-			fmt.Fprintf(stdout, "%s\t%s\t%s\n", o.Type, clean(o.ID), clean(o.Name))
+			_, _ = fmt.Fprintf(stdout, "%s\t%s\t%s\n", o.Type, clean(o.ID), clean(o.Name))
 		}
 	}
 	for _, err := range rep.Errors {
-		fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
+		_, _ = fmt.Fprintln(stderr, "opnsense-unmanaged:", err)
 	}
 	switch {
 	case len(rep.Errors) > 0:
@@ -153,7 +153,7 @@ var (
 func printImport(w io.Writer, o unmanaged.Object, used map[string]bool) {
 	if !safeID.MatchString(o.ID) {
 		// Every id OPNsense hands out matches; anything else stays out of generated code.
-		fmt.Fprintf(w, "# %s: skipped, unexpected id %q\n\n", o.Type, clean(o.ID))
+		_, _ = fmt.Fprintf(w, "# %s: skipped, unexpected id %q\n\n", o.Type, clean(o.ID))
 		return
 	}
 	short := strings.TrimPrefix(o.Type, "opnsense_")
@@ -171,7 +171,7 @@ func printImport(w io.Writer, o unmanaged.Object, used map[string]bool) {
 	}
 	used[o.Type+"."+label] = true
 	if o.Name != "" {
-		fmt.Fprintf(w, "# %s\n", clean(o.Name))
+		_, _ = fmt.Fprintf(w, "# %s\n", clean(o.Name))
 	}
-	fmt.Fprintf(w, "import {\n  to = %s.%s\n  id = %q\n}\n\n", o.Type, label, o.ID)
+	_, _ = fmt.Fprintf(w, "import {\n  to = %s.%s\n  id = %q\n}\n\n", o.Type, label, o.ID)
 }

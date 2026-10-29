@@ -78,7 +78,7 @@ func TestPrintImportLabels(t *testing.T) {
 	if strings.Contains(b.String(), "import") || strings.Contains(b.String(), "${") && !strings.HasPrefix(b.String(), "#") {
 		t.Errorf("unsafe id: %s", b.String())
 	}
-	if got := clean("a\x1b[2Jb‮c\nd"); got != "a?[2Jb?c?d" {
+	if got := clean("a\x1b[2Jb\u202ec\nd"); got != "a?[2Jb?c?d" {
 		t.Errorf("clean: %q", got)
 	}
 }
