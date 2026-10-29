@@ -120,10 +120,13 @@ type Server struct {
 	// LockOutAfter makes every request fail with 503 once the named apply path has been
 	// called, to simulate firewall rules that cut off the API client.
 	LockOutAfter string
-	lockedOut    bool
-	firmware     *firmwareState
-	wakes        []string
-	settings     map[string]*settingsGroup
+	// Forbidden answers paths below these prefixes with 403, like an API user that lacks the
+	// privilege, e.g. "core/firmware/".
+	Forbidden []string
+	lockedOut bool
+	firmware  *firmwareState
+	wakes     []string
+	settings  map[string]*settingsGroup
 }
 
 // Operations returns the calls made to non-CRUD endpoints, e.g.
@@ -220,6 +223,12 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 	if s.lockedOut {
 		http.Error(w, "connection blocked", http.StatusServiceUnavailable)
 		return
+	}
+	for _, p := range s.Forbidden {
+		if strings.HasPrefix(path, p) {
+			http.Error(w, `{"status":403,"message":"Forbidden"}`, http.StatusForbidden)
+			return
+		}
 	}
 	if s.reconfigure[path] && r.Method == http.MethodPost {
 		s.Applies[path]++

@@ -99,6 +99,20 @@ func TestFilterApplyDetectsLockout(t *testing.T) {
 	}
 }
 
+// An API user without "System: Firmware" gets 403 from the probe, which still proves the API
+// answers over a new connection.
+func TestFilterApplyWithoutFirmwarePrivilege(t *testing.T) {
+	fake := opnsensetest.New(t)
+	fake.Forbidden = []string{"core/firmware/"}
+	start := time.Now()
+	if err := fake.Client(t).Filter.ApplyAndVerify(context.Background(), 5*time.Second); err != nil {
+		t.Fatalf("ApplyAndVerify: %v", err)
+	}
+	if time.Since(start) > time.Second {
+		t.Fatalf("waited %v for a 403", time.Since(start))
+	}
+}
+
 // A field missing from FilterRuleRow silently disappears from firewall_rule_list. Leaving out
 // source_not once made inverted rules read as their opposite.
 func TestFilterRuleRowHasEveryField(t *testing.T) {

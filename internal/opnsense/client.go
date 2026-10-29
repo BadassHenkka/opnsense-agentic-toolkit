@@ -234,6 +234,8 @@ func truncate(s string, n int) string {
 // VerifyReachable checks over a new TCP connection that the API still answers, retrying for up
 // to wait (default 10s). Changes to firewall rules, NAT or interfaces can cut off the client
 // that made them; existing connections may survive in the state table while new ones fail.
+// A 403 counts as an answer: the probe's endpoint needs "System: Firmware", which an API user
+// that only manages rules lacks.
 func (c *Client) VerifyReachable(ctx context.Context, wait time.Duration) error {
 	if wait <= 0 {
 		wait = 10 * time.Second
@@ -245,7 +247,8 @@ func (c *Client) VerifyReachable(ctx context.Context, wait time.Duration) error 
 		var resp map[string]any
 		last := c.Get(probe, "core/firmware/running", &resp)
 		cancel()
-		if last == nil {
+		var api *APIError
+		if last == nil || errors.As(last, &api) && api.StatusCode == http.StatusForbidden {
 			return nil
 		}
 		if time.Now().After(deadline) || ctx.Err() != nil {
