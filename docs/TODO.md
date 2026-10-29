@@ -207,5 +207,5 @@ changes; Terraform implements. Open ideas to make the verify step safer:
       baseline backup.
 - [ ] Refuse trial writes on lockout-prone areas (interfaces, management-network routes) unless
       explicitly allowed.
-- [ ] `terraform plan` helper: show which live objects are not in Terraform state (drift and
-      leftovers from trials).
+- [x] `terraform plan` helper: show which live objects are not in Terraform state (drift and
+      leftovers from trials). `cmd/opnsense-unmanaged`, see the README.

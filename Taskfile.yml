@@ -47,10 +47,11 @@ tasks:
       - go mod tidy
 
   build:
-    desc: Build bin/mcp-opnsense and bin/terraform-provider-opnsense
+    desc: Build bin/mcp-opnsense, bin/terraform-provider-opnsense and bin/opnsense-unmanaged
     cmds:
       - go build -ldflags "{{.LDFLAGS}}" -o bin/mcp-opnsense ./cmd/mcp-opnsense
       - go build -ldflags "{{.LDFLAGS}}" -o bin/terraform-provider-opnsense ./cmd/terraform-provider-opnsense
+      - go build -ldflags "{{.LDFLAGS}}" -o bin/opnsense-unmanaged ./cmd/opnsense-unmanaged
 
   test:
     desc: Run all tests with the race detector

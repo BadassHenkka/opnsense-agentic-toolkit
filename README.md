@@ -66,6 +66,7 @@ See [docs/DESIGN.md](docs/DESIGN.md) for the layout, the research behind it, and
 cmd/
   mcp-opnsense/                 MCP server binary (flags, env, stdio)
   terraform-provider-opnsense/  Terraform provider binary
+  opnsense-unmanaged/           lists live objects missing from the state
 internal/
   opnsense/                     shared API client — one file per API controller
     item_controller.go          generic add/get/set/del/search/reconfigure
@@ -85,6 +86,7 @@ internal/
   mcpserver/                    MCP tools — one *_tools.go file per area, grouped in toolsets
   provider/                     Terraform provider and resources
     item_crud.go                generic Create/Read/Update/Delete + apply for item resources
+  unmanaged/                    live objects per resource type, compared with a state
 cmd/opnsense-gen/               code generator
 gen/specs/, gen/models/         generator input: specs and pinned OPNsense model XML
 examples/                       Terraform and MCP client config
@@ -113,7 +115,7 @@ Authorities → export the CA certificate as PEM and keep it at, say,
 **3. Build and configure.**
 
 ```sh
-task build                         # bin/mcp-opnsense and bin/terraform-provider-opnsense
+task build                         # the binaries in ./bin
 export OPNSENSE_URL=https://opnsense.lan      # the address you open in the browser
 export OPNSENSE_API_KEY=...
 export OPNSENSE_API_SECRET=...
@@ -382,6 +384,35 @@ WireGuard: `opnsense_wireguard_instance` generates its private key when you omit
 shows the derived `public_key` in the plan. Peer membership is set only on the peer
 (`instance_ids`). OPNsense stores it on the instance, but the provider never writes it there,
 so two resources never fight over it.
+
+### Objects missing from the state
+
+`tofu plan` only compares the resources in the state, so it doesn't show a rule someone added
+in the web UI. `opnsense-unmanaged` lists those objects:
+
+```sh
+tofu show -json | bin/opnsense-unmanaged              # one line per object: type, ID, name
+tofu show -json | bin/opnsense-unmanaged -import      # import blocks to adopt them
+bin/opnsense-unmanaged -types opnsense_wireguard_peer state.json
+```
+
+- It checks every `opnsense_*` resource type in the state, plus the types in `-types`.
+  `-list-types` prints the types it can check. Settings resources are one fixed object each,
+  so there is nothing to compare.
+- It reads only the type, address and ID of each resource from the JSON, never other values.
+  `tofu show -json` prints sensitive values in plain text, so pipe it rather than writing it
+  to a file.
+- It only makes read calls, with the `OPNSENSE_*` variables of the MCP server. The API user
+  needs the privileges of the pages it checks; a missing one shows as an HTTP 403 error.
+- It skips objects that no resource can manage: built-in aliases (`bogons`, `sshlockout`,
+  `virusprot`, the `__<interface>_network` aliases), automatic and legacy filter rules (the
+  anti-lockout rule among them) and automatic NAT rules. OPNsense gives built-in and automatic
+  objects an ID that isn't a UUID; the helper skips every such object for all types except
+  interface assignments, whose IDs are names such as `opt3`.
+- `-import` derives each resource name from the object's name and prints the name as a
+  comment above the block. Names are free text from the firewall, so check the blocks before
+  you commit them.
+- Exit status: 0 when every object is in the state, 1 when some are missing, 2 on an error.
 
 ### Routing to networks behind a WireGuard peer (site-to-site)
 
