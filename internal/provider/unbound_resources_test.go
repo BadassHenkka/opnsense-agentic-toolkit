@@ -135,4 +135,15 @@ func TestUnboundBlocklistApply(t *testing.T) {
 	if h.fake.Applies["unbound/service/reconfigure"] != 1 {
 		t.Fatalf("applies %v", h.fake.Applies)
 	}
+
+	// source_nets is a NetworkField without NetMaskRequired: a bare address is valid.
+	m := genUnboundBlocklistPlan()
+	m.SourceNets = strSet("192.168.10.4", "192.168.20.0/24", "fd00::4")
+	if d := h.validateAttrs(m); d.HasError() {
+		t.Fatalf("addresses and networks: %v", d)
+	}
+	m.SourceNets = strSet("not-an-address")
+	if !h.validateAttrs(m).HasError() {
+		t.Fatal("an invalid source should fail validation")
+	}
 }

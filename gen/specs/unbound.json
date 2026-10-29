@@ -239,9 +239,9 @@
         },
         "source_nets": {
           "tf_type": "set",
-          "description": "Apply only to these client networks; empty for everyone.",
+          "description": "Apply only to these clients: addresses or networks; empty for everyone.",
           "validators": [
-            "setvalidator.ValueStringsAre(cidr{})"
+            "setvalidator.ValueStringsAre(ipOrCIDR{})"
           ]
         },
         "address": {
