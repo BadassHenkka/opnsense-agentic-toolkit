@@ -6,6 +6,7 @@
 //	OPNSENSE_API_KEY     API key of a dedicated, least-privilege user
 //	OPNSENSE_API_SECRET  API secret
 //	OPNSENSE_CA_FILE     optional PEM bundle for a self-signed certificate
+//	OPNSENSE_TLS_SERVER_NAME  optional name to check the certificate against, if not the URL's host
 package main
 
 import (

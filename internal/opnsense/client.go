@@ -26,6 +26,8 @@ const (
 	EnvAPISecret = "OPNSENSE_API_SECRET"
 	EnvCAFile    = "OPNSENSE_CA_FILE"
 	EnvInsecure  = "OPNSENSE_INSECURE"
+	// EnvTLSServerName overrides the name the certificate is checked against.
+	EnvTLSServerName = "OPNSENSE_TLS_SERVER_NAME"
 )
 
 // Config holds what is needed to talk to one OPNsense instance.
@@ -38,6 +40,11 @@ type Config struct {
 	CAFile string
 	// Insecure disables TLS verification. Prefer CAFile.
 	Insecure bool
+	// TLSServerName, if set, is the name the certificate must be valid for, and the name sent
+	// in SNI. The connection still goes to the host in URL. Use it to reach a firewall by an
+	// address its certificate does not list, such as a test copy that has the real one's
+	// certificate.
+	TLSServerName string
 	// Timeout per request. Zero means 30 seconds.
 	Timeout time.Duration
 	// HTTPClient overrides the client built from the fields above (used in tests).
@@ -52,6 +59,8 @@ func ConfigFromEnv() Config {
 		APISecret: os.Getenv(EnvAPISecret),
 		CAFile:    os.Getenv(EnvCAFile),
 		Insecure:  os.Getenv(EnvInsecure) == "1" || strings.EqualFold(os.Getenv(EnvInsecure), "true"),
+
+		TLSServerName: os.Getenv(EnvTLSServerName),
 	}
 }
 
@@ -117,7 +126,7 @@ func NewClient(cfg Config) (*Client, error) {
 }
 
 func newHTTPClient(cfg Config) (*http.Client, error) {
-	tlsCfg := &tls.Config{MinVersion: tls.VersionTLS12}
+	tlsCfg := &tls.Config{MinVersion: tls.VersionTLS12, ServerName: cfg.TLSServerName}
 	if cfg.CAFile != "" {
 		pem, err := os.ReadFile(cfg.CAFile)
 		if err != nil {

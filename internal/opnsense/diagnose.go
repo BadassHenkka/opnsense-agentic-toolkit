@@ -165,7 +165,7 @@ func connectionHint(err error) string {
 	case errors.As(err, &unknown):
 		return "the certificate is not trusted: export the CA from System > Trust > Authorities and set OPNSENSE_CA_FILE"
 	case errors.As(err, &hostErr):
-		return "the certificate does not match the host name in OPNSENSE_URL; use the name the certificate was issued for"
+		return "the certificate does not match the host name in OPNSENSE_URL; use the name the certificate was issued for, or set it in OPNSENSE_TLS_SERVER_NAME"
 	case errors.As(err, &dnsErr):
 		return "the host name does not resolve; check OPNSENSE_URL or use the IP address"
 	case strings.Contains(err.Error(), "connection refused"):

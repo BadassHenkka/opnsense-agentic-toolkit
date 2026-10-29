@@ -120,6 +120,11 @@ export OPNSENSE_API_SECRET=...
 export OPNSENSE_CA_FILE=$HOME/.config/opnsense/ca.pem   # only for a self-signed certificate
 ```
 
+If the certificate doesn't list the address in `OPNSENSE_URL`, set `OPNSENSE_TLS_SERVER_NAME` to
+a name it lists. The client still connects to the address in the URL but checks the
+certificate against that name. A test copy of the firewall, restored from its `config.xml`, needs
+this: it has the real firewall's certificate at a different address.
+
 **4. Check it.**
 
 ```sh

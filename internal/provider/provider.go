@@ -35,6 +35,8 @@ type providerModel struct {
 	APISecret types.String `tfsdk:"api_secret"`
 	CAFile    types.String `tfsdk:"ca_file"`
 	Insecure  types.Bool   `tfsdk:"insecure"`
+
+	TLSServerName types.String `tfsdk:"tls_server_name"`
 }
 
 func (p *opnsenseProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -68,6 +70,11 @@ func (p *opnsenseProvider) Schema(_ context.Context, _ provider.SchemaRequest, r
 				Optional:    true,
 				Description: "Skip TLS verification. Prefer ca_file. Env: " + opnsense.EnvInsecure + ".",
 			},
+			"tls_server_name": schema.StringAttribute{
+				Optional: true,
+				Description: "Name the certificate must be valid for, if it differs from the host in url. " +
+					"The provider still connects to that host. Env: " + opnsense.EnvTLSServerName + ".",
+			},
 		},
 	}
 }
@@ -96,6 +103,7 @@ func (p *opnsenseProvider) Configure(ctx context.Context, req provider.Configure
 	override(&c.APIKey, cfg.APIKey)
 	override(&c.APISecret, cfg.APISecret)
 	override(&c.CAFile, cfg.CAFile)
+	override(&c.TLSServerName, cfg.TLSServerName)
 	if !cfg.Insecure.IsNull() && !cfg.Insecure.IsUnknown() {
 		c.Insecure = cfg.Insecure.ValueBool()
 	}
