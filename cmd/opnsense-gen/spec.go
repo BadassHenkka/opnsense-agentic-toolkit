@@ -596,6 +596,12 @@ func field(n *xmlNode, typ string, fs FieldSpec, container string) (*Field, erro
 	f.TFComputed, f.TFUnstable, f.NoDefault, f.WriteOnly = fs.TFComputed, fs.TFUnstable, fs.NoDefault, fs.WriteOnly
 	f.ForceRequired, f.Invert, f.Values = fs.Required, fs.Invert, fs.Values
 	f.Validators, f.PlanMods = fs.Validators, fs.PlanModifiers
+	// cidr{} rejects a bare address, so it only fits a network field that requires a mask.
+	for _, v := range f.Validators {
+		if strings.Contains(v, "cidr{}") && n.value("NetMaskRequired") != "Y" {
+			return nil, fmt.Errorf("cidr{} needs NetMaskRequired in the model; use ipOrCIDR{}")
+		}
+	}
 	if fs.AsBool != nil {
 		f.AsTrue, f.AsFalse = fs.AsBool["true"], fs.AsBool["false"]
 		if f.AsTrue == f.AsFalse || len(fs.AsBool) != 2 {
@@ -647,12 +653,6 @@ func field(n *xmlNode, typ string, fs FieldSpec, container string) (*Field, erro
 		f.Sep = fs.Sep
 	}
 
-	// cidr{} rejects a bare address, so it only fits a network field that requires a mask.
-	for _, v := range f.Validators {
-		if strings.Contains(v, "cidr{}") && n.value("NetMaskRequired") != "Y" {
-			return nil, fmt.Errorf("cidr{} needs NetMaskRequired in the model; use ipOrCIDR{}")
-		}
-	}
 	f.APIRequired = n.value("Required") == "Y"
 	if d := n.child("Default"); d != nil {
 		f.Default, f.HasDefault = strings.TrimSpace(d.Text), true
