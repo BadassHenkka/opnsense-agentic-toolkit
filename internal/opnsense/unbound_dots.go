@@ -6,6 +6,6 @@ package opnsense
 // rewrite the type. Get refuses an item of the other type, so that a wrong ID can't turn a
 // DNS over TLS server into plain DNS forwarding.
 
-func (*UnboundForward) kind() (string, string) { return "type", "forward" }
+func (*UnboundForward) kind() string { return "forward" }
 
-func (*UnboundDoT) kind() (string, string) { return "type", "dot" }
+func (*UnboundDoT) kind() string { return "dot" }

@@ -134,33 +134,31 @@ func (ic *ItemController[T, S]) Get(ctx context.Context, uuid string) (*T, error
 
 // kinded is an item that shares its model array with items of another kind, such as
 // Unbound's query forwarding and DNS over TLS servers. The get action of such a controller
-// returns an item of any kind, so Get checks the field that tells them apart.
+// returns an item of any kind, so Get checks the type field that tells them apart.
 type kinded interface {
-	kind() (field, want string)
+	kind() string
 }
 
 // WrongKindError is Get finding an item of another kind in a shared array.
 type WrongKindError struct {
-	UUID, Field, Got, Want string
+	UUID, Got, Want string
 }
 
 func (e *WrongKindError) Error() string {
-	return fmt.Sprintf("opnsense: item %s has %s %q, not %q; it belongs to the resource or tool for %q items",
-		e.UUID, e.Field, e.Got, e.Want, e.Got)
+	return fmt.Sprintf("opnsense: item %s has type %q, not %q; it belongs to the resource or tool for %q items",
+		e.UUID, e.Got, e.Want, e.Got)
 }
 
 func checkKind(uuid string, body json.RawMessage, k kinded) error {
-	field, want := k.kind()
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(body, &fields); err != nil {
-		return fmt.Errorf("opnsense: decode %s: %w", field, err)
+	// The item's own Type is a ReadOnly, which can't hold the option map OPNsense returns.
+	var got struct {
+		Type Option `json:"type"`
 	}
-	var got Option
-	if err := json.Unmarshal(fields[field], &got); err != nil {
-		return fmt.Errorf("opnsense: decode %s: %w", field, err)
+	if err := json.Unmarshal(body, &got); err != nil {
+		return fmt.Errorf("opnsense: decode type: %w", err)
 	}
-	if string(got) != want {
-		return &WrongKindError{UUID: uuid, Field: field, Got: string(got), Want: want}
+	if want := k.kind(); string(got.Type) != want {
+		return &WrongKindError{UUID: uuid, Got: string(got.Type), Want: want}
 	}
 	return nil
 }

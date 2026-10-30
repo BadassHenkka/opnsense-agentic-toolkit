@@ -36,25 +36,10 @@ func TestUnboundForwardRefusesDoT(t *testing.T) {
 		t.Fatalf("DoTs.Get(forward) = %v", err)
 	}
 
-	for name, search := range map[string]func() (int, string, error){
-		"forward": func() (int, string, error) {
-			r, err := c.Unbound.Forwards.Search(ctx, "")
-			if err != nil || len(r.Rows) == 0 {
-				return 0, "", err
-			}
-			return len(r.Rows), string(r.Rows[0].UUID), nil
-		},
-		"dot": func() (int, string, error) {
-			r, err := c.Unbound.DoTs.Search(ctx, "")
-			if err != nil || len(r.Rows) == 0 {
-				return 0, "", err
-			}
-			return len(r.Rows), string(r.Rows[0].UUID), nil
-		},
-	} {
-		want := map[string]string{"forward": fwd, "dot": dot}[name]
-		if n, id, err := search(); err != nil || n != 1 || id != want {
-			t.Errorf("search %s = %d rows, first %q, %v", name, n, id, err)
-		}
+	if r, err := c.Unbound.Forwards.Search(ctx, ""); err != nil || len(r.Rows) != 1 || string(r.Rows[0].UUID) != fwd {
+		t.Errorf("search forwards = %+v, %v", r, err)
+	}
+	if r, err := c.Unbound.DoTs.Search(ctx, ""); err != nil || len(r.Rows) != 1 || string(r.Rows[0].UUID) != dot {
+		t.Errorf("search DoTs = %+v, %v", r, err)
 	}
 }
