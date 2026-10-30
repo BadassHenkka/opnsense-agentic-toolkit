@@ -7,9 +7,11 @@ package privileges
 import (
 	_ "embed"
 	"encoding/json"
+	"maps"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
+	"sync"
 )
 
 // Privilege is one entry of an ACL.xml file, with its API patterns.
@@ -23,8 +25,9 @@ type Privilege struct {
 
 // Grants reports whether the privilege allows endpoint (a path below /api/).
 func (p Privilege) Grants(endpoint string) bool {
+	url := "/api/" + strings.ReplaceAll(endpoint, "{arg}", "x")
 	for _, pat := range p.Patterns {
-		if urlMatch("/api/"+strings.ReplaceAll(endpoint, "{arg}", "x"), pat) {
+		if urlMatch(url, pat) {
 			return true
 		}
 	}
@@ -53,16 +56,17 @@ func urlMatch(url, pattern string) bool {
 	return re.MatchString(url)
 }
 
-// All returns every privilege with API patterns.
-func All() []Privilege { return acl }
-
 //go:embed endpoints/mcp.json
 var mcpJSON []byte
 
 //go:embed endpoints/terraform.json
 var terraformJSON []byte
 
-var mcpEndpoints, terraformEndpoints = mustLoad(mcpJSON), mustLoad(terraformJSON)
+// Loaded on first use, so the server and the provider don't parse them at every start.
+var (
+	mcpEndpoints       = sync.OnceValue(func() map[string][]string { return mustLoad(mcpJSON) })
+	terraformEndpoints = sync.OnceValue(func() map[string][]string { return mustLoad(terraformJSON) })
+)
 
 func mustLoad(b []byte) map[string][]string {
 	var m map[string][]string
@@ -74,27 +78,35 @@ func mustLoad(b []byte) map[string][]string {
 
 // ToolEndpoints returns the endpoints an MCP tool calls; ResourceEndpoints those of a
 // Terraform resource type.
-func ToolEndpoints(tool string) []string    { return mcpEndpoints[tool] }
-func ResourceEndpoints(typ string) []string { return terraformEndpoints[typ] }
+func ToolEndpoints(tool string) []string    { return mcpEndpoints()[tool] }
+func ResourceEndpoints(typ string) []string { return terraformEndpoints()[typ] }
 
-// known lists every endpoint any tool or resource calls.
-func known() []string {
+// known lists every endpoint any tool or resource calls, sorted.
+var known = sync.OnceValue(func() []string {
 	set := map[string]bool{}
-	for _, m := range []map[string][]string{mcpEndpoints, terraformEndpoints} {
+	for _, m := range []map[string][]string{mcpEndpoints(), terraformEndpoints()} {
 		for _, eps := range m {
 			for _, e := range eps {
 				set[e] = true
 			}
 		}
 	}
-	return sortedKeys(set)
-}
+	return slices.Sorted(maps.Keys(set))
+})
 
-func sortedKeys(m map[string]bool) []string {
-	out := make([]string, 0, len(m))
-	for k := range m {
-		out = append(out, k)
+// knownGrants maps each privilege key, "All pages" left out, to the known endpoints it
+// grants. It depends only on the embedded data, so it is built once.
+var knownGrants = sync.OnceValue(func() map[string][]string {
+	out := map[string][]string{}
+	for _, p := range acl {
+		if isAll(p) {
+			continue
+		}
+		for _, e := range known() {
+			if p.Grants(e) {
+				out[p.Key] = append(out[p.Key], e)
+			}
+		}
 	}
-	sort.Strings(out)
 	return out
-}
+})

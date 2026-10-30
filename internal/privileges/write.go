@@ -3,7 +3,7 @@ package privileges
 import (
 	"fmt"
 	"io"
-	"sort"
+	"slices"
 	"strings"
 )
 
@@ -28,19 +28,14 @@ func Write(w io.Writer, plan Plan, verbose bool) error {
 	if len(plan.Ungranted) > 0 {
 		fmt.Fprintf(&b, "Only \"All pages\" grants: %s\n\n", strings.Join(plan.Ungranted, " "))
 	}
-	var opt []string
-	for e := range plan.Optional {
-		opt = append(opt, e)
-	}
-	sort.Strings(opt)
-	for _, e := range opt {
-		fmt.Fprintf(&b, "Not needed: %s, %s.\n", e, plan.Optional[e])
+	for _, o := range plan.Optional {
+		fmt.Fprintf(&b, "Not needed: %s, %s.\n", o.Endpoint, o.Why)
 	}
 	_, err := io.WriteString(w, b.String())
 	return err
 }
 
-// byController groups endpoints as "module/controller: action action; ...".
+// byController groups endpoints as "module/controller: action action; ...", each action once.
 func byController(endpoints []string) string {
 	actions := map[string][]string{}
 	var order []string
@@ -53,7 +48,9 @@ func byController(endpoints []string) string {
 		if _, ok := actions[ctrl]; !ok {
 			order = append(order, ctrl)
 		}
-		actions[ctrl] = append(actions[ctrl], parts[2])
+		if !slices.Contains(actions[ctrl], parts[2]) {
+			actions[ctrl] = append(actions[ctrl], parts[2])
+		}
 	}
 	var out []string
 	for _, c := range order {

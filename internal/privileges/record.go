@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -72,7 +73,7 @@ func (r *Recorder) Finish(file string) error {
 	var missing []string
 	for owner, eps := range got {
 		for _, ep := range eps {
-			if !contains(want[owner], ep) {
+			if !slices.Contains(want[owner], ep) {
 				missing = append(missing, owner+": "+ep)
 			}
 		}
@@ -85,13 +86,17 @@ func (r *Recorder) Finish(file string) error {
 	return nil
 }
 
-func contains(list []string, s string) bool {
-	for _, v := range list {
-		if v == s {
-			return true
+// Main is for TestMain: it runs the tests (m.Run) and returns the exit code, the tests' own
+// or 1 when they pass but Finish fails.
+func (r *Recorder) Main(run func() int, file string) int {
+	code := run()
+	if code == 0 {
+		if err := r.Finish(file); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			code = 1
 		}
 	}
-	return false
+	return code
 }
 
 // Endpoint reduces an API path to <module>/<controller>/<action>, with each argument after it

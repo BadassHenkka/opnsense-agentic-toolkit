@@ -42,32 +42,32 @@ func fetchModels(root string) error {
 		}
 	}
 	for _, m := range sortedKeys(models) {
-		u, err := modelURL(m, refs)
-		if err != nil {
+		if err := fetchFile(root, m, refs); err != nil {
 			return err
 		}
-		resp, err := http.Get(u)
-		if err != nil {
-			return err
-		}
-		body, err := io.ReadAll(resp.Body)
-		_ = resp.Body.Close()
-		if err != nil {
-			return err
-		}
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("%s: %s", u, resp.Status)
-		}
-		dst := filepath.Join(root, "gen", "models", filepath.FromSlash(m))
-		if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
-			return err
-		}
-		if err := os.WriteFile(dst, body, 0o644); err != nil {
-			return err
-		}
-		fmt.Println("fetched", m)
 	}
 	return fetchACLs(root, refs, models)
+}
+
+// fetchFile downloads rel (a path below gen/models, see modelURL) at the pinned refs.
+func fetchFile(root, rel string, refs map[string]string) error {
+	u, err := modelURL(rel, refs)
+	if err != nil {
+		return err
+	}
+	body, err := download(u)
+	if err != nil {
+		return err
+	}
+	dst := filepath.Join(root, "gen", "models", filepath.FromSlash(rel))
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	if err := os.WriteFile(dst, body, 0o644); err != nil {
+		return err
+	}
+	fmt.Println("fetched", rel)
+	return nil
 }
 
 // fetchACLs downloads the ACL.xml of every core module, and of the plugins the specs use, next
@@ -96,26 +96,20 @@ func fetchACLs(root string, refs map[string]string, models map[string]bool) erro
 				dst = "core/" + rest
 			case repo == "plugins":
 				parts := strings.SplitN(p, "/", 3)
+				if len(parts) < 3 || !plugins[parts[0]+"/"+parts[1]] {
+					continue
+				}
 				sub, ok := strings.CutPrefix(parts[2], mvc)
-				if len(parts) < 3 || !ok || !plugins[parts[0]+"/"+parts[1]] {
+				if !ok {
 					continue
 				}
 				dst = "plugins/" + parts[0] + "/" + parts[1] + "/" + sub
 			default:
 				continue
 			}
-			body, err := download(fmt.Sprintf("https://raw.githubusercontent.com/opnsense/%s/%s/%s", repo, refs[repo], p))
-			if err != nil {
+			if err := fetchFile(root, dst, refs); err != nil {
 				return err
 			}
-			out := filepath.Join(root, "gen", "models", filepath.FromSlash(dst))
-			if err := os.MkdirAll(filepath.Dir(out), 0o755); err != nil {
-				return err
-			}
-			if err := os.WriteFile(out, body, 0o644); err != nil {
-				return err
-			}
-			fmt.Println("fetched", dst)
 		}
 	}
 	return nil

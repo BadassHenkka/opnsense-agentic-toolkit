@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -50,14 +49,7 @@ func newHarness(t *testing.T, fake *opnsensetest.Server, r resource.Resource) *h
 var endpoints privileges.Recorder
 
 func TestMain(m *testing.M) {
-	code := m.Run()
-	if code == 0 {
-		if err := endpoints.Finish("../privileges/endpoints/terraform.json"); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			code = 1
-		}
-	}
-	os.Exit(code)
+	os.Exit(endpoints.Main(m.Run, "../privileges/endpoints/terraform.json"))
 }
 
 func (h *harness) empty() tftypes.Value {

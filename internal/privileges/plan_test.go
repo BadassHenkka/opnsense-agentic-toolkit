@@ -1,6 +1,7 @@
 package privileges
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -47,7 +48,7 @@ func TestFor(t *testing.T) {
 		t.Fatalf("wireguard peer: %+v", p)
 	}
 	for _, g := range For([]string{"firewall/alias/searchItem"}).Grants {
-		if !contains(g.AlsoAllows, "firewall/alias/getItem/{arg}") {
+		if !slices.Contains(g.AlsoAllows, "firewall/alias/getItem/{arg}") {
 			t.Errorf("%s: also allows %v", g.Name, g.AlsoAllows)
 		}
 	}

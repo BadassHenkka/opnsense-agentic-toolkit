@@ -3,7 +3,6 @@ package main
 import (
 	"html"
 	"slices"
-	"sort"
 	"strings"
 
 	"github.com/smulis/opnsense-agentic-toolkit/internal/privileges"
@@ -62,14 +61,9 @@ func alsoAllows(g privileges.Grant) string {
 }
 
 func notNeeded(plan privileges.Plan) []string {
-	var keys []string
-	for e := range plan.Optional {
-		keys = append(keys, e)
-	}
-	sort.Strings(keys)
 	var out []string
-	for _, e := range keys {
-		out = append(out, "It also calls "+e+", "+plan.Optional[e]+", so that call doesn't need a privilege of its own.")
+	for _, o := range plan.Optional {
+		out = append(out, "It also calls "+o.Endpoint+", "+o.Why+", so that call doesn't need a privilege of its own.")
 	}
 	return out
 }

@@ -1,6 +1,8 @@
 package privileges
 
 import (
+	"maps"
+	"slices"
 	"sort"
 )
 
@@ -16,12 +18,16 @@ type Grant struct {
 
 // Plan is a small set of privileges that grants a set of endpoints.
 type Plan struct {
-	Endpoints []string
-	Grants    []Grant
+	Grants []Grant
 	// Ungranted lists endpoints no privilege grants except "All pages".
 	Ungranted []string
-	// Optional lists endpoints that work without their privilege, with the reason.
-	Optional map[string]string
+	// Optional lists endpoints that work without their privilege, sorted.
+	Optional []OptionalEndpoint
+}
+
+// OptionalEndpoint is an endpoint that works without its privilege, and why.
+type OptionalEndpoint struct {
+	Endpoint, Why string
 }
 
 // optional are endpoints a tool or resource calls that need no privilege of their own.
@@ -30,49 +36,38 @@ var optional = map[string]string{
 }
 
 // isAll reports whether p grants every page, like "All pages".
-func isAll(p Privilege) bool {
-	for _, pat := range p.Patterns {
-		if pat == "*" {
-			return true
-		}
-	}
-	return false
-}
+func isAll(p Privilege) bool { return slices.Contains(p.Patterns, "*") }
 
 // For picks privileges for endpoints. For each endpoint it takes a privilege already picked
 // when one grants it, else the narrowest one: the privilege that grants the fewest endpoints
 // the toolkit knows. Endpoints with the fewest candidates go first, so the narrow choices
 // they force are reused.
 func For(endpoints []string) Plan {
+	var plan Plan
 	set := map[string]bool{}
-	plan := Plan{Optional: map[string]string{}}
 	for _, e := range endpoints {
 		if why, ok := optional[e]; ok {
-			plan.Optional[e] = why
+			if !slices.ContainsFunc(plan.Optional, func(o OptionalEndpoint) bool { return o.Endpoint == e }) {
+				plan.Optional = append(plan.Optional, OptionalEndpoint{e, why})
+			}
 			continue
 		}
 		set[e] = true
 	}
-	plan.Endpoints = sortedKeys(set)
-	all := known()
-	breadth := map[string]int{}
+	sort.Slice(plan.Optional, func(i, j int) bool { return plan.Optional[i].Endpoint < plan.Optional[j].Endpoint })
+	order := slices.Sorted(maps.Keys(set))
+	grants := knownGrants()
 	candidates := map[string][]Privilege{}
 	for _, p := range acl {
 		if isAll(p) {
 			continue
 		}
-		for _, e := range all {
-			if p.Grants(e) {
-				breadth[p.Key]++
-			}
-		}
-		for _, e := range plan.Endpoints {
+		for _, e := range order {
 			if p.Grants(e) {
 				candidates[e] = append(candidates[e], p)
 			}
 		}
 	}
-	order := append([]string(nil), plan.Endpoints...)
 	sort.SliceStable(order, func(i, j int) bool { return len(candidates[order[i]]) < len(candidates[order[j]]) })
 
 	picked := map[string]*Grant{}
@@ -89,8 +84,8 @@ func For(endpoints []string) Plan {
 			if pi != pj {
 				return pi
 			}
-			if breadth[cands[i].Key] != breadth[cands[j].Key] {
-				return breadth[cands[i].Key] < breadth[cands[j].Key]
+			if bi, bj := len(grants[cands[i].Key]), len(grants[cands[j].Key]); bi != bj {
+				return bi < bj
 			}
 			return cands[i].Name < cands[j].Name
 		})
@@ -104,8 +99,8 @@ func For(endpoints []string) Plan {
 	for _, k := range keys {
 		g := picked[k]
 		sort.Strings(g.For)
-		for _, e := range all {
-			if !set[e] && g.Grants(e) {
+		for _, e := range grants[k] {
+			if !set[e] {
 				g.AlsoAllows = append(g.AlsoAllows, e)
 			}
 		}

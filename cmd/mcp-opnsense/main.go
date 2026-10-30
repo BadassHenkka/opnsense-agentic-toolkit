@@ -47,9 +47,7 @@ func run() error {
 	if len(os.Args) > 1 && os.Args[1] == "privileges" {
 		return runPrivileges(os.Args[2:])
 	}
-	readOnly := flag.Bool("read-only", envBool("OPNSENSE_MCP_READ_ONLY"), "register only tools that do not change OPNsense")
-	toolsets := flag.String("toolsets", envOr("OPNSENSE_MCP_TOOLSETS", "all"),
-		"comma-separated toolsets to enable ("+strings.Join(mcpserver.Toolsets(), ", ")+", all)")
+	readOnly, toolsets := toolFlags(flag.CommandLine)
 	showVersion := flag.Bool("version", false, "print version and exit")
 	check := flag.Bool("check", false, "test the configuration and connection, print a report and exit")
 	flag.Parse()
@@ -119,11 +117,18 @@ func runCheck() error {
 	return nil
 }
 
+// toolFlags declares the flags that pick the tools, so the server and privileges agree.
+func toolFlags(fs *flag.FlagSet) (readOnly *bool, toolsets *string) {
+	readOnly = fs.Bool("read-only", envBool("OPNSENSE_MCP_READ_ONLY"), "register only tools that do not change OPNsense")
+	toolsets = fs.String("toolsets", envOr("OPNSENSE_MCP_TOOLSETS", "all"),
+		"comma-separated toolsets to enable ("+strings.Join(mcpserver.Toolsets(), ", ")+", all)")
+	return readOnly, toolsets
+}
+
 // runPrivileges prints the privileges the tools selected by the flags need.
 func runPrivileges(args []string) error {
 	fs := flag.NewFlagSet("mcp-opnsense privileges", flag.ExitOnError)
-	readOnly := fs.Bool("read-only", envBool("OPNSENSE_MCP_READ_ONLY"), "only the tools that do not change OPNsense")
-	toolsets := fs.String("toolsets", envOr("OPNSENSE_MCP_TOOLSETS", "all"), "comma-separated toolsets ("+strings.Join(mcpserver.Toolsets(), ", ")+", all)")
+	readOnly, toolsets := toolFlags(fs)
 	verbose := fs.Bool("v", false, "also list the endpoints each privilege is needed for")
 	_ = fs.Parse(args)
 

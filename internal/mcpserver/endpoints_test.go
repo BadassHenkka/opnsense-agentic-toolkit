@@ -2,7 +2,6 @@ package mcpserver_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -27,14 +26,7 @@ func recordTool(next mcp.MethodHandler) mcp.MethodHandler {
 }
 
 func TestMain(m *testing.M) {
-	code := m.Run()
-	if code == 0 {
-		if err := endpoints.Finish("../privileges/endpoints/mcp.json"); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			code = 1
-		}
-	}
-	os.Exit(code)
+	os.Exit(endpoints.Main(m.Run, "../privileges/endpoints/mcp.json"))
 }
 
 // TestToolEndpoints calls the tools no other test reaches, so their endpoints get recorded.
