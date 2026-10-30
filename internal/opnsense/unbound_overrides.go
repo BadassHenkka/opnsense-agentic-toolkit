@@ -25,6 +25,9 @@ func (h *HostOverride) FQDN() string { return fqdn(h.Hostname, h.Domain) }
 // FQDN returns hostname.domain, or the domain when hostname is empty.
 func (r HostOverrideRow) FQDN() string { return fqdn(string(r.Hostname), string(r.Domain)) }
 
+// FQDN joins the alias's hostname and domain.
+func (r HostAliasRow) FQDN() string { return fqdn(string(r.Hostname), string(r.Domain)) }
+
 const unboundReconfigure = "unbound/service/reconfigure"
 
 // Apply activates staged override and alias changes (reloads Unbound).
@@ -72,7 +75,7 @@ func (s *UnboundService) FindHostAliases(ctx context.Context, name string) ([]Ho
 	want := normName(name)
 	var out []HostAliasRow
 	for _, r := range res.Rows {
-		if normName(fqdn(string(r.Hostname), string(r.Domain))) == want {
+		if normName(r.FQDN()) == want {
 			out = append(out, r)
 		}
 	}

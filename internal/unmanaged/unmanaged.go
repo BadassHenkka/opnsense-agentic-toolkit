@@ -1,11 +1,14 @@
 package unmanaged
 
 import (
+	"cmp"
 	"context"
 	"fmt"
+	"maps"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
+	"sync"
 
 	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
 )
@@ -28,9 +31,14 @@ var uuidRe = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[
 // (the bogons and sshlockout aliases, the __<if>_network aliases) their name as id, and
 // automatic NAT rules an id like automatic_<service>_<n>.
 func items[T any, S opnsense.NamedRow](ctx context.Context, ic *opnsense.ItemController[T, S]) ([]Object, error) {
+	return named(ctx, ic, func(r S) string { _, name := r.RowRef(); return name })
+}
+
+// named is items with the name taken from name instead of RowRef.
+func named[T any, S opnsense.NamedRow](ctx context.Context, ic *opnsense.ItemController[T, S], name func(S) string) ([]Object, error) {
 	return rows(ctx, ic, func(r S) (Object, bool) {
-		id, name := r.RowRef()
-		return Object{ID: id, Name: name}, uuidRe.MatchString(id)
+		id, _ := r.RowRef()
+		return Object{ID: id, Name: name(r)}, uuidRe.MatchString(id)
 	})
 }
 
@@ -68,27 +76,19 @@ func listers() map[string]lister {
 	}
 	// Unnamed rows: show what tells them apart in the web UI.
 	m["opnsense_unbound_host_override"] = func(ctx context.Context, c *opnsense.Client) ([]Object, error) {
-		return rows(ctx, c.Unbound.HostOverrides, func(r opnsense.HostOverrideRow) (Object, bool) {
-			return Object{ID: string(r.UUID), Name: join(r.FQDN(), string(r.RR))}, uuidRe.MatchString(string(r.UUID))
-		})
+		return named(ctx, c.Unbound.HostOverrides, func(r opnsense.HostOverrideRow) string { return join(r.FQDN(), string(r.RR)) })
 	}
 	m["opnsense_unbound_host_alias"] = func(ctx context.Context, c *opnsense.Client) ([]Object, error) {
-		return rows(ctx, c.Unbound.HostAliases, func(r opnsense.HostAliasRow) (Object, bool) {
-			name := string(r.Domain)
-			if r.Hostname != "" {
-				name = string(r.Hostname) + "." + name
-			}
-			return Object{ID: string(r.UUID), Name: name}, uuidRe.MatchString(string(r.UUID))
-		})
+		return named(ctx, c.Unbound.HostAliases, opnsense.HostAliasRow.FQDN)
 	}
 	m["opnsense_unbound_forward"] = func(ctx context.Context, c *opnsense.Client) ([]Object, error) {
-		return rows(ctx, c.Unbound.Forwards, func(r opnsense.UnboundForwardRow) (Object, bool) {
-			return Object{ID: string(r.UUID), Name: upstream(string(r.Domain), string(r.Server), string(r.Description))}, uuidRe.MatchString(string(r.UUID))
+		return named(ctx, c.Unbound.Forwards, func(r opnsense.UnboundForwardRow) string {
+			return upstream(string(r.Domain), string(r.Server), string(r.Description))
 		})
 	}
 	m["opnsense_unbound_dot"] = func(ctx context.Context, c *opnsense.Client) ([]Object, error) {
-		return rows(ctx, c.Unbound.DoTs, func(r opnsense.UnboundDoTRow) (Object, bool) {
-			return Object{ID: string(r.UUID), Name: upstream(string(r.Domain), string(r.Server), string(r.Description))}, uuidRe.MatchString(string(r.UUID))
+		return named(ctx, c.Unbound.DoTs, func(r opnsense.UnboundDoTRow) string {
+			return upstream(string(r.Domain), string(r.Server), string(r.Description))
 		})
 	}
 
@@ -139,12 +139,7 @@ func upstream(domain, server, description string) string {
 
 // Types returns the resource types Find can list, sorted.
 func Types() []string {
-	var out []string
-	for t := range listers() {
-		out = append(out, t)
-	}
-	sort.Strings(out)
-	return out
+	return slices.Sorted(maps.Keys(listers()))
 }
 
 // Report is the result of Find.
@@ -182,34 +177,42 @@ func Find(ctx context.Context, c *opnsense.Client, st *State, extra []string) Re
 		}
 		want[t] = true
 	}
-	for t := range want {
-		rep.Checked = append(rep.Checked, t)
-	}
-	sort.Strings(rep.Checked)
-	sort.Strings(rep.Unchecked)
+	rep.Checked = slices.Sorted(maps.Keys(want))
+	slices.Sort(rep.Unchecked)
 
-	for _, t := range rep.Checked {
-		objs, err := all[t](ctx, c)
-		if err != nil {
+	// The searches are independent; run a few at a time rather than flood php-fpm.
+	type result struct {
+		objs []Object
+		err  error
+	}
+	results := make([]result, len(rep.Checked))
+	sem := make(chan struct{}, 4)
+	var wg sync.WaitGroup
+	for i, t := range rep.Checked {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
+			results[i].objs, results[i].err = all[t](ctx, c)
+		}()
+	}
+	wg.Wait()
+
+	for i, t := range rep.Checked {
+		if err := results[i].err; err != nil {
 			rep.Errors = append(rep.Errors, fmt.Errorf("%s: %w", t, err))
 			continue
 		}
-		for _, o := range objs {
+		for _, o := range results[i].objs {
 			if !st.IDs[t][o.ID] {
 				o.Type = t
 				rep.Missing = append(rep.Missing, o)
 			}
 		}
 	}
-	sort.SliceStable(rep.Missing, func(i, j int) bool {
-		a, b := rep.Missing[i], rep.Missing[j]
-		if a.Type != b.Type {
-			return a.Type < b.Type
-		}
-		if a.Name != b.Name {
-			return a.Name < b.Name
-		}
-		return a.ID < b.ID
+	slices.SortFunc(rep.Missing, func(a, b Object) int {
+		return cmp.Or(cmp.Compare(a.Type, b.Type), cmp.Compare(a.Name, b.Name), cmp.Compare(a.ID, b.ID))
 	})
 	return rep
 }
