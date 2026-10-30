@@ -160,9 +160,7 @@ func (m *genTrustCAModel) fromAPI(ctx context.Context, id string, v *opnsense.Tr
 		m.Certificate = types.StringValue(v.Certificate)
 	}
 	if m.PrivateKey.IsUnknown() { // write-only: keep what Terraform has
-		if v.PrivateKey != "" || m.PrivateKey.IsUnknown() || m.PrivateKey.IsNull() {
-			m.PrivateKey = types.StringValue(v.PrivateKey)
-		}
+		m.PrivateKey = types.StringValue(v.PrivateKey)
 	}
 	if v.ValidFrom != "" || m.ValidFrom.IsUnknown() || m.ValidFrom.IsNull() {
 		m.ValidFrom = types.StringValue(string(v.ValidFrom))
@@ -377,9 +375,7 @@ func (m *genTrustCertModel) fromAPI(ctx context.Context, id string, v *opnsense.
 		m.Csr = types.StringValue(v.CSR)
 	}
 	if m.PrivateKey.IsUnknown() { // write-only: keep what Terraform has
-		if v.PrivateKey != "" || m.PrivateKey.IsUnknown() || m.PrivateKey.IsNull() {
-			m.PrivateKey = types.StringValue(v.PrivateKey)
-		}
+		m.PrivateKey = types.StringValue(v.PrivateKey)
 	}
 	if v.ValidFrom != "" || m.ValidFrom.IsUnknown() || m.ValidFrom.IsNull() {
 		m.ValidFrom = types.StringValue(string(v.ValidFrom))

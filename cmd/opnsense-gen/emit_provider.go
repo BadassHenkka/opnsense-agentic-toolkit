@@ -158,7 +158,7 @@ func schemaAttr(b *w, f *Field) string {
 		parts = append(parts, "Optional: true")
 		if def := tfDefault(b, f); def != "" {
 			parts = append(parts, "Computed: true", "Default: "+def)
-		} else if (f.NoDefault || f.TFKind() != "int") && (!f.WriteOnly || !f.Sensitive) {
+		} else if (f.NoDefault || f.TFKind() != "int") && !f.optionalOnly() {
 			parts = append(parts, "Computed: true")
 		}
 	}
@@ -223,6 +223,12 @@ func schemaAttr(b *w, f *Field) string {
 // attribute as null, and with a default of "" the next apply would clear the secret.
 func (f *Field) keepsUnset() bool {
 	return f.Sensitive && !f.NoDefault && !f.Required() && !f.Computed && !f.TFComputed && f.TFKind() == "string"
+}
+
+// optionalOnly reports whether f is a write-only secret that is optional and not computed:
+// OPNsense never returns it, so an unset value stays null.
+func (f *Field) optionalOnly() bool {
+	return f.WriteOnly && f.Sensitive && !f.keepsUnset()
 }
 
 // tfDefault renders the schema default, or "" for none.
@@ -364,8 +370,9 @@ func fromAPIValueStmt(f *Field) string {
 	if len(f.Values) > 0 {
 		val = "genMapValue(" + val + ", " + mapLiteral(f, false) + ")"
 	}
-	if f.Sensitive {
-		// Write-only fields read back empty; keep the configured value.
+	if f.Sensitive && !f.WriteOnly {
+		// Secrets can read back empty; keep the configured value. fromAPIStmt guards
+		// write-only fields itself.
 		return fmt.Sprintf("if %s != \"\" || %s.IsUnknown() || %s.IsNull() {\n%s = types.StringValue(%s)\n}", v, m, m, m, val)
 	}
 	return fmt.Sprintf("%s = types.StringValue(%s)", m, val)
@@ -626,8 +633,8 @@ func exampleValue(o *Object, f *Field) (string, bool) {
 // tfLiteral renders the Terraform model value for API value v.
 func tfLiteral(f *Field, v string, known bool) string {
 	if !known {
-		if f.WriteOnly && f.Sensitive {
-			return "types." + tfShape(f) + "Null()" // optional only: an unset value stays null
+		if f.optionalOnly() {
+			return "types." + tfShape(f) + "Null()"
 		}
 		return "types." + tfShape(f) + "Unknown()"
 	}

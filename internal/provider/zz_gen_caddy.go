@@ -651,9 +651,7 @@ func (m *genCaddyBasicAuthModel) fromAPI(ctx context.Context, id string, v *opns
 	var diags diag.Diagnostics
 	m.Username = types.StringValue(v.Username)
 	if m.Password.IsUnknown() { // write-only: keep what Terraform has
-		if v.Password != "" || m.Password.IsUnknown() || m.Password.IsNull() {
-			m.Password = types.StringValue(v.Password)
-		}
+		m.Password = types.StringValue(v.Password)
 	}
 	m.Description = types.StringValue(v.Description)
 	_ = ctx

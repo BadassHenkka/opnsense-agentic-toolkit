@@ -114,9 +114,7 @@ func (m *genDynDNSAccountModel) fromAPI(ctx context.Context, id string, v *opnse
 	m.Server = types.StringValue(v.Server)
 	m.Username = types.StringValue(v.Username)
 	if m.Password.IsUnknown() || m.Password.IsNull() { // write-only: keep what Terraform has
-		if v.Password != "" || m.Password.IsUnknown() || m.Password.IsNull() {
-			m.Password = types.StringValue(v.Password)
-		}
+		m.Password = types.StringValue(v.Password)
 	}
 	m.ResourceID = types.StringValue(v.ResourceID)
 	m.Hostnames, d = types.SetValueFrom(ctx, types.StringType, nonNil([]string(v.Hostnames)))
