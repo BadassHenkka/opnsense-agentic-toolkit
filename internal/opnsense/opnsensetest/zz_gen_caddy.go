@@ -118,7 +118,7 @@ func registerGenCaddy(s *Server) {
 		c := s.add(&Collection{Base: "caddy/reverse_proxy", Suffix: "BasicAuth", Key: "basicauth",
 			Fields: map[string]Field{
 				"basicauthuser": {Required: true, Mask: "^([0-9a-zA-Z]{2,72})$"},
-				"basicauthpass": {Sensitive: true, Required: true},
+				"basicauthpass": {Sensitive: true, UpdateOnly: true, Required: true},
 				"description":   {},
 			},
 		})

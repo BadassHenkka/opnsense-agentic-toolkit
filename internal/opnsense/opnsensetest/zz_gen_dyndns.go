@@ -12,7 +12,7 @@ func registerGenDynDNS(s *Server) {
 				"protocol":        {Kind: Option, Choices: static("dyndns1", "dyndns2", "get", "post", "put")},
 				"server":          {},
 				"username":        {Mask: "^([a-zA-Z0-9\\-.@_:+\\%])*$"},
-				"password":        {Sensitive: true, Mask: "^[^\\n]*$"},
+				"password":        {Sensitive: true, UpdateOnly: true, Mask: "^[^\\n]*$"},
 				"resourceId":      {Mask: "^[^\\n]*$"},
 				"hostnames":       {Required: true},
 				"wildcard":        {Required: true, Default: "0"},

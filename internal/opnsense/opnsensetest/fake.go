@@ -63,6 +63,9 @@ type Field struct {
 	// Sensitive fields hold credentials. SeedSecrets fills them so tests can check that
 	// no front end shows them.
 	Sensitive bool
+	// UpdateOnly fields (UpdateOnlyTextField) read back empty in get and search, and an empty
+	// write keeps the stored value.
+	UpdateOnly bool
 }
 
 // Collection is one OPNsense model array served under Base with the <action><Suffix> pattern.
@@ -395,6 +398,9 @@ func (c *Collection) serve(s *Server, verb, arg string, w http.ResponseWriter, r
 			}
 			row := map[string]string{"uuid": id}
 			for k, v := range c.withVirtual(s, id, rec) {
+				if c.Fields[k].UpdateOnly {
+					v = ""
+				}
 				row[k] = strings.ReplaceAll(v, "\n", ",")
 			}
 			rows = append(rows, row)
@@ -504,6 +510,9 @@ func decodeFields(w http.ResponseWriter, key string, fields map[string]Field, in
 			http.Error(w, fmt.Sprintf("field %s.%s is maintained by OPNsense and must not be sent", key, k), http.StatusBadRequest)
 			return nil, false
 		}
+		if f.UpdateOnly && (v == nil || v == "") {
+			continue // UpdateOnlyTextField ignores an empty value
+		}
 		switch v := v.(type) {
 		case string:
 			rec[k] = v
@@ -566,6 +575,9 @@ func renderFlat(s *Server, fields map[string]Field, rec Record) map[string]any {
 	out := map[string]any{}
 	for name, f := range fields {
 		v := rec[name]
+		if f.UpdateOnly {
+			v = ""
+		}
 		switch f.Kind {
 		case Text:
 			out[name] = v

@@ -33,6 +33,9 @@ func fakeField(f *Field) string {
 	if f.Sensitive {
 		parts = append(parts, "Sensitive: true")
 	}
+	if f.UpdateOnly {
+		parts = append(parts, "UpdateOnly: true")
+	}
 	if f.APIRequired && !f.Computed {
 		parts = append(parts, "Required: true")
 	}
