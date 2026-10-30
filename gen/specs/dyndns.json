@@ -36,7 +36,7 @@
         "password": {
           "sensitive": true,
           "write_only": true,
-          "description": "Password or API token. OPNsense does return it; this provider and the MCP server never expose it."
+          "description": "Password or API token; never returned by OPNsense."
         },
         "resourceId": {
           "attr": "resource_id",
