@@ -242,8 +242,10 @@ from your password manager and then runs `exec bin/mcp-opnsense --read-only`.
 No MCP tool returns a credential, whether from a `list` or a `get`: private keys, preshared
 keys, passwords, tokens and API secrets are left out of search results and shown as
 `(set, hidden)` or `<name>_set` elsewhere. That includes `backup_diff_get` (credential elements
-in config.xml diffs) and `caddy_caddyfile_get`. Public keys stay visible. A test seeds a marker
-into every sensitive field of the fake firewall and fails if any tool returns one.
+in config.xml diffs) and `caddy_caddyfile_get`. DynDNS and user passwords have no `_set`
+flag: OPNsense never returns them, not even whether one is set. Tools do show public keys. A
+test seeds a marker into every sensitive field of the fake firewall and fails if any tool
+returns one.
 
 ## Terraform provider
 

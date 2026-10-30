@@ -7,11 +7,12 @@ import (
 	"testing"
 
 	"github.com/smulis/opnsense-agentic-toolkit/internal/mcpserver"
+	"github.com/smulis/opnsense-agentic-toolkit/internal/opnsense"
 )
 
 // TestNoToolReturnsSecrets seeds a unique marker into every field the specs mark sensitive,
 // then calls every list tool, and the get tool that goes with it for each item listed. No
-// marker may appear in any result: OPNsense does return these columns, so the tools must not.
+// marker may appear in any result: OPNsense returns most of these fields, so the tools must not.
 func TestNoToolReturnsSecrets(t *testing.T) {
 	cs, fake := connect(t, mcpserver.Options{})
 	markers := fake.SeedSecrets("SENTINEL-SECRET-")
@@ -91,5 +92,31 @@ func TestListsKeepPublicKeys(t *testing.T) {
 	}
 	if _, has := row["privkey"]; has {
 		t.Fatalf("private key in the list: %v", row)
+	}
+}
+
+// TestUpdateOnlyHasNoSetFlag: OPNsense reads an update-only password back empty, so a
+// password_set flag would always say false, even when a password is stored.
+func TestUpdateOnlyHasNoSetFlag(t *testing.T) {
+	ctx := context.Background()
+	cs, fake := connect(t, mcpserver.Options{})
+	c := fake.Client(t)
+	if _, err := c.DynDNS.Accounts.Add(ctx, opnsense.DynDNSAccount{
+		Enabled: true, Service: "cloudflare", Password: "token", Hostnames: opnsense.CSVList{"home.example.com"},
+		Checkip: "web_dyndns", CheckipTimeout: opnsense.IntOf(10), TTL: opnsense.IntOf(300), Description: "home",
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Auth.Users.Add(ctx, opnsense.User{Name: "alice", Password: "pw"}); err != nil {
+		t.Fatal(err)
+	}
+	for tool, name := range map[string]string{"dyndns_account_get": "home", "auth_user_get": "alice"} {
+		out, ok := call(t, cs, tool, map[string]any{"name": name})
+		if !ok {
+			t.Fatalf("%s: %v", tool, out)
+		}
+		if v, has := out["password_set"]; has {
+			t.Errorf("%s returned password_set=%v", tool, v)
+		}
 	}
 }

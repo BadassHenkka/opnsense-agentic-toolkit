@@ -19,7 +19,6 @@ type genDynDNSAccountView struct {
 	Protocol       string   `json:"protocol,omitempty"`
 	Server         string   `json:"server,omitempty"`
 	Username       string   `json:"username,omitempty"`
-	PasswordSet    bool     `json:"password_set" jsonschema:"whether a value is set; the value is never returned"`
 	ResourceID     string   `json:"resource_id,omitempty"`
 	Hostnames      []string `json:"hostnames,omitempty"`
 	Wildcard       bool     `json:"wildcard"`
@@ -41,7 +40,6 @@ func genDynDNSAccountViewOf(id string, v *opnsense.DynDNSAccount) genDynDNSAccou
 		Protocol:       string(v.Protocol),
 		Server:         v.Server,
 		Username:       v.Username,
-		PasswordSet:    v.Password != "",
 		ResourceID:     v.ResourceID,
 		Hostnames:      nonNil([]string(v.Hostnames)),
 		Wildcard:       bool(v.Wildcard),

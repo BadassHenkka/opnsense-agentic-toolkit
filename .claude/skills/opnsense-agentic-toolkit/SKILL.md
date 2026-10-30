@@ -133,7 +133,7 @@ Not covered by Terraform (say so instead of improvising): firmware updates and r
 - **Destroys**: list every `-` in the plan by name. Deleting a plugin removes its config.
 - **Trust**: changing anything but `description` on a CA or certificate replaces it (new key and certificate); services using it must be pointed at the new refid. **API keys** are replaced on any change.
 - **Secrets** (WireGuard private keys, API secrets, DNS API tokens, EAB keys) live in Terraform state. Use variables or a secret source, never inline literals in committed files, and never print them from state or MCP output.
-- MCP reads never return secrets: hand-written tools show `(set, hidden)`, generated ones a `<name>_set` flag. Do not try to recover them from the firewall.
+- MCP reads never return secrets: hand-written tools show `(set, hidden)`, generated ones a `<name>_set` flag. DynDNS and user passwords have neither: OPNsense does not say whether one is set. Do not try to recover them from the firewall.
 
 ## Rules
 

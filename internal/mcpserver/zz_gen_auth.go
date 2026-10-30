@@ -45,7 +45,6 @@ type genUserView struct {
 	Expires        string   `json:"expires,omitempty"`
 	AuthorizedKeys string   `json:"authorized_keys,omitempty"`
 	Shell          string   `json:"shell,omitempty"`
-	PasswordSet    bool     `json:"password_set" jsonschema:"whether a value is set; the value is never returned"`
 	PwdChangedAt   string   `json:"pwd_changed_at,omitempty"`
 	LandingPage    string   `json:"landing_page,omitempty"`
 	Comment        string   `json:"comment,omitempty"`
@@ -66,7 +65,6 @@ func genUserViewOf(id string, v *opnsense.User) genUserView {
 		Expires:        v.Expires,
 		AuthorizedKeys: v.AuthorizedKeys,
 		Shell:          v.Shell,
-		PasswordSet:    v.Password != "",
 		PwdChangedAt:   string(v.PwdChangedAt),
 		LandingPage:    v.LandingPage,
 		Comment:        v.Comment,

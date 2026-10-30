@@ -71,13 +71,25 @@ func viewExpr(f *Field) string {
 	return val
 }
 
+// viewFields are the fields a get tool shows. Update-only fields read back empty, so the
+// view cannot even say whether one is set.
+func viewFields(o *Object) []*Field {
+	var out []*Field
+	for _, f := range o.Fields {
+		if !f.UpdateOnly {
+			out = append(out, f)
+		}
+	}
+	return out
+}
+
 func emitView(b *w, o *Object) {
 	view := "gen" + o.Go + "View"
 	b.p("type %s struct {", view)
 	if !o.Settings {
 		b.p("\tUUID string `json:\"uuid\"`")
 	}
-	for _, f := range o.Fields {
+	for _, f := range viewFields(o) {
 		name := tfGo(f)
 		if f.Sensitive {
 			name += "Set"
@@ -98,7 +110,7 @@ func emitView(b *w, o *Object) {
 		b.p("\treturn %s{", view)
 		b.p("\t\tUUID: id,")
 	}
-	for _, f := range o.Fields {
+	for _, f := range viewFields(o) {
 		name := tfGo(f)
 		if f.Sensitive {
 			name += "Set"
