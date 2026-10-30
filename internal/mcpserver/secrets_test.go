@@ -103,7 +103,7 @@ func TestUpdateOnlyHasNoSetFlag(t *testing.T) {
 	c := fake.Client(t)
 	if _, err := c.DynDNS.Accounts.Add(ctx, opnsense.DynDNSAccount{
 		Enabled: true, Service: "cloudflare", Password: "token", Hostnames: opnsense.CSVList{"home.example.com"},
-		Checkip: "web_dyndns", CheckipTimeout: opnsense.IntOf(10), TTL: opnsense.IntOf(300), Description: "home",
+		Checkip: "web_icanhazip", CheckipTimeout: opnsense.IntOf(10), TTL: opnsense.IntOf(300), Description: "home",
 	}); err != nil {
 		t.Fatal(err)
 	}

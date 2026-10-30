@@ -18,7 +18,7 @@ func TestUpdateOnlyPassword(t *testing.T) {
 
 	acct := opnsense.DynDNSAccount{
 		Enabled: true, Service: "cloudflare", Password: "token", Hostnames: opnsense.CSVList{"home.example.com"},
-		Checkip: "web_dyndns", CheckipTimeout: opnsense.IntOf(10), TTL: opnsense.IntOf(300), Description: "home",
+		Checkip: "web_icanhazip", CheckipTimeout: opnsense.IntOf(10), TTL: opnsense.IntOf(300), Description: "home",
 	}
 	id, err := accounts.Add(ctx, acct)
 	if err != nil {
