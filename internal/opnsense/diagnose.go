@@ -87,11 +87,10 @@ func Diagnose(ctx context.Context, cfg Config) []Check {
 	}
 	var info FirmwareInfo
 	err = c.Get(ctx, "core/firmware/info", &info)
-	var api *APIError
 	switch {
 	case err == nil:
 		add(Check{Name: "connection", Status: CheckOK, Detail: "authenticated; OPNsense " + string(info.ProductVersion)})
-	case errors.As(err, &api) && api.StatusCode == http.StatusForbidden:
+	case errors.Is(err, ErrForbidden):
 		// 403 comes after authentication, so the key and secret are right.
 		add(Check{Name: "connection", Status: CheckOK, Detail: "authenticated (the version is hidden without System: Firmware)"})
 	default:
@@ -114,7 +113,7 @@ func Diagnose(ctx context.Context, cfg Config) []Check {
 		} else {
 			e = c.Get(ctx, p.Path, &resp)
 		}
-		if errors.As(e, &api) && api.StatusCode == http.StatusForbidden {
+		if errors.Is(e, ErrForbidden) {
 			denied = append(denied, fmt.Sprintf("%s (%s)", p.Area, p.Privilege))
 		}
 	}

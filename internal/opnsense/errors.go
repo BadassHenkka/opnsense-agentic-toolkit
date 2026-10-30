@@ -12,6 +12,9 @@ import (
 // ErrNotFound is returned when an item does not exist.
 var ErrNotFound = errors.New("opnsense: not found")
 
+// ErrForbidden matches a 403: the API user lacks the privilege for the page.
+var ErrForbidden = errors.New("opnsense: forbidden")
+
 // APIError is a non-2xx HTTP response.
 type APIError struct {
 	Method     string
@@ -36,9 +39,10 @@ func (e *APIError) Error() string {
 	return msg
 }
 
-// Is lets errors.Is(err, ErrNotFound) match a 404.
+// Is lets errors.Is(err, ErrNotFound) match a 404 and errors.Is(err, ErrForbidden) a 403.
 func (e *APIError) Is(target error) bool {
-	return target == ErrNotFound && e.StatusCode == http.StatusNotFound
+	return target == ErrNotFound && e.StatusCode == http.StatusNotFound ||
+		target == ErrForbidden && e.StatusCode == http.StatusForbidden
 }
 
 // ValidationError is OPNsense rejecting a write: HTTP 200 with result "failed".

@@ -247,8 +247,7 @@ func (c *Client) VerifyReachable(ctx context.Context, wait time.Duration) error 
 		var resp map[string]any
 		last := c.Get(probe, "core/firmware/running", &resp)
 		cancel()
-		var api *APIError
-		if last == nil || errors.As(last, &api) && api.StatusCode == http.StatusForbidden {
+		if last == nil || errors.Is(last, ErrForbidden) {
 			return nil
 		}
 		if time.Now().After(deadline) || ctx.Err() != nil {
